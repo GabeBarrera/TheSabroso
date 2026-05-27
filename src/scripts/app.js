@@ -20,9 +20,18 @@ function haversine(lat1, lon1, lat2, lon2) {
 
 function isVoiceHidden(r, hiddenFilters) {
   if (!hiddenFilters.length) return false;
+  if (hiddenFilters.includes("all")) return true;
   const cuisine = (r.cuisine || "").toLowerCase();
   const tags = (Array.isArray(r.tags) ? r.tags : ["restaurant"]).map((t) => t.toLowerCase());
-  return hiddenFilters.some((f) => cuisine.includes(f) || tags.includes(f));
+  for (const f of hiddenFilters) {
+    // "bar" / "restaurant" tag filters only hide entries that carry that tag exclusively
+    if (f === "bar" || f === "restaurant") {
+      if (tags.length === 1 && tags[0] === f) return true;
+    } else {
+      if (cuisine.includes(f)) return true;
+    }
+  }
+  return false;
 }
 
 function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFilters, setView, setVoiceResult, setProfile, mapActionsRef) {
@@ -55,14 +64,19 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
     return;
   }
 
-  // Hide / Show
+  // Hide all / Show all
+  if (/hide all/.test(t)) { setHiddenFilters(["all"]); return; }
+  if (/show all/.test(t)) { setHiddenFilters([]); return; }
+
+  // Hide / Show [tag or cuisine]
   const hideShowMatch = t.match(/^(hide|show)\s+(.+)/);
   if (hideShowMatch) {
     const action = hideShowMatch[1];
     const filter = hideShowMatch[2].trim().toLowerCase();
     setHiddenFilters((prev) => {
-      if (action === "hide") return prev.includes(filter) ? prev : [...prev, filter];
-      return prev.filter((f) => f !== filter);
+      const base = prev.filter((f) => f !== "all"); // drop "all" when switching to specific
+      if (action === "hide") return base.includes(filter) ? base : [...base, filter];
+      return base.filter((f) => f !== filter);
     });
     return;
   }
@@ -303,29 +317,46 @@ function doBackup(target, list) {
   SDStore.download(filename, JSON.stringify(list, null, 2));
 }
 
-function VoiceResultModal({ result, restaurants, onClose, onSelect, setView, mapActionsRef }) {
+function VoiceResultModal({ result, onClose, setView, mapActionsRef }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  // expand whenever a fresh result arrives
+  useEffect(() => { if (result) setCollapsed(false); }, [result]);
+
   if (!result) return null;
-  const title = result.type === "nearest" ? "Nearest Restaurants"
-    : result.type === "none" ? "No Results"
+
+  const isNone = result.type === "none";
+  const tabLabel = result.type === "nearest" ? "Near" : isNone ? "None" : "Found";
+  const panelTitle = result.type === "nearest" ? "Nearest Restaurants"
+    : isNone ? "No Results"
     : `Found · "${result.query}"`;
-  const sub = result.type === "nearest"
+  const panelSub = result.type === "nearest"
     ? `${result.items.length} closest to your location`
-    : result.type === "none"
+    : isNone
     ? `Nothing matched "${result.query}"`
     : `${result.items.length} restaurant${result.items.length !== 1 ? "s" : ""} matched`;
 
   return (
-    <div className="voice-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="voice-panel">
+    <div className={`voice-drawer${collapsed ? " collapsed" : ""}`}>
+      <button
+        className="voice-drawer-tab"
+        onClick={() => setCollapsed((v) => !v)}
+        title={collapsed ? "Expand results" : "Collapse results"}
+        aria-label={collapsed ? "Expand results" : "Collapse results"}
+      >
+        <span className="voice-drawer-tab-label">{tabLabel}</span>
+        <span className="voice-drawer-tab-arrow">{collapsed ? "‹" : "›"}</span>
+      </button>
+      <div className="voice-drawer-panel">
         <div className="voice-panel-head">
           <div>
-            <div className="voice-panel-title">{title}</div>
-            <div className="voice-panel-sub">{sub}</div>
+            <div className="voice-panel-title">{panelTitle}</div>
+            <div className="voice-panel-sub">{panelSub}</div>
           </div>
-          <button className="voice-panel-close" onClick={onClose}>Close</button>
+          <button className="voice-panel-close" onClick={onClose} title="Close">✕</button>
         </div>
         <div className="voice-panel-body">
-          {result.type === "none" ? (
+          {isNone ? (
             <div className="voice-no-results">Nothing found.</div>
           ) : result.items.map((r) => (
             <button key={r.id} className="voice-result-row" onClick={() => {
@@ -335,9 +366,7 @@ function VoiceResultModal({ result, restaurants, onClose, onSelect, setView, map
             }}>
               <div className="vr-name">{r.name}</div>
               <div className="vr-meta">{r.cuisine || "—"} · {r.address}</div>
-              {r.dist != null && (
-                <div className="vr-dist">{r.dist.toFixed(1)} mi away</div>
-              )}
+              {r.dist != null && <div className="vr-dist">{r.dist.toFixed(1)} mi away</div>}
             </button>
           ))}
         </div>

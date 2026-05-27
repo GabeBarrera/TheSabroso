@@ -54,7 +54,7 @@ function AboutView({ goLeft, goRight }) {
         </div>
 
         <p className="about-intro">
-          <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still have no idea where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. Bon appétit, and welcome to the Sabroso.
+          <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. Bon appétit, and welcome to the Sabroso.
         </p>
 
         <div className="about-mobile-nav">
@@ -85,9 +85,17 @@ function AboutView({ goLeft, goRight }) {
 
 function isFilterHidden(r, hiddenFilters) {
   if (!hiddenFilters || !hiddenFilters.length) return false;
+  if (hiddenFilters.includes("all")) return true;
   const cuisine = (r.cuisine || "").toLowerCase();
   const tags = (Array.isArray(r.tags) ? r.tags : ["restaurant"]).map((t) => t.toLowerCase());
-  return hiddenFilters.some((f) => cuisine.includes(f) || tags.includes(f));
+  for (const f of hiddenFilters) {
+    if (f === "bar" || f === "restaurant") {
+      if (tags.length === 1 && tags[0] === f) return true;
+    } else {
+      if (cuisine.includes(f)) return true;
+    }
+  }
+  return false;
 }
 
 function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef }) {
