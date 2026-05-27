@@ -9,6 +9,113 @@ const VIEW_MAP = 0;
 const VIEW_ABOUT = 1;
 const VIEW_RECIPES = 2;
 
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 3959;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function isVoiceHidden(r, hiddenFilters) {
+  if (!hiddenFilters.length) return false;
+  const cuisine = (r.cuisine || "").toLowerCase();
+  const tags = (Array.isArray(r.tags) ? r.tags : ["restaurant"]).map((t) => t.toLowerCase());
+  return hiddenFilters.some((f) => cuisine.includes(f) || tags.includes(f));
+}
+
+function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFilters, setView, setVoiceResult, setProfile, mapActionsRef) {
+  const t = transcript.toLowerCase().trim();
+
+  // Surprise Me
+  if (t.includes("surprise me")) {
+    const pool = restaurants.filter((r) => !isVoiceHidden(r, hiddenFilters));
+    if (!pool.length) return;
+    const r = pool[Math.floor(Math.random() * pool.length)];
+    setView(VIEW_MAP);
+    setTimeout(() => mapActionsRef.current?.zoomTo(r), 400);
+    return;
+  }
+
+  // I'm Craving [cuisine]
+  const cravingMatch = t.match(/(?:i(?:'m| am) craving|craving)\s+(.+)/);
+  if (cravingMatch) {
+    const craving = cravingMatch[1].trim();
+    const pool = restaurants.filter(
+      (r) => (r.cuisine || "").toLowerCase().includes(craving) && !isVoiceHidden(r, hiddenFilters)
+    );
+    if (!pool.length) {
+      setVoiceResult({ type: "none", query: craving });
+      return;
+    }
+    const r = pool[Math.floor(Math.random() * pool.length)];
+    setView(VIEW_MAP);
+    setTimeout(() => mapActionsRef.current?.zoomTo(r), 400);
+    return;
+  }
+
+  // Hide / Show
+  const hideShowMatch = t.match(/^(hide|show)\s+(.+)/);
+  if (hideShowMatch) {
+    const action = hideShowMatch[1];
+    const filter = hideShowMatch[2].trim().toLowerCase();
+    setHiddenFilters((prev) => {
+      if (action === "hide") return prev.includes(filter) ? prev : [...prev, filter];
+      return prev.filter((f) => f !== filter);
+    });
+    return;
+  }
+
+  // Find nearest
+  if (/find\s+nearest|nearest\s+restaurant/.test(t)) {
+    const geo = navigator.geolocation;
+    if (!geo) return;
+    geo.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const withDist = restaurants
+          .filter((r) => !isVoiceHidden(r, hiddenFilters))
+          .map((r) => ({ ...r, dist: haversine(latitude, longitude, r.lat, r.lng) }))
+          .sort((a, b) => a.dist - b.dist);
+        const nearby = withDist.slice(0, 5);
+        setView(VIEW_MAP);
+        setTimeout(() => {
+          mapActionsRef.current?.zoomTo(nearby[0]);
+          setVoiceResult({ type: "nearest", items: nearby });
+        }, 400);
+      },
+      () => {
+        setVoiceResult({ type: "none", query: "your location (permission denied)" });
+      },
+      { timeout: 6000 }
+    );
+    return;
+  }
+
+  // Find [string]
+  const findMatch = t.match(/^find\s+(.+)/);
+  if (findMatch) {
+    const query = findMatch[1].trim();
+    const matches = restaurants.filter((r) => {
+      const text = [r.name, r.cuisine, r.address, (r.description || "").replace(/<[^>]+>/g, "")]
+        .join(" ").toLowerCase();
+      return text.includes(query);
+    });
+    if (matches.length === 0) {
+      setVoiceResult({ type: "none", query });
+      return;
+    }
+    if (matches.length === 1) {
+      setView(VIEW_MAP);
+      setTimeout(() => mapActionsRef.current?.zoomTo(matches[0]), 400);
+      return;
+    }
+    setVoiceResult({ type: "list", items: matches, query });
+    return;
+  }
+}
+
 function App() {
   const [view, setView] = useState(VIEW_ABOUT);
   const [restaurants, setRestaurants] = useState(() => SDStore.loadRestaurants() ?? []);
@@ -21,7 +128,14 @@ function App() {
   const [profile, setProfile] = useState(null);
   const [modal, setModal] = useState(null);
   const [animate, setAnimate] = useState(true);
+  const [chatActive, setChatActive] = useState(false);
+  const [hiddenFilters, setHiddenFilters] = useState([]);
+  const [voiceResult, setVoiceResult] = useState(null);
   const touchRef = useRef(null);
+  const mapActionsRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const hiddenFiltersRef = useRef(hiddenFilters);
+  useEffect(() => { hiddenFiltersRef.current = hiddenFilters; }, [hiddenFilters]);
 
   // seed from JSON files on first visit
   useEffect(() => {
@@ -43,6 +157,38 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem("sabroso_theme", theme); } catch (e) { /* no-op */ }
   }, [theme]);
+
+  // voice recognition — start/stop when chatActive changes
+  useEffect(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    if (!chatActive) {
+      if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch (e) { /* ignore */ } }
+      return;
+    }
+    const rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.lang = "en-US";
+    rec.onresult = (e) => {
+      const transcript = e.results[e.results.length - 1][0].transcript.trim();
+      handleVoiceCommand(
+        transcript,
+        SDStore.loadRestaurants() ?? [],
+        hiddenFiltersRef.current,
+        setHiddenFilters,
+        setView,
+        setVoiceResult,
+        setProfile,
+        mapActionsRef
+      );
+    };
+    rec.onerror = (e) => { if (e.error === "not-allowed") setChatActive(false); };
+    rec.onend = () => { if (chatActive) { try { rec.start(); } catch (e) { /* ignore */ } } };
+    rec.start();
+    recognitionRef.current = rec;
+    return () => { try { rec.stop(); } catch (e) { /* ignore */ } };
+  }, [chatActive]);
 
   // keyboard nav
   useEffect(() => {
@@ -140,6 +286,13 @@ function App() {
         openManage={openManage}
         theme={theme}
         setTheme={setTheme}
+        chatActive={chatActive}
+        setChatActive={setChatActive}
+        hiddenFilters={hiddenFilters}
+        setHiddenFilters={setHiddenFilters}
+        voiceResult={voiceResult}
+        setVoiceResult={setVoiceResult}
+        mapActionsRef={mapActionsRef}
       />
     </ToastProvider>
   );
@@ -150,12 +303,57 @@ function doBackup(target, list) {
   SDStore.download(filename, JSON.stringify(list, null, 2));
 }
 
+function VoiceResultModal({ result, restaurants, onClose, onSelect, setView, mapActionsRef }) {
+  if (!result) return null;
+  const title = result.type === "nearest" ? "Nearest Restaurants"
+    : result.type === "none" ? "No Results"
+    : `Found · "${result.query}"`;
+  const sub = result.type === "nearest"
+    ? `${result.items.length} closest to your location`
+    : result.type === "none"
+    ? `Nothing matched "${result.query}"`
+    : `${result.items.length} restaurant${result.items.length !== 1 ? "s" : ""} matched`;
+
+  return (
+    <div className="voice-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="voice-panel">
+        <div className="voice-panel-head">
+          <div>
+            <div className="voice-panel-title">{title}</div>
+            <div className="voice-panel-sub">{sub}</div>
+          </div>
+          <button className="voice-panel-close" onClick={onClose}>Close</button>
+        </div>
+        <div className="voice-panel-body">
+          {result.type === "none" ? (
+            <div className="voice-no-results">Nothing found.</div>
+          ) : result.items.map((r) => (
+            <button key={r.id} className="voice-result-row" onClick={() => {
+              onClose();
+              setView(VIEW_MAP);
+              setTimeout(() => mapActionsRef.current?.zoomTo(r), 400);
+            }}>
+              <div className="vr-name">{r.name}</div>
+              <div className="vr-meta">{r.cuisine || "—"} · {r.address}</div>
+              {r.dist != null && (
+                <div className="vr-dist">{r.dist.toFixed(1)} mi away</div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AppInner(props) {
   const {
     view, setView, animate, onPointerDown, onPointerUp,
     restaurants, setRestaurants, recipes, setRecipes,
     profile, setProfile, modal, setModal, openManage,
     theme, setTheme,
+    chatActive, setChatActive, hiddenFilters, setHiddenFilters,
+    voiceResult, setVoiceResult, mapActionsRef,
   } = props;
   const toast = useToast();
 
@@ -225,6 +423,8 @@ function AppInner(props) {
             openManage={openManage}
             navigate={setView}
             theme={theme}
+            hiddenFilters={hiddenFilters}
+            mapActionsRef={mapActionsRef}
           />
         </div>
         <div className="panel" data-screen-label="01 About">
@@ -266,9 +466,33 @@ function AppInner(props) {
         )}
       </button>
 
+      {/* chat toggle */}
+      <button
+        className={`chat-toggle${chatActive ? " active" : ""}`}
+        onClick={() => setChatActive((v) => !v)}
+        title={chatActive ? "Stop listening" : "Voice commands"}
+        aria-label={chatActive ? "Stop voice commands" : "Start voice commands"}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="9" y="2" width="6" height="11" rx="3"/>
+          <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
+        </svg>
+      </button>
+
       {/* PROFILE OVERLAY */}
       {profile && (
         <RestaurantProfile restaurant={profile} onClose={() => setProfile(null)} />
+      )}
+
+      {/* VOICE RESULT */}
+      {voiceResult && (
+        <VoiceResultModal
+          result={voiceResult}
+          restaurants={restaurants}
+          onClose={() => setVoiceResult(null)}
+          setView={setView}
+          mapActionsRef={mapActionsRef}
+        />
       )}
 
       {/* MODALS */}

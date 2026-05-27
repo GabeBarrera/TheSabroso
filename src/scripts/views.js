@@ -54,7 +54,7 @@ function AboutView({ goLeft, goRight }) {
         </div>
 
         <p className="about-intro">
-          <span className="drop">N</span><span className="drop-lead">otes</span> from the pass — a tight, opinionated record of where to eat in San&nbsp;Diego and how to cook the things you ate there. No filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it.
+          <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still have no idea where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. Bon appétit, and welcome to the Sabroso.
         </p>
 
         <div className="about-mobile-nav">
@@ -83,7 +83,14 @@ function AboutView({ goLeft, goRight }) {
    MAP VIEW — leaflet + restaurant pins + manage
    ============================================================ */
 
-function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme }) {
+function isFilterHidden(r, hiddenFilters) {
+  if (!hiddenFilters || !hiddenFilters.length) return false;
+  const cuisine = (r.cuisine || "").toLowerCase();
+  const tags = (Array.isArray(r.tags) ? r.tags : ["restaurant"]).map((t) => t.toLowerCase());
+  return hiddenFilters.some((f) => cuisine.includes(f) || tags.includes(f));
+}
+
+function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef }) {
   const mapDiv = useRefV(null);
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
@@ -158,7 +165,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     tileLayerRef.current.setUrl(newUrl);
   }, [theme]);
 
-  // re-render restaurant markers when list changes
+  // re-render restaurant markers when list or filters change
   useEffectV(() => {
     const map = mapInstance.current;
     if (!map) return;
@@ -167,7 +174,11 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     markersRef.current.forEach((m) => map.removeLayer(m));
     markersRef.current = [];
 
+    const markerById = {};
+
     restaurants.forEach((r) => {
+      if (isFilterHidden(r, hiddenFilters)) return;
+
       const rTags = Array.isArray(r.tags) ? r.tags : ["restaurant"];
       const isBarOnly = rTags.includes("bar") && !rTags.includes("restaurant");
       const markerCls = isBarOnly ? "sd-marker bar-pin" : "sd-marker";
@@ -202,12 +213,8 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
       `;
       m.bindPopup(popHtml, { maxWidth: 300 });
       m.on("popupopen", () => {
-        // inject stars
         const slot = document.getElementById(`stars-${r.id}`);
-        if (slot) {
-          slot.innerHTML = starsHtml(r.rating || 0);
-        }
-        // wire select button
+        if (slot) slot.innerHTML = starsHtml(r.rating || 0);
         const btn = document.querySelector(`.pop-select[data-id="${r.id}"]`);
         if (btn) {
           btn.onclick = () => {
@@ -217,9 +224,24 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         }
       });
 
+      // hover to open popup
+      m.on("mouseover", () => m.openPopup());
+
+      markerById[r.id] = m;
       markersRef.current.push(m);
     });
-  }, [restaurants]);
+
+    // expose map actions for voice commands
+    if (mapActionsRef) {
+      mapActionsRef.current = {
+        zoomTo: (r) => {
+          map.setView([r.lat, r.lng], 16, { animate: true });
+          const marker = markerById[r.id];
+          setTimeout(() => { if (marker) marker.openPopup(); }, 520);
+        },
+      };
+    }
+  }, [restaurants, hiddenFilters]);
 
   return (
     <div className="map-view" data-screen-label="02 Map">
