@@ -329,8 +329,8 @@
 <header class="site-header">
   <div class="wordmark">The <span>Sabroso</span> · Data Editor</div>
   <div class="header-right">
-    <button class="btn sm" onclick="exportAll()">Export All JSON</button>
-    <button class="btn sm" onclick="resetToSeed()">Reset to Seed</button>
+    <button class="btn sm ghost" onclick="reloadFromJSON()">Reload from JSON</button>
+    <button class="btn sm" onclick="exportAll()">Export All</button>
   </div>
 </header>
 
@@ -345,10 +345,11 @@
     <h2>Restaurants</h2>
     <div style="display:flex;gap:10px;align-items:center">
       <span class="count" id="r-count"></span>
+      <button class="btn sm ghost" onclick="exportRestaurants()">Export Restaurants</button>
       <button class="btn accent" onclick="openRestaurantModal(null)">+ New Restaurant</button>
     </div>
   </div>
-  <div class="notice">Changes save to <code>sabroso_restaurants</code> in localStorage. Use <strong>Export All JSON</strong> to persist to disk.</div>
+  <div class="notice">Auto-loaded from <code>restaurants.json</code>. Edit freely, then click <strong>Export Restaurants</strong> to download the updated file for git push.</div>
   <div class="entry-list" id="r-list"></div>
 </div>
 
@@ -358,10 +359,11 @@
     <h2>Recipes</h2>
     <div style="display:flex;gap:10px;align-items:center">
       <span class="count" id="rec-count"></span>
+      <button class="btn sm ghost" onclick="exportRecipes()">Export Recipes</button>
       <button class="btn accent" onclick="openRecipeModal(null)">+ New Recipe</button>
     </div>
   </div>
-  <div class="notice">Changes save to <code>sabroso_recipes</code> in localStorage. Use <strong>Export All JSON</strong> to persist to disk.</div>
+  <div class="notice">Auto-loaded from <code>recipes.json</code>. Edit freely, then click <strong>Export Recipes</strong> to download the updated file for git push.</div>
   <div class="entry-list" id="rec-list"></div>
 </div>
 
@@ -489,37 +491,49 @@ let restaurants = [];
 let recipes     = [];
 let editingRTags = [];
 
-/* ── Init ── */
+/* ── Init: always fetch fresh from JSON files ── */
 async function init() {
-  const rRaw = localStorage.getItem(R_KEY);
-  const recRaw = localStorage.getItem(REC_KEY);
+  let rOk = false, recOk = false;
 
-  if (rRaw) {
-    restaurants = JSON.parse(rRaw);
-  } else {
-    try {
-      const res = await fetch("./restaurants.json");
-      restaurants = await res.json();
-      localStorage.setItem(R_KEY, JSON.stringify(restaurants));
-    } catch (e) {
-      restaurants = [];
-    }
+  try {
+    const res = await fetch("./restaurants.json?_=" + Date.now());
+    if (!res.ok) throw new Error(res.status);
+    restaurants = await res.json();
+    localStorage.setItem(R_KEY, JSON.stringify(restaurants));
+    rOk = true;
+  } catch (e) {
+    const cached = localStorage.getItem(R_KEY);
+    restaurants = cached ? JSON.parse(cached) : [];
   }
 
-  if (recRaw) {
-    recipes = JSON.parse(recRaw);
-  } else {
-    try {
-      const res = await fetch("./recipes.json");
-      recipes = await res.json();
-      localStorage.setItem(REC_KEY, JSON.stringify(recipes));
-    } catch (e) {
-      recipes = [];
-    }
+  try {
+    const res = await fetch("./recipes.json?_=" + Date.now());
+    if (!res.ok) throw new Error(res.status);
+    recipes = await res.json();
+    localStorage.setItem(REC_KEY, JSON.stringify(recipes));
+    recOk = true;
+  } catch (e) {
+    const cached = localStorage.getItem(REC_KEY);
+    recipes = cached ? JSON.parse(cached) : [];
   }
 
   renderRestaurants();
   renderRecipes();
+
+  if (rOk && recOk) {
+    toast("Loaded from JSON files");
+  } else if (!rOk && !recOk) {
+    toast("JSON fetch failed — serve via HTTP (not file://)", true);
+  } else {
+    toast("Partially loaded — one file fell back to cache", true);
+  }
+}
+
+/* ── Reload: clears cache and re-fetches ── */
+async function reloadFromJSON() {
+  localStorage.removeItem(R_KEY);
+  localStorage.removeItem(REC_KEY);
+  await init();
 }
 
 /* ── Render ── */
@@ -722,25 +736,27 @@ function confirmDeleteRecipe(id) {
   setTimeout(() => deleteRecipe(), 0);
 }
 
-/* ── Persist ── */
+/* ── Persist to localStorage (crash recovery only) ── */
 function persist() {
   localStorage.setItem(R_KEY,   JSON.stringify(restaurants));
   localStorage.setItem(REC_KEY, JSON.stringify(recipes));
 }
 
 /* ── Export ── */
+function exportRestaurants() {
+  download("restaurants.json", JSON.stringify(restaurants, null, 2));
+  toast("Exported restaurants.json");
+}
+
+function exportRecipes() {
+  download("recipes.json", JSON.stringify(recipes, null, 2));
+  toast("Exported recipes.json");
+}
+
 function exportAll() {
   download("restaurants.json", JSON.stringify(restaurants, null, 2));
   download("recipes.json",     JSON.stringify(recipes,     null, 2));
   toast("Exported restaurants.json + recipes.json");
-}
-
-function resetToSeed() {
-  if (!confirm("Reset all data to seed files? Current localStorage data will be lost.")) return;
-  localStorage.removeItem(R_KEY);
-  localStorage.removeItem(REC_KEY);
-  init();
-  toast("Reset to seed data");
 }
 
 /* ── Utils ── */

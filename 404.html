@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 · The Sabroso</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:        #1a1816;
+    --ink-2:      #2e2b28;
+    --paper:      #f5f0e8;
+    --cream:      #ede8dd;
+    --hairline:   #d4cfc4;
+    --muted:      #7a7568;
+    --terracotta: #c4502d;
+    --marine:     #1f4a5e;
+    --serif:      Georgia, "Times New Roman", serif;
+    --mono:       "Courier New", Courier, monospace;
+    --sans:       system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    flex-shrink: 0;
+  }
+  .wordmark {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .wordmark span { font-style: italic; font-weight: 400; color: var(--terracotta); }
+
+  .home-link {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .home-link:hover { color: var(--paper); }
+
+  /* ── Main ── */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 28px;
+    text-align: center;
+  }
+
+  .error-code {
+    font-family: var(--serif);
+    font-size: clamp(96px, 18vw, 180px);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--cream);
+    letter-spacing: -.04em;
+    user-select: none;
+    margin-bottom: 12px;
+  }
+
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--terracotta);
+    margin: 0 auto 36px;
+  }
+
+  /* ── Joke card ── */
+  .joke-wrap {
+    position: relative;
+    max-width: 560px;
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .joke {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+    padding: 0 8px;
+  }
+  .joke.visible {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+    inset: auto;
+  }
+
+  .joke-headline {
+    font-family: var(--serif);
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .joke-body {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: .04em;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 460px;
+  }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    transition: background 150ms, color 150ms;
+  }
+  .btn-home:hover { background: var(--terracotta); border-color: var(--terracotta); }
+
+  .btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--hairline);
+    cursor: pointer;
+    transition: color 150ms, border-color 150ms;
+  }
+  .btn-next:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* ── Progress dots ── */
+  .dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 32px;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--hairline);
+    transition: background 300ms;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--terracotta); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 20px 28px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--hairline);
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="wordmark" href="/">The <span>Sabroso</span></a>
+  <a class="home-link" href="/">← Back to the menu</a>
+</header>
+
+<main>
+  <div class="error-code">404</div>
+  <div class="divider"></div>
+
+  <div class="joke-wrap" id="joke-wrap">
+    <!-- jokes injected by JS -->
+  </div>
+
+  <div class="controls">
+    <a class="btn-home" href="/">Back to Home</a>
+    <button class="btn-next" id="btn-next" onclick="nextJoke()">Another one</button>
+  </div>
+
+  <div class="dots" id="dots"></div>
+</main>
+
+<footer>The Sabroso · San Diego</footer>
+
+<script>
+const JOKES = [
+  {
+    headline: "Recipe Not Found",
+    body: "We searched every pantry. Checked behind the dried fenugreek. Asked the line cook. This page simply does not exist."
+  },
+  {
+    headline: "This Page Has Been 86'd",
+    body: "86'd: kitchen code for out of stock, discontinued, or never happened. That's what this URL is. Never happened."
+  },
+  {
+    headline: "Missing from the Mise en Place",
+    body: "Every great dish starts with everything in its place. This page was not in its place. It was not anywhere."
+  },
+  {
+    headline: "Lost in the Weeds",
+    body: "The page you're looking for is buried somewhere between a turned table and a screaming ticket printer. We cannot get to it right now."
+  },
+  {
+    headline: "We Reduced This URL",
+    body: "We reduced it over high heat until it completely disappeared. Classic French technique. Terrible for navigation."
+  },
+  {
+    headline: "Returned to the Kitchen",
+    body: "This page was sent back. No explanation given. The chef just shook his head slowly and walked away."
+  },
+  {
+    headline: "Not Found — Like a Vegetable Peeler",
+    body: "It's here somewhere. It has to be. We just had it. But right now, in this moment, when you actually need it, it is gone."
+  },
+  {
+    headline: "No Reservation on File",
+    body: "We checked under every name. We tried the alternate spelling. We checked for walk-ins. This page never booked."
+  },
+  {
+    headline: "Still Soaking Overnight",
+    body: "Some things need time. This page is currently soaking in a brine of non-existence. Check back never."
+  },
+  {
+    headline: "The Knife Came Out Clean",
+    body: "Tested for doneness: insert a URL, it should come out with a page attached. This one came out clean. The page isn't done. Or doesn't exist. Same outcome."
+  }
+];
+
+let current = Math.floor(Math.random() * JOKES.length);
+let timer;
+
+function buildJokes() {
+  const wrap = document.getElementById("joke-wrap");
+  const dotsEl = document.getElementById("dots");
+  wrap.innerHTML = "";
+  dotsEl.innerHTML = "";
+
+  JOKES.forEach((j, i) => {
+    const div = document.createElement("div");
+    div.className = "joke" + (i === current ? " visible" : "");
+    div.id = "joke-" + i;
+    div.innerHTML = `<div class="joke-headline">${j.headline}</div><div class="joke-body">${j.body}</div>`;
+    wrap.appendChild(div);
+
+    const dot = document.createElement("div");
+    dot.className = "dot" + (i === current ? " active" : "");
+    dot.addEventListener("click", () => goTo(i));
+    dot.id = "dot-" + i;
+    dotsEl.appendChild(dot);
+  });
+}
+
+function goTo(idx) {
+  document.getElementById("joke-" + current).classList.remove("visible");
+  document.getElementById("dot-"  + current).classList.remove("active");
+  current = (idx + JOKES.length) % JOKES.length;
+  document.getElementById("joke-" + current).classList.add("visible");
+  document.getElementById("dot-"  + current).classList.add("active");
+  resetTimer();
+}
+
+function nextJoke() { goTo(current + 1); }
+
+function resetTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current + 1), 5000);
+}
+
+buildJokes();
+resetTimer();
+</script>
+</body>
+</html>
