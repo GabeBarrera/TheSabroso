@@ -316,7 +316,7 @@ function nextJoke() { goTo(current + 1); }
 
 function resetTimer() {
   clearInterval(timer);
-  timer = setInterval(() => goTo(current + 1), 5000);
+  timer = setInterval(() => goTo(current + 1), 30000);
 }
 
 buildJokes();
