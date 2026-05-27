@@ -125,10 +125,70 @@
     "address": "2990 Jamacha Rd, El Cajon, CA 92019",
     "cuisine": "Mediterranean",
     "rating": 4.5,
-    "lat": 32.74058121003366, 
+    "lat": 32.74058121003366,
     "lng": -116.942269436211,
     "tags": ["restaurant"],
     "description": "<p>Rancho San Diego strip-mall exterior, Beirut grandmother's kitchen interior. The hummus is made daily from dried chickpeas — you will notice the difference immediately. The mixed grill is the order. The pita arrives from the oven still inflated and lands on the table immediately.</p><h3>The order</h3><ul><li>Hummus with pine nuts and warm pita — start here</li><li>Mixed grill platter — shawarma, kafta, shish tawook</li><li>Fattoush — dressed right before it leaves the kitchen</li></ul><p><em>Worth the drive out. Arrive early.</em></p>",
     "createdAt": "2026-03-29"
+  },
+  {
+    "id": "r12",
+    "name": "Salt & Straw",
+    "address": "1670 India St, San Diego, CA 92101",
+    "cuisine": "Ice Cream",
+    "rating": 4.6,
+    "lat": 32.7227729,
+    "lng": -117.1684520,
+    "tags": ["restaurant"],
+    "description": "<p>Little Italy scoop shop doing small-batch ice cream the way it should be done — unusual flavors, local sourcing, made in-house daily. The seasonal menu rotates hard enough that returning monthly produces a different list. The honey lavender is the reference point newcomers should start with before venturing further.</p><h3>The order</h3><ul><li>Honey lavender — the benchmark, don't skip it on your first visit</li><li>Sea salt with caramel ribbons — the one that gets people to drive across town</li><li>One seasonal scoop — whatever is most unexpected wins</li></ul><p>Go at an odd hour. The weekend line wraps the block and the waffle cone doesn't benefit from standing in the sun.</p>",
+    "createdAt": "2026-04-05"
+  },
+  {
+    "id": "r13",
+    "name": "Realm of the 52 Remedies",
+    "address": "4805 Convoy St, San Diego, CA 92111",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.8,
+    "lat": 32.8292062,
+    "lng": -117.1531488,
+    "tags": ["bar"],
+    "description": "<p>Hidden behind an unmarked door in the Convoy District, inside what appears to be a traditional apothecary. Velvet booths, glowing bottles, Eastern talisman on every surface. The cocktail menu reads like a pharmacopoeia — 52 remedies organized by ailment. This is not a gimmick. The drinks are precise and serious.</p><h3>The order</h3><ul><li>Ask the bartender what you're suffering from. Answer honestly.</li><li>The Jeju — mandarin-forward, clarified, slightly medicinal in the best way</li><li>Whatever is made with the house-infused spirits — they run deep</li></ul><p><strong>Reservations required.</strong> Walk-ins are turned away. This is the correct policy for a room this considered.</p>",
+    "createdAt": "2026-04-12"
+  },
+  {
+    "id": "r14",
+    "name": "Raised by Wolves",
+    "address": "4301 La Jolla Village Dr #2030, San Diego, CA 92122",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.9,
+    "lat": 32.8725160,
+    "lng": -117.2138900,
+    "tags": ["bar"],
+    "description": "<p>Inside Westfield UTC, behind a flower shop, through a bookcase that opens when you pull the right book. This is not an affectation — the bar behind it earns every theatrical device. The cocktail program is one of the tightest in San Diego: short list, deep sourcing, technique that never announces itself. The glassware is exceptional. The ice is considered.</p><h3>The order</h3><ul><li>The bartender's choice — state your spirit and a flavor direction, defer completely</li><li>Anything featuring house-aged spirits from the back bar</li><li>The snacks are an afterthought. This is a drinks room.</li></ul><p>Book ahead. The room is small, intentionally. Arrive on time — the experience is sequenced.</p>",
+    "createdAt": "2026-04-19"
+  },
+  {
+    "id": "r15",
+    "name": "Born & Raised",
+    "address": "1909 India St, San Diego, CA 92101",
+    "cuisine": "Steakhouse",
+    "rating": 4.7,
+    "lat": 32.7246250,
+    "lng": -117.1685518,
+    "tags": ["restaurant"],
+    "description": "<p>Little Italy steakhouse operating at a level this city doesn't have many examples of. Art deco interior, two-story room, rooftop bar with a view that holds up. The dry-aged beef program is taken seriously — the cuts are sourced, aged on-site, and handled by a kitchen that knows what it's doing. Michelin Guide listed. This is not a surprise.</p><h3>The order</h3><ul><li>45-day dry-aged ribeye — the reason the restaurant exists</li><li>Lobster thermidor — excessive in the best sense</li><li>Wedge salad, iceberg, blue cheese, lardons — not ironic, just correct</li></ul><p>The rooftop bar is worth arriving early for. The cocktail list upstairs is shorter and better than most standalone bars in the neighborhood.</p>",
+    "createdAt": "2026-04-26"
+  },
+  {
+    "id": "r16",
+    "name": "Pushkin Restaurant & Bar",
+    "address": "750 6th Ave, San Diego, CA 92101",
+    "cuisine": "Russian",
+    "rating": 4.4,
+    "lat": 32.7131073,
+    "lng": -117.1593341,
+    "tags": ["restaurant", "bar"],
+    "description": "<p>Gaslamp Quarter Russian restaurant and lounge that covers more ground than the address suggests — full kitchen, serious bar program, hookah lounge in the back. The pelmeni and the borscht are both done correctly, which is the minimum requirement and also not guaranteed anywhere else in this zip code. The vibe runs late and gets louder as the night progresses.</p><h3>The order</h3><ul><li>Borscht — the beet kind, the proper kind, arrive with smetana</li><li>Pelmeni, beef and pork mix, in broth</li><li>Blini flight with caviar if the occasion justifies it</li></ul><p>The bar list leans vodka and Eastern European spirits. This is the correct orientation. Order accordingly.</p>",
+    "createdAt": "2026-05-03"
   }
 ]
