@@ -466,7 +466,7 @@ a { color: inherit; }
   margin-bottom: 6px;
 }
 .pin-pop .pop-head-row .pop-cuisine { margin-bottom: 0; }
-.pin-pop .pop-tags { display: flex; gap: 3px; }
+.pin-pop .pop-tags { display: flex; gap: 3px; margin-right: 14px; }
 .pop-tag {
   display: inline-flex;
   align-items: center;
