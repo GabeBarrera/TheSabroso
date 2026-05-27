@@ -12,7 +12,7 @@ function AboutView({ goLeft, goRight }) {
       <div className="chrome">
         <div className="left">
           <span className="vol">Vol. I</span>
-          <span>Established · MMXXV</span>
+          <span>Established · 5.27.2026</span>
         </div>
         <div className="right">
           <span>San Diego · CA</span>
@@ -54,7 +54,7 @@ function AboutView({ goLeft, goRight }) {
         </div>
 
         <p className="about-intro">
-          <span className="drop">N</span>otes from the pass — a tight, opinionated record of where to eat in San&nbsp;Diego and how to cook the things you ate there. No filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it.
+          <span className="drop">N</span><span className="drop-lead">otes</span> from the pass — a tight, opinionated record of where to eat in San&nbsp;Diego and how to cook the things you ate there. No filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it.
         </p>
       </div>
 
@@ -67,7 +67,7 @@ function AboutView({ goLeft, goRight }) {
       </button>
 
       <div className="about-meta">
-        <span>Edited by Claude · Chef &amp; Cartographer</span>
+        <span>Edited by <a href="https://www.gabebarrera.dev" target="_blank" rel="noopener noreferrer">Gabe</a> · Chef &amp; Cyber Nerd</span>
         <span className="coords">⌂ Local-first · saved to your device</span>
       </div>
     </div>

@@ -14,7 +14,7 @@ function App() {
   const [restaurants, setRestaurants] = useState(() => SDStore.loadRestaurants());
   const [recipes, setRecipes] = useState(() => SDStore.loadRecipes());
   const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem("sd_theme") || "light"; } catch (e) { return "light"; }
+    try { return localStorage.getItem("sabroso_theme") || "light"; } catch (e) { return "light"; }
   });
 
   const [profile, setProfile] = useState(null);          // restaurant profile open
@@ -27,7 +27,7 @@ function App() {
   useEffect(() => { SDStore.saveRecipes(recipes); }, [recipes]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    try { localStorage.setItem("sd_theme", theme); } catch (e) { /* no-op */ }
+    try { localStorage.setItem("sabroso_theme", theme); } catch (e) { /* no-op */ }
   }, [theme]);
 
   // keyboard nav
@@ -130,7 +130,7 @@ function App() {
 }
 
 function doBackup(target, list) {
-  const filename = target === "restaurant" ? "sd_savor_restaurants.json" : "sd_savor_recipes.json";
+  const filename = target === "restaurant" ? "sabroso_restaurants.json" : "sabroso_recipes.json";
   SDStore.download(filename, JSON.stringify(list, null, 2));
 }
 
@@ -166,6 +166,20 @@ function AppInner(props) {
       return [...list, entry];
     });
     toast(isEdit ? `Updated · ${entry.name}` : `Filed · ${entry.name}`, "ok");
+    closeModal();
+  };
+
+  const deleteRestaurant = (id) => {
+    const entry = restaurants.find((r) => r.id === id);
+    setRestaurants((list) => list.filter((r) => r.id !== id));
+    toast(`Deleted · ${entry?.name || "entry"}`, "ok");
+    closeModal();
+  };
+
+  const deleteRecipe = (id) => {
+    const entry = recipes.find((r) => r.id === id);
+    setRecipes((list) => list.filter((r) => r.id !== id));
+    toast(`Deleted · ${entry?.name || "recipe"}`, "ok");
     closeModal();
   };
 
@@ -249,10 +263,10 @@ function AppInner(props) {
         <RecipeForm onSave={saveRecipe} onCancel={closeModal} mode="new" />
       )}
       {modal?.kind === "edit" && modal.target === "restaurant" && (
-        <RestaurantForm initial={modal.initial} onSave={saveRestaurant} onCancel={closeModal} mode="edit" />
+        <RestaurantForm initial={modal.initial} onSave={saveRestaurant} onCancel={closeModal} onDelete={() => deleteRestaurant(modal.initial.id)} mode="edit" />
       )}
       {modal?.kind === "edit" && modal.target === "recipe" && (
-        <RecipeForm initial={modal.initial} onSave={saveRecipe} onCancel={closeModal} mode="edit" />
+        <RecipeForm initial={modal.initial} onSave={saveRecipe} onCancel={closeModal} onDelete={() => deleteRecipe(modal.initial.id)} mode="edit" />
       )}
       {modal?.kind === "pick" && (
         <EditPicker

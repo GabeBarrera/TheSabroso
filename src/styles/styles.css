@@ -334,6 +334,10 @@ a { color: inherit; }
   color: var(--terracotta);
 }
 
+.about-intro .drop-lead {
+  margin-left: -5px;
+}
+
 .about-meta {
   position: absolute;
   bottom: 32px;
@@ -1255,6 +1259,8 @@ a { color: inherit; }
 .btn.accent:hover { background: var(--terracotta-2); border-color: var(--terracotta-2); }
 .btn.ghost { border-color: var(--hairline); color: var(--muted); }
 .btn.ghost:hover { background: var(--cream); color: var(--ink); border-color: var(--ink); }
+.btn.danger { border-color: var(--terracotta); color: var(--terracotta); }
+.btn.danger:hover { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
 
 .export-group {
   display: inline-flex;

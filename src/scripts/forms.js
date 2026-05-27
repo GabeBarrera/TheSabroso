@@ -13,7 +13,7 @@ const CUISINE_OPTIONS = [
   "Spanish", "Pizza", "BBQ", "Bakery", "Café", "Cocktail Bar"
 ];
 
-function RestaurantForm({ initial, onSave, onCancel, mode = "new" }) {
+function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
   const [address, setAddress] = useStateF(initial?.address || "");
@@ -70,10 +70,15 @@ function RestaurantForm({ initial, onSave, onCancel, mode = "new" }) {
       wide
       footer={
         <>
-          <div className="export-group">
-            <span className="lbl">Export</span>
-            <button onClick={() => exportOne("json")}>.json</button>
-            <button onClick={() => exportOne("csv")}>.csv</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {mode === "edit" && onDelete && (
+              <button className="btn danger" onClick={onDelete}>Delete</button>
+            )}
+            <div className="export-group">
+              <span className="lbl">Export</span>
+              <button onClick={() => exportOne("json")}>.json</button>
+              <button onClick={() => exportOne("csv")}>.csv</button>
+            </div>
           </div>
           <div className="row">
             <button className="btn ghost" onClick={onCancel}>Cancel</button>
@@ -133,7 +138,7 @@ function RestaurantForm({ initial, onSave, onCancel, mode = "new" }) {
    RECIPE FORM (new + edit)
    ============================================================ */
 
-function RecipeForm({ initial, onSave, onCancel, mode = "new" }) {
+function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
   const [cuisine, setCuisine] = useStateF(initial?.cuisine || "");
@@ -178,10 +183,15 @@ function RecipeForm({ initial, onSave, onCancel, mode = "new" }) {
       wide
       footer={
         <>
-          <div className="export-group">
-            <span className="lbl">Export</span>
-            <button onClick={() => exportOne("json")}>.json</button>
-            <button onClick={() => exportOne("csv")}>.csv</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {mode === "edit" && onDelete && (
+              <button className="btn danger" onClick={onDelete}>Delete</button>
+            )}
+            <div className="export-group">
+              <span className="lbl">Export</span>
+              <button onClick={() => exportOne("json")}>.json</button>
+              <button onClick={() => exportOne("csv")}>.csv</button>
+            </div>
           </div>
           <div className="row">
             <button className="btn ghost" onClick={onCancel}>Cancel</button>
