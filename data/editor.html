@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sabroso · Data Editor</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:        #1a1816;
+    --ink-2:      #2e2b28;
+    --paper:      #f5f0e8;
+    --cream:      #ede8dd;
+    --hairline:   #d4cfc4;
+    --muted:      #7a7568;
+    --terracotta: #c4502d;
+    --marine:     #1f4a5e;
+    --serif:      Georgia, "Times New Roman", serif;
+    --mono:       "Courier New", Courier, monospace;
+    --sans:       system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .site-header .wordmark {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .site-header .wordmark span { font-style: italic; font-weight: 400; color: var(--terracotta); }
+  .site-header .header-right { display: flex; gap: 8px; align-items: center; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--hairline);
+    background: var(--cream);
+    padding: 0 28px;
+  }
+  .tab-btn {
+    padding: 14px 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    border-bottom-color: var(--terracotta);
+    color: var(--ink);
+  }
+  .tab-btn:hover:not(.active) { color: var(--ink); }
+
+  /* ── Panel ── */
+  .panel { display: none; padding: 28px; }
+  .panel.active { display: block; }
+
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .panel-head h2 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .panel-head .count {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── Entry list ── */
+  .entry-list { display: flex; flex-direction: column; gap: 1px; }
+  .entry-row {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .entry-row:hover { border-color: var(--ink-2); }
+  .entry-info { flex: 1; min-width: 0; }
+  .entry-name {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .entry-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tag-pip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .tag-pip.r { background: var(--terracotta); }
+  .tag-pip.b { background: var(--marine); }
+  .entry-rating {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--terracotta);
+    white-space: nowrap;
+  }
+  .entry-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.accent { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+  .btn.accent:hover { background: #a8401f; border-color: #a8401f; }
+  .btn.ghost { border-color: var(--hairline); color: var(--muted); }
+  .btn.ghost:hover { background: var(--cream); color: var(--ink); border-color: var(--ink); }
+  .btn.danger { border-color: var(--terracotta); color: var(--terracotta); background: var(--paper); }
+  .btn.danger:hover { background: var(--terracotta); color: var(--paper); }
+  .btn.sm { padding: 5px 11px; font-size: 9px; }
+
+  /* ── Modal ── */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,24,22,.55);
+    z-index: 200;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-head {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--hairline);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 0 0 12px;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal-body { padding: 22px 24px; overflow-y: auto; }
+  .modal-foot {
+    padding: 16px 24px;
+    border-top: 1px solid var(--hairline);
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* ── Fields ── */
+  .field { margin-bottom: 16px; }
+  .field-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field-input, .field-select, .field-textarea {
+    width: 100%;
+    padding: 9px 11px;
+    font-family: var(--sans);
+    font-size: 14px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    outline: none;
+  }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    border-color: var(--ink);
+  }
+  .field-textarea { resize: vertical; min-height: 140px; font-size: 13px; font-family: var(--mono); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ── Tag toggles ── */
+  .tag-toggles { display: flex; gap: 8px; }
+  .tag-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px 7px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .tag-toggle:hover { border-color: var(--ink); color: var(--ink); }
+  .tag-toggle.on { border-color: var(--ink); color: var(--ink); }
+  .tb-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .tb-badge.r { background: var(--terracotta); }
+  .tb-badge.b { background: var(--marine); }
+
+  /* ── Notice ── */
+  .notice {
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    border-left: 3px solid var(--terracotta);
+    background: var(--cream);
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wordmark">The <span>Sabroso</span> · Data Editor</div>
+  <div class="header-right">
+    <button class="btn sm" onclick="exportAll()">Export All JSON</button>
+    <button class="btn sm" onclick="resetToSeed()">Reset to Seed</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="showTab('restaurants', this)">Restaurants</button>
+  <button class="tab-btn" onclick="showTab('recipes', this)">Recipes</button>
+</nav>
+
+<!-- Restaurants panel -->
+<div id="panel-restaurants" class="panel active">
+  <div class="panel-head">
+    <h2>Restaurants</h2>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="count" id="r-count"></span>
+      <button class="btn accent" onclick="openRestaurantModal(null)">+ New Restaurant</button>
+    </div>
+  </div>
+  <div class="notice">Changes save to <code>sabroso_restaurants</code> in localStorage. Use <strong>Export All JSON</strong> to persist to disk.</div>
+  <div class="entry-list" id="r-list"></div>
+</div>
+
+<!-- Recipes panel -->
+<div id="panel-recipes" class="panel">
+  <div class="panel-head">
+    <h2>Recipes</h2>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="count" id="rec-count"></span>
+      <button class="btn accent" onclick="openRecipeModal(null)">+ New Recipe</button>
+    </div>
+  </div>
+  <div class="notice">Changes save to <code>sabroso_recipes</code> in localStorage. Use <strong>Export All JSON</strong> to persist to disk.</div>
+  <div class="entry-list" id="rec-list"></div>
+</div>
+
+<!-- Restaurant modal -->
+<div class="modal-backdrop" id="r-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="r-modal-title">Restaurant</div>
+      <button class="modal-close" onclick="closeModal('r-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="r-id" />
+      <input type="hidden" id="r-created" />
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Name</label>
+          <input class="field-input" id="r-name" placeholder="The Crab Shack" />
+        </div>
+        <div class="field">
+          <label class="field-label">Cuisine</label>
+          <input class="field-input" id="r-cuisine" placeholder="Coastal American" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Tags</label>
+        <div class="tag-toggles">
+          <button type="button" class="tag-toggle rest" id="tag-restaurant" onclick="toggleTag('restaurant')">
+            <span class="tb-badge r">R</span> Restaurant
+          </button>
+          <button type="button" class="tag-toggle bar" id="tag-bar" onclick="toggleTag('bar')">
+            <span class="tb-badge b">B</span> Bar
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Address</label>
+        <input class="field-input" id="r-address" placeholder="1234 Coast Hwy, San Diego, CA" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Latitude</label>
+          <input class="field-input" id="r-lat" type="number" step="0.0001" placeholder="32.7157" />
+        </div>
+        <div class="field">
+          <label class="field-label">Longitude</label>
+          <input class="field-input" id="r-lng" type="number" step="0.0001" placeholder="-117.1611" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Rating (0 – 5)</label>
+        <input class="field-input" id="r-rating" type="number" min="0" max="5" step="0.1" placeholder="4.5" />
+      </div>
+      <div class="field">
+        <label class="field-label">Review (HTML)</label>
+        <textarea class="field-textarea" id="r-desc" placeholder="<p>Write the review here...</p>"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger" id="r-delete-btn" onclick="deleteRestaurant()">Delete</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" onclick="closeModal('r-modal')">Cancel</button>
+        <button class="btn accent" onclick="saveRestaurant()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe modal -->
+<div class="modal-backdrop" id="rec-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="rec-modal-title">Recipe</div>
+      <button class="modal-close" onclick="closeModal('rec-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="rec-id" />
+      <input type="hidden" id="rec-created" />
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Name</label>
+          <input class="field-input" id="rec-name" placeholder="Fish Tacos, San Diego" />
+        </div>
+        <div class="field">
+          <label class="field-label">Cuisine / Category</label>
+          <input class="field-input" id="rec-cuisine" placeholder="Mexican" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Time (minutes)</label>
+          <input class="field-input" id="rec-time" type="number" placeholder="30" />
+        </div>
+        <div class="field">
+          <label class="field-label">Serves</label>
+          <input class="field-input" id="rec-serves" type="number" placeholder="2" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Tagline</label>
+        <input class="field-input" id="rec-tagline" placeholder="One sentence. Make it sting." />
+      </div>
+      <div class="field">
+        <label class="field-label">Ingredients &amp; Method (HTML)</label>
+        <textarea class="field-textarea" id="rec-desc" style="min-height:200px" placeholder="<h3>Ingredients</h3><ul><li>...</li></ul><h3>Method</h3><ol><li>...</li></ol>"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger" id="rec-delete-btn" onclick="deleteRecipe()">Delete</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" onclick="closeModal('rec-modal')">Cancel</button>
+        <button class="btn accent" onclick="saveRecipe()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const R_KEY   = "sabroso_restaurants";
+const REC_KEY = "sabroso_recipes";
+
+/* ── State ── */
+let restaurants = [];
+let recipes     = [];
+let editingRTags = [];
+
+/* ── Init ── */
+async function init() {
+  const rRaw = localStorage.getItem(R_KEY);
+  const recRaw = localStorage.getItem(REC_KEY);
+
+  if (rRaw) {
+    restaurants = JSON.parse(rRaw);
+  } else {
+    try {
+      const res = await fetch("./restaurants.json");
+      restaurants = await res.json();
+      localStorage.setItem(R_KEY, JSON.stringify(restaurants));
+    } catch (e) {
+      restaurants = [];
+    }
+  }
+
+  if (recRaw) {
+    recipes = JSON.parse(recRaw);
+  } else {
+    try {
+      const res = await fetch("./recipes.json");
+      recipes = await res.json();
+      localStorage.setItem(REC_KEY, JSON.stringify(recipes));
+    } catch (e) {
+      recipes = [];
+    }
+  }
+
+  renderRestaurants();
+  renderRecipes();
+}
+
+/* ── Render ── */
+function renderRestaurants() {
+  const list = document.getElementById("r-list");
+  document.getElementById("r-count").textContent = `${restaurants.length} entries`;
+  if (restaurants.length === 0) {
+    list.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;">No restaurants yet.</div>';
+    return;
+  }
+  list.innerHTML = restaurants.map((r) => {
+    const tags = Array.isArray(r.tags) ? r.tags : ["restaurant"];
+    const pips = [
+      tags.includes("restaurant") ? '<span class="tag-pip r">R</span>' : "",
+      tags.includes("bar")        ? '<span class="tag-pip b">B</span>' : "",
+    ].join("");
+    return `
+      <div class="entry-row">
+        <div class="entry-info">
+          <div class="entry-name">${esc(r.name)}</div>
+          <div class="entry-meta">
+            ${esc(r.cuisine || "—")} · ${esc(r.address ? r.address.split(",")[0] : "")}
+            ${pips}
+          </div>
+        </div>
+        <div class="entry-rating">★ ${(r.rating || 0).toFixed(1)}</div>
+        <div class="entry-actions">
+          <button class="btn sm" onclick='openRestaurantModal(${JSON.stringify(r.id)})'>Edit</button>
+          <button class="btn sm danger" onclick='confirmDeleteRestaurant(${JSON.stringify(r.id)})'>Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function renderRecipes() {
+  const list = document.getElementById("rec-list");
+  document.getElementById("rec-count").textContent = `${recipes.length} entries`;
+  if (recipes.length === 0) {
+    list.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;">No recipes yet.</div>';
+    return;
+  }
+  list.innerHTML = recipes.map((r) => `
+    <div class="entry-row">
+      <div class="entry-info">
+        <div class="entry-name">${esc(r.name)}</div>
+        <div class="entry-meta">${esc(r.cuisine || "—")} · ${r.time || 0} min · serves ${r.serves || 0}</div>
+      </div>
+      <div class="entry-actions">
+        <button class="btn sm" onclick='openRecipeModal(${JSON.stringify(r.id)})'>Edit</button>
+        <button class="btn sm danger" onclick='confirmDeleteRecipe(${JSON.stringify(r.id)})'>Delete</button>
+      </div>
+    </div>`
+  ).join("");
+}
+
+/* ── Tab ── */
+function showTab(name, btn) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(`panel-${name}`).classList.add("active");
+  if (btn) btn.classList.add("active");
+}
+
+/* ── Modal helpers ── */
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+/* ── Tag toggle (restaurant modal) ── */
+function toggleTag(tag) {
+  if (editingRTags.includes(tag)) {
+    editingRTags = editingRTags.filter(t => t !== tag);
+  } else {
+    editingRTags.push(tag);
+  }
+  syncTagUI();
+}
+function syncTagUI() {
+  document.getElementById("tag-restaurant").classList.toggle("on", editingRTags.includes("restaurant"));
+  document.getElementById("tag-bar").classList.toggle("on", editingRTags.includes("bar"));
+}
+
+/* ── Restaurant modal ── */
+function openRestaurantModal(id) {
+  const r = id ? restaurants.find(x => x.id === id) : null;
+  document.getElementById("r-modal-title").textContent = r ? "Edit Restaurant" : "New Restaurant";
+  document.getElementById("r-id").value      = r?.id || "";
+  document.getElementById("r-created").value = r?.createdAt || "";
+  document.getElementById("r-name").value    = r?.name || "";
+  document.getElementById("r-cuisine").value = r?.cuisine || "";
+  document.getElementById("r-address").value = r?.address || "";
+  document.getElementById("r-lat").value     = r?.lat ?? 32.7157;
+  document.getElementById("r-lng").value     = r?.lng ?? -117.1611;
+  document.getElementById("r-rating").value  = r?.rating ?? 4.0;
+  document.getElementById("r-desc").value    = r?.description || "";
+  editingRTags = r?.tags ? [...r.tags] : ["restaurant"];
+  syncTagUI();
+  document.getElementById("r-delete-btn").style.display = r ? "" : "none";
+  openModal("r-modal");
+}
+
+function saveRestaurant() {
+  const name = document.getElementById("r-name").value.trim();
+  if (!name) { toast("Name is required", true); return; }
+  const id = document.getElementById("r-id").value;
+  const entry = {
+    id:          id || newId("r"),
+    name,
+    address:     document.getElementById("r-address").value.trim(),
+    cuisine:     document.getElementById("r-cuisine").value.trim(),
+    rating:      Math.round(parseFloat(document.getElementById("r-rating").value || 4) * 10) / 10,
+    tags:        editingRTags.length > 0 ? [...editingRTags] : ["restaurant"],
+    lat:         parseFloat(document.getElementById("r-lat").value) || 32.7157,
+    lng:         parseFloat(document.getElementById("r-lng").value) || -117.1611,
+    description: document.getElementById("r-desc").value,
+    createdAt:   document.getElementById("r-created").value || today(),
+  };
+  if (id) {
+    restaurants = restaurants.map(r => r.id === id ? entry : r);
+  } else {
+    restaurants = [...restaurants, entry];
+  }
+  persist();
+  renderRestaurants();
+  closeModal("r-modal");
+  toast(id ? `Updated · ${entry.name}` : `Added · ${entry.name}`);
+}
+
+function deleteRestaurant() {
+  const id = document.getElementById("r-id").value;
+  const r = restaurants.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Delete "${r.name}"? This cannot be undone.`)) return;
+  restaurants = restaurants.filter(x => x.id !== id);
+  persist();
+  renderRestaurants();
+  closeModal("r-modal");
+  toast(`Deleted · ${r.name}`);
+}
+
+function confirmDeleteRestaurant(id) {
+  openRestaurantModal(id);
+  setTimeout(() => deleteRestaurant(), 0);
+}
+
+/* ── Recipe modal ── */
+function openRecipeModal(id) {
+  const r = id ? recipes.find(x => x.id === id) : null;
+  document.getElementById("rec-modal-title").textContent = r ? "Edit Recipe" : "New Recipe";
+  document.getElementById("rec-id").value      = r?.id || "";
+  document.getElementById("rec-created").value = r?.createdAt || "";
+  document.getElementById("rec-name").value    = r?.name || "";
+  document.getElementById("rec-cuisine").value = r?.cuisine || "";
+  document.getElementById("rec-time").value    = r?.time || "";
+  document.getElementById("rec-serves").value  = r?.serves || "";
+  document.getElementById("rec-tagline").value = r?.tagline || "";
+  document.getElementById("rec-desc").value    = r?.description || "";
+  document.getElementById("rec-delete-btn").style.display = r ? "" : "none";
+  openModal("rec-modal");
+}
+
+function saveRecipe() {
+  const name = document.getElementById("rec-name").value.trim();
+  if (!name) { toast("Name is required", true); return; }
+  const id = document.getElementById("rec-id").value;
+  const entry = {
+    id:          id || newId("rec"),
+    name,
+    cuisine:     document.getElementById("rec-cuisine").value.trim(),
+    time:        parseInt(document.getElementById("rec-time").value) || 0,
+    serves:      parseInt(document.getElementById("rec-serves").value) || 0,
+    tagline:     document.getElementById("rec-tagline").value.trim(),
+    description: document.getElementById("rec-desc").value,
+    createdAt:   document.getElementById("rec-created").value || today(),
+  };
+  if (id) {
+    recipes = recipes.map(r => r.id === id ? entry : r);
+  } else {
+    recipes = [...recipes, entry];
+  }
+  persist();
+  renderRecipes();
+  closeModal("rec-modal");
+  toast(id ? `Updated · ${entry.name}` : `Added · ${entry.name}`);
+}
+
+function deleteRecipe() {
+  const id = document.getElementById("rec-id").value;
+  const r = recipes.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Delete "${r.name}"? This cannot be undone.`)) return;
+  recipes = recipes.filter(x => x.id !== id);
+  persist();
+  renderRecipes();
+  closeModal("rec-modal");
+  toast(`Deleted · ${r.name}`);
+}
+
+function confirmDeleteRecipe(id) {
+  openRecipeModal(id);
+  setTimeout(() => deleteRecipe(), 0);
+}
+
+/* ── Persist ── */
+function persist() {
+  localStorage.setItem(R_KEY,   JSON.stringify(restaurants));
+  localStorage.setItem(REC_KEY, JSON.stringify(recipes));
+}
+
+/* ── Export ── */
+function exportAll() {
+  download("restaurants.json", JSON.stringify(restaurants, null, 2));
+  download("recipes.json",     JSON.stringify(recipes,     null, 2));
+  toast("Exported restaurants.json + recipes.json");
+}
+
+function resetToSeed() {
+  if (!confirm("Reset all data to seed files? Current localStorage data will be lost.")) return;
+  localStorage.removeItem(R_KEY);
+  localStorage.removeItem(REC_KEY);
+  init();
+  toast("Reset to seed data");
+}
+
+/* ── Utils ── */
+function newId(prefix) {
+  return prefix + "_" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+}
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+function esc(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
+}
+function download(filename, content) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], { type: "application/json" }));
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+let toastTimer;
+function toast(msg, isError = false) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.background = isError ? "var(--terracotta)" : "var(--ink)";
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+}
+
+/* Close modal on backdrop click */
+document.querySelectorAll(".modal-backdrop").forEach(bd => {
+  bd.addEventListener("click", e => { if (e.target === bd) bd.classList.remove("open"); });
+});
+
+/* Close on Escape */
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".modal-backdrop.open").forEach(bd => bd.classList.remove("open"));
+  }
+});
+
+init();
+</script>
+</body>
+</html>

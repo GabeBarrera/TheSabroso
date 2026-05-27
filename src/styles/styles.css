@@ -455,6 +455,29 @@ a { color: inherit; }
 .pin-pop {
   padding: 18px 18px 16px;
 }
+.pin-pop .pop-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.pin-pop .pop-head-row .pop-cuisine { margin-bottom: 0; }
+.pin-pop .pop-tags { display: flex; gap: 3px; }
+.pop-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--paper);
+  letter-spacing: 0;
+}
+.pop-tag.rt { background: var(--terracotta); }
+.pop-tag.bt { background: var(--marine); }
+
 .pin-pop .pop-cuisine {
   font-family: var(--mono);
   font-size: 9px;
@@ -546,6 +569,12 @@ a { color: inherit; }
   box-shadow: 0 0 0 1px var(--paper), 0 0 0 2px var(--marine), 0 4px 8px rgba(26,24,22,.3);
 }
 .user-marker .pulse { background: var(--marine); }
+
+.bar-pin .dot {
+  background: var(--marine);
+  box-shadow: 0 0 0 1px var(--ink), 0 4px 8px rgba(26,24,22,.3);
+}
+.bar-pin .pulse { background: var(--marine); }
 
 /* ============================================================
    RECIPES VIEW
@@ -1261,6 +1290,38 @@ a { color: inherit; }
 .btn.ghost:hover { background: var(--cream); color: var(--ink); border-color: var(--ink); }
 .btn.danger { border-color: var(--terracotta); color: var(--terracotta); }
 .btn.danger:hover { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+
+.tag-toggles { display: flex; gap: 8px; }
+.tag-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px 7px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 120ms, color 120ms;
+}
+.tag-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.tag-toggle.on { border-color: var(--ink); color: var(--ink); }
+.tb-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--paper);
+  flex-shrink: 0;
+}
+.tb-badge.r { background: var(--terracotta); }
+.tb-badge.b { background: var(--marine); }
 
 .export-group {
   display: inline-flex;

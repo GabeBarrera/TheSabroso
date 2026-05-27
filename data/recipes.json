@@ -1,0 +1,42 @@
+[
+  {
+    "id": "rec1",
+    "name": "Carne Asada — The Only Way",
+    "cuisine": "Mexican",
+    "time": 45,
+    "serves": 4,
+    "tagline": "Skirt steak, charred lime, no shortcuts. The marinade is the recipe.",
+    "description": "<h3>Ingredients</h3><ul><li>2 lb skirt steak, trimmed</li><li>4 garlic cloves, smashed</li><li>1 bunch cilantro, stems &amp; all</li><li>3 limes, juiced</li><li>1 orange, juiced</li><li>2 tbsp soy sauce</li><li>1 tbsp ground cumin</li><li>1 jalapeño, sliced</li></ul><h3>Method</h3><ol><li><strong>Marinade.</strong> Blitz everything except the steak. Pour over the meat. Bag it. <em>Six hours minimum, twelve is better.</em></li><li><strong>Heat.</strong> The grill must scream. Smoke point or you've already failed.</li><li><strong>Sear.</strong> Two minutes per side. No moving the meat around like an amateur.</li><li><strong>Rest.</strong> Ten minutes. Under foil. Walk away.</li><li><strong>Slice.</strong> Against the grain. Thin. Salt on the cutting board.</li></ol>",
+    "createdAt": "2025-09-20"
+  },
+  {
+    "id": "rec2",
+    "name": "Fish Tacos, San Diego",
+    "cuisine": "Mexican",
+    "time": 30,
+    "serves": 4,
+    "tagline": "Beer battered, cabbage, crema, that's the whole law. Don't get clever.",
+    "description": "<h3>Ingredients</h3><ul><li>1 lb cod or rockfish, cut into fingers</li><li>1 cup flour</li><li>1 cup cold lager</li><li>1 tsp baking powder</li><li>Cabbage, shredded fine</li><li>Crema, lime, hot sauce</li><li>Corn tortillas, warmed on flame</li></ul><h3>Method</h3><ol><li>Whisk the batter cold. <strong>Cold</strong>. Lumps are fine.</li><li>Oil at 375°F. Test with a wooden spoon — should hiss.</li><li>Dip fish, fry 3 minutes, drain on rack — never paper towels, you'll steam them soggy.</li><li>Build: tortilla, fish, cabbage, crema, lime. Done.</li></ol>",
+    "createdAt": "2025-10-08"
+  },
+  {
+    "id": "rec3",
+    "name": "Charred Little Gems",
+    "cuisine": "Salad",
+    "time": 12,
+    "serves": 2,
+    "tagline": "Five-minute side that costs nothing and tastes like the coast.",
+    "description": "<h3>Ingredients</h3><ul><li>4 heads little gem lettuce, halved</li><li>3 anchovy fillets</li><li>1 egg yolk</li><li>1 lemon</li><li>Olive oil, parmesan, black pepper</li></ul><h3>Method</h3><ol><li>Cast iron, smoking hot, no oil. Lettuce cut-side down. <em>Sixty seconds.</em></li><li>Mash anchovies with yolk, lemon, oil. That's the dressing.</li><li>Spoon over the charred lettuce. Shower of parmesan. Crack of pepper.</li></ol>",
+    "createdAt": "2025-10-22"
+  },
+  {
+    "id": "rec4",
+    "name": "Cacio e Pepe — Properly",
+    "cuisine": "Italian",
+    "time": 20,
+    "serves": 2,
+    "tagline": "Three ingredients. Four if you count the water. There is nowhere to hide.",
+    "description": "<h3>Ingredients</h3><ul><li>200g tonnarelli or spaghetti</li><li>100g pecorino romano, finely grated</li><li>Black peppercorns, freshly cracked</li><li>Pasta water — heavily starchy</li></ul><h3>Method</h3><ol><li><strong>Toast the pepper.</strong> Dry pan, low heat, smell it bloom.</li><li>Pasta in salted water — less salt than you think. The cheese is salty.</li><li>Reserve a cup of water. Drain pasta one minute under.</li><li>Off the heat: pecorino, splash of water, whisk to a paste. Add pasta. <em>Toss like you mean it.</em></li><li>If it breaks, you added cheese too hot. Start again.</li></ol>",
+    "createdAt": "2025-11-05"
+  }
+]

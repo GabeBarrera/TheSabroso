@@ -23,6 +23,11 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
   const [description, setDescription] = useStateF(initial?.description || "");
   const [lat, setLat] = useStateF(initial?.lat ?? 32.7157);
   const [lng, setLng] = useStateF(initial?.lng ?? -117.1611);
+  const [tags, setTags] = useStateF(initial?.tags || ["restaurant"]);
+
+  const toggleTag = (tag) => setTags((prev) =>
+    prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+  );
 
   const cuisineIsCustom = cuisine === "__custom";
   const finalCuisine = cuisineIsCustom ? customCuisine.trim() : cuisine;
@@ -37,6 +42,7 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
       address: address.trim(),
       cuisine: finalCuisine,
       rating: Math.round(rating * 10) / 10,
+      tags: tags.length > 0 ? tags : ["restaurant"],
       lat: Number(lat),
       lng: Number(lng),
       description,
@@ -102,6 +108,18 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
           {cuisineIsCustom && (
             <input className="field-input" style={{ marginTop: 8 }} value={customCuisine} onChange={(e) => setCustomCuisine(e.target.value)} placeholder="e.g. Peruvian–Japanese" />
           )}
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Tags</label>
+        <div className="tag-toggles">
+          <button type="button" className={`tag-toggle rest${tags.includes("restaurant") ? " on" : ""}`} onClick={() => toggleTag("restaurant")}>
+            <span className="tb-badge r">R</span> Restaurant
+          </button>
+          <button type="button" className={`tag-toggle bar${tags.includes("bar") ? " on" : ""}`} onClick={() => toggleTag("bar")}>
+            <span className="tb-badge b">B</span> Bar
+          </button>
         </div>
       </div>
 

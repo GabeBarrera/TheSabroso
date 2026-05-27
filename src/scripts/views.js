@@ -163,17 +163,28 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     markersRef.current = [];
 
     restaurants.forEach((r) => {
+      const rTags = Array.isArray(r.tags) ? r.tags : ["restaurant"];
+      const isBarOnly = rTags.includes("bar") && !rTags.includes("restaurant");
+      const markerCls = isBarOnly ? "sd-marker bar-pin" : "sd-marker";
       const icon = L.divIcon({
         className: "",
-        html: '<div class="sd-marker"><div class="pulse"></div><div class="dot"></div></div>',
+        html: `<div class="${markerCls}"><div class="pulse"></div><div class="dot"></div></div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       });
       const m = L.marker([r.lat, r.lng], { icon }).addTo(map);
 
+      const tagBadges = [
+        rTags.includes("restaurant") ? '<span class="pop-tag rt">R</span>' : "",
+        rTags.includes("bar")        ? '<span class="pop-tag bt">B</span>' : "",
+      ].join("");
+
       const popHtml = `
         <div class="pin-pop">
-          <div class="pop-cuisine">${escapeHtml(r.cuisine || "—")}</div>
+          <div class="pop-head-row">
+            <div class="pop-cuisine">${escapeHtml(r.cuisine || "—")}</div>
+            ${tagBadges ? `<div class="pop-tags">${tagBadges}</div>` : ""}
+          </div>
           <div class="pop-name">${escapeHtml(r.name)}</div>
           <div class="pop-addr">${escapeHtml(r.address || "")}</div>
           <div class="pop-rating">

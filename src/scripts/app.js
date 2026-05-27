@@ -11,20 +11,34 @@ const VIEW_RECIPES = 2;
 
 function App() {
   const [view, setView] = useState(VIEW_ABOUT);
-  const [restaurants, setRestaurants] = useState(() => SDStore.loadRestaurants());
-  const [recipes, setRecipes] = useState(() => SDStore.loadRecipes());
+  const [restaurants, setRestaurants] = useState(() => SDStore.loadRestaurants() ?? []);
+  const [recipes, setRecipes] = useState(() => SDStore.loadRecipes() ?? []);
+  const [dataReady, setDataReady] = useState(() => localStorage.getItem("sabroso_restaurants") !== null);
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem("sabroso_theme") || "light"; } catch (e) { return "light"; }
   });
 
-  const [profile, setProfile] = useState(null);          // restaurant profile open
-  const [modal, setModal] = useState(null);              // { kind: 'new'|'edit'|'import'|'pick', target: 'restaurant'|'recipe', initial?: ... }
+  const [profile, setProfile] = useState(null);
+  const [modal, setModal] = useState(null);
   const [animate, setAnimate] = useState(true);
   const touchRef = useRef(null);
 
-  // persist on change
-  useEffect(() => { SDStore.saveRestaurants(restaurants); }, [restaurants]);
-  useEffect(() => { SDStore.saveRecipes(recipes); }, [recipes]);
+  // seed from JSON files on first visit
+  useEffect(() => {
+    if (dataReady) return;
+    Promise.all([
+      fetch("./data/restaurants.json").then((r) => r.json()).catch(() => []),
+      fetch("./data/recipes.json").then((r) => r.json()).catch(() => []),
+    ]).then(([r, rec]) => {
+      setRestaurants(r);
+      setRecipes(rec);
+      setDataReady(true);
+    });
+  }, []);
+
+  // persist on change — guarded so we don't write before seed fetch resolves
+  useEffect(() => { if (dataReady) SDStore.saveRestaurants(restaurants); }, [restaurants, dataReady]);
+  useEffect(() => { if (dataReady) SDStore.saveRecipes(recipes); }, [recipes, dataReady]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem("sabroso_theme", theme); } catch (e) { /* no-op */ }
