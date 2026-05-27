@@ -56,6 +56,11 @@ function AboutView({ goLeft, goRight }) {
         <p className="about-intro">
           <span className="drop">N</span><span className="drop-lead">otes</span> from the pass — a tight, opinionated record of where to eat in San&nbsp;Diego and how to cook the things you ate there. No filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it.
         </p>
+
+        <div className="about-mobile-nav">
+          <button className="nav-btn" onClick={goLeft}>← Map</button>
+          <button className="nav-btn" onClick={goRight}>Recipes →</button>
+        </div>
       </div>
 
       <button className="edge-arrow right" onClick={goRight} aria-label="Open the recipes">
@@ -222,6 +227,14 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         <div className="title">The Map · <span className="it">San Diego</span></div>
       </div>
 
+      <div className="map-mobile-bar">
+        <button className="nav-btn" onClick={() => navigate(1)}>About</button>
+        <button className="nav-btn" onClick={() => navigate(2)}>Recipes</button>
+        <div style={{ marginLeft: "auto" }}>
+          <ManageMenu items={openManage("restaurant")} />
+        </div>
+      </div>
+
       <div className="chrome">
         <div className="left" />
         <div className="right">
@@ -266,6 +279,12 @@ function escapeHtml(s) {
 function RecipesView({ recipes, openManage, navigate }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
+  const [sidebarOpen, setSidebarOpen] = useStateV(true);
+
+  const handleSelectRecipe = (id) => {
+    setSelectedId(id);
+    setSidebarOpen(false);
+  };
 
   const filtered = useMemoV(() => {
     const s = q.trim().toLowerCase();
@@ -309,7 +328,7 @@ function RecipesView({ recipes, openManage, navigate }) {
         </div>
       </div>
 
-      <div className="recipes-body">
+      <div className={`recipes-body${!sidebarOpen ? " sidebar-closed" : ""}`}>
         <div className="recipes-sidebar">
           <div className="search-field">
             <span className="icon" />
@@ -331,7 +350,7 @@ function RecipesView({ recipes, openManage, navigate }) {
               <button
                 key={r.id}
                 className={`recipe-row ${r.id === selectedId ? "active" : ""}`}
-                onClick={() => setSelectedId(r.id)}
+                onClick={() => handleSelectRecipe(r.id)}
               >
                 <div className="r-name">{r.name}</div>
                 <div className="r-meta">{r.cuisine || "—"} · {r.time}m · serves {r.serves}</div>
@@ -341,6 +360,7 @@ function RecipesView({ recipes, openManage, navigate }) {
         </div>
 
         <div className="recipe-detail">
+          <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>← Recipes</button>
           {!selected ? (
             <div className="empty">
               <div className="glyph">Ⓡ</div>

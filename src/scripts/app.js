@@ -61,6 +61,7 @@ function App() {
 
   // swipe nav (pointer)
   const onPointerDown = (e) => {
+    if (e.pointerType === "touch") return;
     if (modal || profile) return;
     // ignore if on map (leaflet handles its own gestures) — but allow on chrome
     const path = e.target;
@@ -69,6 +70,7 @@ function App() {
     touchRef.current = { x: e.clientX, y: e.clientY, t: Date.now() };
   };
   const onPointerUp = (e) => {
+    if (e.pointerType === "touch") return;
     const start = touchRef.current;
     touchRef.current = null;
     if (!start) return;

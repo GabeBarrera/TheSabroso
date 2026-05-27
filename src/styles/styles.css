@@ -354,6 +354,8 @@ a { color: inherit; }
 
 .about-meta .coords { color: var(--marine); }
 
+.about-mobile-nav { display: none; }
+
 /* corner ornaments */
 .corner-orn {
   position: absolute;
@@ -402,6 +404,8 @@ a { color: inherit; }
   letter-spacing: .02em;
 }
 .map-header .title .it { font-style: italic; font-weight: 400; }
+
+.map-mobile-bar { display: none; }
 
 .map-stat {
   position: absolute;
@@ -715,6 +719,7 @@ a { color: inherit; }
   overflow-y: auto;
   background: var(--cream);
 }
+.sidebar-toggle-btn { display: none; }
 .recipe-detail .r-eyebrow {
   font-family: var(--mono);
   font-size: 10px;
@@ -1604,12 +1609,15 @@ a { color: inherit; }
   border: 1px solid var(--ink);
   z-index: 60;
   cursor: pointer;
+  transform: rotate(0deg);
   transition: background 200ms ease, color 200ms ease, transform 200ms ease;
 }
 .theme-toggle:hover {
   background: var(--ink);
   color: var(--paper);
-  transform: rotate(-12deg);
+}
+@media (hover: hover) {
+  .theme-toggle:hover { transform: rotate(-12deg); }
 }
 .theme-toggle svg {
   width: 18px;
@@ -1621,3 +1629,178 @@ a { color: inherit; }
 .row { display: flex; align-items: center; gap: 12px; }
 .spacer { flex: 1; }
 .muted { color: var(--muted); }
+
+/* ============================================================
+   MOBILE — max-width 640px
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+  /* ---- ABOUT VIEW ---- */
+
+  .about {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .edge-arrow { display: none; }
+  .corner-orn { display: none; }
+
+  .about-center {
+    flex: 1;
+    padding: 72px 24px 32px;
+    justify-content: flex-start;
+  }
+
+  .about-intro {
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: 100%;
+  }
+
+  .about-byline {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .about-mobile-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  .about-meta {
+    position: relative;
+    bottom: auto;
+    padding: 0 24px 28px;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+
+  /* ---- MAP VIEW ---- */
+
+  .map-mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    position: absolute;
+    top: 56px; left: 0; right: 0;
+    height: 40px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--hairline);
+    z-index: 40;
+  }
+
+  .map-view .chrome .right { display: none; }
+
+  .map-canvas { inset: 96px 0 0 0; }
+
+  .map-stat {
+    bottom: 68px;
+    left: 12px;
+    padding: 10px 14px;
+    min-width: 160px;
+  }
+  .map-stat .v { font-size: 24px; }
+
+  /* ---- RECIPES VIEW ---- */
+
+  .recipes-head {
+    padding: 64px 20px 16px;
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .recipes-head .title { font-size: 40px; }
+  .recipes-head .sub { margin-top: 6px; }
+  .recipes-head .count { text-align: left; }
+  .recipes-head .count strong {
+    display: inline;
+    font-size: 40px;
+    margin-right: 6px;
+  }
+
+  .recipes-body {
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  .recipes-sidebar {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    transform: translateX(0);
+    transition: transform 320ms cubic-bezier(.4,0,.2,1);
+  }
+
+  .recipes-body.sidebar-closed .recipes-sidebar {
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  .recipe-detail {
+    padding: 20px 20px 70px;
+    height: 100%;
+  }
+
+  .recipe-detail h1 { font-size: 34px; }
+
+  .sidebar-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 9px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ---- CHROME ---- */
+
+  .chrome { padding: 0 14px; }
+
+  /* ---- MODALS ---- */
+
+  .modal-bg {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal {
+    max-height: 90vh;
+    max-width: 100%;
+  }
+  .modal-body { padding: 20px 18px; }
+  .modal-foot { padding: 14px 18px; flex-wrap: wrap; gap: 10px; }
+  .field-row { grid-template-columns: 1fr; }
+
+  /* ---- PROFILE ---- */
+
+  .profile-head { padding: 56px 20px 24px; }
+  .profile-meta { grid-template-columns: 1fr 1fr; }
+  .profile-meta .cell { padding: 14px 16px; }
+  .profile-meta .cell .v { font-size: 18px; }
+  .profile-body { padding: 28px 20px 60px; font-size: 16px; }
+  .profile-close { top: 12px; right: 12px; padding: 8px 12px; font-size: 10px; }
+
+  /* ---- TOAST ---- */
+
+  .toast-stack { bottom: 68px; right: 12px; left: 12px; }
+  .toast { min-width: auto; }
+
+  /* ---- BOTTOM FIXED UI ---- */
+
+  .nav-dots { bottom: 14px; }
+  .theme-toggle { bottom: 14px; left: 14px; width: 40px; height: 40px; }
+
+}
