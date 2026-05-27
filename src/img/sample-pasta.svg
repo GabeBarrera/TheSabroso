@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="p3" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+      <rect width="10" height="10" fill="#ebe4d5"></rect>
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#d8d0bd" stroke-width="3"></line>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#p3)"></rect>
+  <rect x="40" y="40" width="720" height="420" fill="none" stroke="#1a1816" stroke-width="1"></rect>
+  <text x="400" y="240" text-anchor="middle" font-family="ui-monospace, &#39;JetBrains Mono&#39;, monospace" font-size="18" fill="#1a1816" letter-spacing="4">[ PASTA  PASS ]</text>
+  <text x="400" y="270" text-anchor="middle" font-family="ui-monospace, &#39;JetBrains Mono&#39;, monospace" font-size="11" fill="#6b655c" letter-spacing="3">drop a real photo here</text>
+  <text x="400" y="430" text-anchor="middle" font-family="serif" font-style="italic" font-size="14" fill="#c4502d">src/img/sample-pasta.svg</text>
+</svg>

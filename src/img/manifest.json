@@ -1,0 +1,5 @@
+[
+  { "file": "sample-snapper.svg", "label": "Whole snapper" },
+  { "file": "sample-coast.svg",   "label": "Pacific coast" },
+  { "file": "sample-pasta.svg",   "label": "Pasta pass" }
+]
