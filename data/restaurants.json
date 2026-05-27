@@ -7,7 +7,7 @@
     "rating": 4.7,
     "lat": 32.68531518270564,
     "lng": -117.17890793621442,
-    "tags": ["restaurant"],
+    "tags": ["restaurant", "bar"],
     "description": "<p>South Park's Neapolitan flagship, inside a converted garage with a Valoriani oven that runs at 900°F. The dough ferments 48 hours. The Margherita is the reference point for every other pizza in this city — San Marzano tomatoes, fior di latte, one basil leaf, no arguments.</p><h3>The order</h3><ul><li>Margherita — the benchmark</li><li>Bufalina — buffalo mozzarella, cherry tomato, barely touched</li><li>Burrata with prosciutto crudo, to start</li></ul><p>No half-baked substitutions. The dough is the whole product.</p>",
     "createdAt": "2026-01-14"
   },
@@ -19,7 +19,7 @@
     "rating": 4.4,
     "lat": 32.72449282219502,
     "lng": -117.16924736256803,
-    "tags": ["restaurant"],
+    "tags": ["restaurant", "bar"],
     "description": "<p>Downtown ramen counter with a tonkotsu broth that runs 18 hours. The chashu comes from a low braise that's been going since Tuesday. The soft egg is seasoned overnight. Cramped, loud, worth every inconvenience.</p><h3>The order</h3><ul><li>Tonkotsu — rich, porky, the correct depth</li><li>Extra chashu — add it, don't think about it</li><li>Gyoza, pan-fried, order them when you sit down</li></ul><p><em>No substitutions on the broth.</em> This is non-negotiable and the right call.</p>",
     "createdAt": "2026-01-22"
   },
@@ -79,7 +79,7 @@
     "rating": 4.0,
     "lat": 32.74277422441969, 
     "lng": -117.18063189092838,
-    "tags": ["restaurant", "bar"],
+    "tags": ["restaurant"],
     "description": "<p>North Park neighborhood pub that actually cooks. The kind of place you walk into expecting a decent burger and leave having eaten one of the better meals of the month. Draft list rotates weekly — usually twelve locals, always something worth ordering.</p><h3>The order</h3><ul><li>Smash burger — straightforward, well-executed</li><li>Fries, duck fat on good days</li><li>Whatever stout is on draft</li></ul><p>Loud on weekends. Manageable on a Tuesday. Go on a Tuesday.</p>",
     "createdAt": "2026-03-01"
   },
@@ -175,7 +175,7 @@
     "rating": 4.7,
     "lat": 32.7246250,
     "lng": -117.1685518,
-    "tags": ["restaurant"],
+    "tags": ["restaurant", "bar"],
     "description": "<p>Little Italy steakhouse operating at a level this city doesn't have many examples of. Art deco interior, two-story room, rooftop bar with a view that holds up. The dry-aged beef program is taken seriously — the cuts are sourced, aged on-site, and handled by a kitchen that knows what it's doing. Michelin Guide listed. This is not a surprise.</p><h3>The order</h3><ul><li>45-day dry-aged ribeye — the reason the restaurant exists</li><li>Lobster thermidor — excessive in the best sense</li><li>Wedge salad, iceberg, blue cheese, lardons — not ironic, just correct</li></ul><p>The rooftop bar is worth arriving early for. The cocktail list upstairs is shorter and better than most standalone bars in the neighborhood.</p>",
     "createdAt": "2026-04-26"
   },
