@@ -30,6 +30,26 @@
     "createdAt": "2025-10-22"
   },
   {
+    "id": "rec5",
+    "name": "French Toast",
+    "cuisine": "Breakfast",
+    "time": 10,
+    "serves": 2,
+    "tagline": "Butter bread, egg custard, maple syrup. The bread is the whole argument.",
+    "description": "<h3>Ingredients</h3><ul><li>2 large eggs</li><li>4 slices Martin's Old-Fashioned Real Butter Bread</li><li>1/4 cup milk</li><li>1 tsp vanilla extract</li><li>1/2 tsp ground cinnamon</li><li>Pinch of salt</li><li>2 tbsp butter</li><li>1/2 cup maple syrup, warmed</li><li>Powdered sugar, for serving</li></ul><h3>Method</h3><ol><li>Crack eggs into a shallow dish. Add milk and whisk to combine.</li><li>Whisk in vanilla, cinnamon, and a pinch of salt.</li><li>Melt butter in a medium skillet over medium heat.</li><li>Dip bread slices in egg mixture on both sides — coated, not soaked through.</li><li>Fry until golden brown, about 2–3 minutes per side.</li><li>Serve warm with butter and maple syrup. Powdered sugar if you want.</li></ol>",
+    "createdAt": "2026-05-27"
+  },
+  {
+    "id": "rec6",
+    "name": "Mashed Potatoes",
+    "cuisine": "Sides",
+    "time": 30,
+    "serves": 8,
+    "tagline": "Russets and Yukons, a stick and a half of butter, sour cream. That's the whole secret.",
+    "description": "<h3>Ingredients</h3><ul><li>3 lb. mixed potatoes (russets and Yukon Golds), peeled, cut into 1\" pieces</li><li>Kosher salt</li><li>1/2 cup whole milk</li><li>3/4 cup (1 1/2 sticks) + 2 tbsp unsalted butter</li><li>1/2 cup sour cream, room temperature</li><li>Freshly ground black pepper</li><li>Chopped fresh parsley, for serving</li></ul><h3>Method</h3><ol><li>Cover potatoes with water in a large pot, add a generous pinch of salt. Bring to a boil and cook until softened, 15–20 minutes.</li><li>Drain and return potatoes to the pot. Mash with a potato masher or ricer until smooth.</li><li>While potatoes cook, warm milk and 3/4 cup butter in a small saucepan over medium-low heat until butter melts, about 3 minutes.</li><li>Pour milk mixture over potatoes and stir until creamy. Add sour cream and stir to combine. Season generously with salt and pepper.</li><li>Transfer to a serving bowl. Top with remaining 2 tbsp butter, more pepper, and parsley.</li></ol>",
+    "createdAt": "2026-05-27"
+  },
+  {
     "id": "rec4",
     "name": "Cacio e Pepe — Properly",
     "cuisine": "Italian",
