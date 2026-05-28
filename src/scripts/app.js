@@ -1,6 +1,6 @@
 (function () {
 /* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile,
-          RestaurantForm, RecipeForm, EditPicker, ImportDialog,
+          RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal,
           ToastProvider, useToast, SDStore */
 
 const { useState, useEffect, useRef, useCallback } = React;
@@ -143,6 +143,7 @@ function App() {
   const [modal, setModal] = useState(null);
   const [animate, setAnimate] = useState(true);
   const [chatActive, setChatActive] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => SDStore.isAdmin());
   const [hiddenFilters, setHiddenFilters] = useState([]);
   const [voiceResult, setVoiceResult] = useState(null);
   const touchRef = useRef(null);
@@ -307,6 +308,8 @@ function App() {
         voiceResult={voiceResult}
         setVoiceResult={setVoiceResult}
         mapActionsRef={mapActionsRef}
+        isAdmin={isAdmin}
+        setIsAdmin={setIsAdmin}
       />
     </ToastProvider>
   );
@@ -383,8 +386,15 @@ function AppInner(props) {
     theme, setTheme,
     chatActive, setChatActive, hiddenFilters, setHiddenFilters,
     voiceResult, setVoiceResult, mapActionsRef,
+  isAdmin, setIsAdmin,
   } = props;
   const toast = useToast();
+
+  const handleAdminLogout = () => {
+    SDStore.adminLogout();
+    setIsAdmin(false);
+    toast("Logged out", "ok");
+  };
 
   const goLeft = () => setView((v) => Math.max(0, v - 1));
   const goRight = () => setView((v) => Math.min(2, v + 1));
@@ -508,9 +518,29 @@ function AppInner(props) {
         </svg>
       </button>
 
+      {/* admin toggle — lock icon; click to login or logout */}
+      <button
+        className={`admin-toggle${isAdmin ? " authed" : ""}`}
+        onClick={() => isAdmin ? handleAdminLogout() : setModal({ kind: "login" })}
+        title={isAdmin ? "Log out of admin" : "Admin login"}
+        aria-label={isAdmin ? "Log out of admin" : "Admin login"}
+      >
+        {isAdmin ? (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 019.9-1"/>
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+        )}
+      </button>
+
       {/* PROFILE OVERLAY */}
       {profile && (
-        <RestaurantProfile restaurant={profile} onClose={() => setProfile(null)} />
+        <RestaurantProfile restaurant={profile} onClose={() => setProfile(null)} isAdmin={isAdmin} />
       )}
 
       {/* VOICE RESULT */}
@@ -526,13 +556,13 @@ function AppInner(props) {
 
       {/* MODALS */}
       {modal?.kind === "new" && modal.target === "restaurant" && (
-        <RestaurantForm onSave={saveRestaurant} onCancel={closeModal} mode="new" />
+        <RestaurantForm onSave={saveRestaurant} onCancel={closeModal} mode="new" isAdmin={isAdmin} />
       )}
       {modal?.kind === "new" && modal.target === "recipe" && (
         <RecipeForm onSave={saveRecipe} onCancel={closeModal} mode="new" />
       )}
       {modal?.kind === "edit" && modal.target === "restaurant" && (
-        <RestaurantForm initial={modal.initial} onSave={saveRestaurant} onCancel={closeModal} onDelete={() => deleteRestaurant(modal.initial.id)} mode="edit" />
+        <RestaurantForm initial={modal.initial} onSave={saveRestaurant} onCancel={closeModal} onDelete={() => deleteRestaurant(modal.initial.id)} mode="edit" isAdmin={isAdmin} />
       )}
       {modal?.kind === "edit" && modal.target === "recipe" && (
         <RecipeForm initial={modal.initial} onSave={saveRecipe} onCancel={closeModal} onDelete={() => deleteRecipe(modal.initial.id)} mode="edit" />
@@ -551,6 +581,12 @@ function AppInner(props) {
           kind={modal.target}
           onClose={closeModal}
           onCommit={commitImport}
+        />
+      )}
+      {modal?.kind === "login" && (
+        <LoginModal
+          onLogin={() => { setIsAdmin(true); closeModal(); }}
+          onCancel={closeModal}
         />
       )}
     </div>

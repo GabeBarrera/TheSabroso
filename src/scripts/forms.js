@@ -13,7 +13,7 @@ const CUISINE_OPTIONS = [
   "Spanish", "Pizza", "BBQ", "Bakery", "Café", "Cocktail Bar"
 ];
 
-function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
+function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
   const [address, setAddress] = useStateF(initial?.address || "");
@@ -24,6 +24,11 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
   const [lat, setLat] = useStateF(initial?.lat ?? 32.7157);
   const [lng, setLng] = useStateF(initial?.lng ?? -117.1611);
   const [tags, setTags] = useStateF(initial?.tags || ["restaurant"]);
+  const [contacts, setContacts] = useStateF(initial?.contacts || []);
+
+  const addContact = () => setContacts(prev => [...prev, { title: "", name: "" }]);
+  const removeContact = (i) => setContacts(prev => prev.filter((_, idx) => idx !== i));
+  const updateContact = (i, key, val) => setContacts(prev => prev.map((c, idx) => idx === i ? { ...c, [key]: val } : c));
 
   const toggleTag = (tag) => setTags((prev) =>
     prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -46,6 +51,7 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
       lat: Number(lat),
       lng: Number(lng),
       description,
+      contacts: contacts.filter(c => c.title.trim() || c.name.trim()),
       createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
     };
     onSave(entry);
@@ -148,6 +154,20 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
         <label className="field-label">The review</label>
         <RichEditor value={description} onChange={setDescription} placeholder="Walk in. First impressions. The kitchen. The order. Skip the niceties." />
       </div>
+
+      {isAdmin && (
+        <div className="field">
+          <label className="field-label">Contacts</label>
+          {contacts.map((c, i) => (
+            <div key={i} className="contact-editor-row">
+              <input className="field-input" placeholder="Title" value={c.title} onChange={e => updateContact(i, "title", e.target.value)} />
+              <input className="field-input" placeholder="Name" value={c.name} onChange={e => updateContact(i, "name", e.target.value)} />
+              <button type="button" className="btn ghost contact-del" onClick={() => removeContact(i)}>✕</button>
+            </div>
+          ))}
+          <button type="button" className="btn ghost" style={{ marginTop: contacts.length > 0 ? 4 : 0 }} onClick={addContact}>+ Add contact</button>
+        </div>
+      )}
     </Modal>
   );
 }
@@ -493,6 +513,62 @@ function ImportDialog({ existing, kind, onClose, onCommit }) {
   );
 }
 
-Object.assign(window, { RestaurantForm, RecipeForm, EditPicker, ImportDialog });
+/* ============================================================
+   LOGIN MODAL
+   ============================================================ */
+
+function LoginModal({ onLogin, onCancel }) {
+  const [pw, setPw] = useStateF("");
+  const [err, setErr] = useStateF(false);
+  const [loading, setLoading] = useStateF(false);
+  const toast = useToast();
+
+  const handleSubmit = async () => {
+    if (loading) return;
+    setLoading(true);
+    const ok = await SDStore.adminLogin(pw);
+    setLoading(false);
+    if (ok) {
+      toast("Logged in as admin", "ok");
+      onLogin();
+    } else {
+      setErr(true);
+      setTimeout(() => setErr(false), 1400);
+    }
+  };
+
+  return (
+    <Modal
+      eyebrow="Access"
+      title="Admin"
+      italicTitle="login"
+      onClose={onCancel}
+      footer={
+        <div className="row">
+          <button className="btn ghost" onClick={onCancel}>Cancel</button>
+          <button className="btn accent" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Checking…" : "Log in"}
+          </button>
+        </div>
+      }
+    >
+      <div className="field">
+        <label className="field-label">Password</label>
+        <input
+          className={`field-input${err ? " field-input-err" : ""}`}
+          type="password"
+          value={pw}
+          onChange={e => { setPw(e.target.value); setErr(false); }}
+          onKeyDown={e => e.key === "Enter" && handleSubmit()}
+          autoFocus
+          placeholder="••••••••"
+        />
+        {err && <div className="field-err-msg">Incorrect password</div>}
+      </div>
+    </Modal>
+  );
+}
+
+Object.assign(window, { RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal });
 
 })();

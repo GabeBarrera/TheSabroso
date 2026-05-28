@@ -2,8 +2,10 @@
    STORAGE — localStorage helpers for restaurants + recipes
    ============================================================ */
 
-const RESTAURANTS_KEY = "sabroso_restaurants";
-const RECIPES_KEY     = "sabroso_recipes";
+const RESTAURANTS_KEY   = "sabroso_restaurants";
+const RECIPES_KEY       = "sabroso_recipes";
+const ADMIN_PW_KEY      = "sabroso_admin_pw";
+const ADMIN_SESSION_KEY = "sabroso_admin_session";
 
 window.SDStore = {
   loadRestaurants() {
@@ -50,4 +52,23 @@ window.SDStore = {
     const body = rows.map((r) => columns.map((c) => esc(r[c])).join(",")).join("\n");
     return head + "\n" + body;
   },
+
+  async hashPw(pw) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  },
+
+  async adminLogin(pw) {
+    const hash = await this.hashPw(pw);
+    let stored = localStorage.getItem(ADMIN_PW_KEY);
+    if (!stored) stored = await this.hashPw("admin");
+    if (hash === stored) {
+      sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+      return true;
+    }
+    return false;
+  },
+
+  adminLogout() { sessionStorage.removeItem(ADMIN_SESSION_KEY); },
+  isAdmin()     { return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1"; },
 };
