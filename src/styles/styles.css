@@ -2169,6 +2169,10 @@ a { color: inherit; }
 
 @media (max-width: 640px) {
 
+  /* Let dropdowns (manage-menu, sort-menu) escape panel clip.
+     .app { overflow: hidden } still prevents cross-panel bleed. */
+  .panel { overflow: visible; }
+
   /* ---- ABOUT VIEW ---- */
 
   .about {
@@ -2227,7 +2231,7 @@ a { color: inherit; }
     height: 40px;
     background: var(--paper);
     border-bottom: 1px solid var(--hairline);
-    z-index: 100;
+    z-index: 800;
   }
 
   .recipes-view .chrome { position: relative; z-index: 100; }
