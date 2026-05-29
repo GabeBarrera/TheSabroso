@@ -253,25 +253,13 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   return (
     <div className="map-view" data-screen-label="02 Map">
       <div className="map-header">
-        <div className="title">The Map · <span className="it">San Diego</span></div>
-      </div>
-
-      <div className="map-mobile-bar">
-        <button className="nav-btn" onClick={() => navigate(1)}>About</button>
-        <button className="nav-btn" onClick={() => navigate(2)}>Recipes</button>
-        <div style={{ marginLeft: "auto" }}>
-          <ManageMenu items={openManage("restaurant")} />
-        </div>
-      </div>
-
-      <div className="chrome">
-        <div className="left" />
-        <div className="right">
+        <div className="map-header-left">
           <button className="nav-btn" onClick={() => navigate(1)}>About</button>
           <button className="nav-btn" onClick={() => navigate(2)}>Recipes</button>
-          <div style={{ marginLeft: 6 }}>
-            <ManageMenu items={openManage("restaurant")} />
-          </div>
+        </div>
+        <div className="title">The Map · <span className="it">San Diego</span></div>
+        <div className="map-header-right">
+          <ManageMenu items={openManage("restaurant")} />
         </div>
       </div>
 

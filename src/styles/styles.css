@@ -390,18 +390,30 @@ a { color: inherit; }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 56px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: center;
+  padding: 0 16px;
   background: var(--paper);
   border-bottom: 1px solid var(--ink);
   z-index: 40;
+}
+.map-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.map-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 .map-header .title {
   font-family: var(--serif);
   font-weight: 700;
   font-size: 22px;
   letter-spacing: .02em;
+  text-align: center;
 }
 .map-header .title .it { font-style: italic; font-weight: 400; }
 
@@ -2221,24 +2233,9 @@ a { color: inherit; }
 
   /* ---- MAP VIEW ---- */
 
-  .map-mobile-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 12px;
-    position: absolute;
-    top: 56px; left: 0; right: 0;
-    height: 40px;
-    background: var(--paper);
-    border-bottom: 1px solid var(--hairline);
-    z-index: 800;
-  }
-
   .recipes-view .chrome { position: relative; z-index: 100; }
 
-  .map-view .chrome .right { display: none; }
-
-  .map-canvas { inset: 96px 0 0 0; }
+  .map-canvas { inset: 56px 0 0 0; }
 
   .map-stat {
     bottom: 68px;
@@ -2386,4 +2383,72 @@ a { color: inherit; }
   .kbd-input-box { bottom: 68px; }
   .cmd-error { bottom: 130px; }
 
+}
+
+/* ============================================================
+   LANDSCAPE — phones rotated (small viewport height)
+   ============================================================ */
+
+@media (max-height: 520px) {
+
+  /* Allow panels to scroll vertically so content isn't clipped */
+  .panel { overflow-y: auto; }
+
+  /* ABOUT VIEW — become a scrollable column */
+  .about {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+  }
+  .edge-arrow { display: none; }
+  .corner-orn { display: none; }
+
+  .about-center {
+    flex: 1;
+    padding: 64px 32px 24px;
+    justify-content: flex-start;
+  }
+
+  .about-intro {
+    font-size: 17px;
+    line-height: 1.5;
+    max-width: 100%;
+  }
+
+  .about-byline {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .about-mobile-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .about-meta {
+    position: relative;
+    bottom: auto;
+    padding: 0 32px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+
+  /* RECIPES VIEW — compact header so body gets more room */
+  .recipes-head {
+    padding: 60px 24px 12px;
+    gap: 12px;
+  }
+  .recipes-head .title { font-size: 36px; }
+  .recipes-head .count strong { font-size: 36px; }
+
+  /* MAP — title can shrink a bit */
+  .map-header .title { font-size: 17px; }
+  .map-header-left .nav-btn,
+  .map-header-right .nav-btn { font-size: 10px; padding: 7px 10px; }
 }
