@@ -60,6 +60,26 @@
     "createdAt": "2025-11-05"
   },
   {
+    "id": "rec9",
+    "name": "Mexican Hot Chocolate Cookies",
+    "cuisine": "Baking",
+    "time": 30,
+    "serves": 24,
+    "tagline": "Cayenne, cinnamon, molten marshmallow. Chocolate cookie with a secret inside.",
+    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 1½ cups / 192g all-purpose flour</li><li><input type='checkbox'> ½ cup / 51g cocoa powder, preferably Dutch-processed</li><li><input type='checkbox'> 1 tsp baking soda</li><li><input type='checkbox'> 1 tsp kosher salt (Diamond Crystal)</li><li><input type='checkbox'> ½ tsp ground cayenne</li><li><input type='checkbox'> 3 tsp ground cinnamon (2 tsp for dough, 1 tsp for coating)</li><li><input type='checkbox'> ½ cup / 113g unsalted butter, room temperature</li><li><input type='checkbox'> 1½ cups / 305g light brown sugar</li><li><input type='checkbox'> 1 large egg, room temperature</li><li><input type='checkbox'> 2 tsp vanilla extract</li><li><input type='checkbox'> Mini marshmallows, frozen solid</li><li><input type='checkbox'> ¼ cup / 50g granulated sugar</li></ul><h3>Method</h3><ol><li>Whisk together flour, cocoa powder, baking soda, salt, cayenne, and 2 tsp cinnamon in a medium bowl. Set aside.</li><li>Beat butter and brown sugar on medium-high until light and fluffy, about 2 minutes. Add egg and vanilla. Beat until creamy, 2 more minutes. Add flour mixture and beat on low until no dry spots remain, about 1 minute.</li><li>Scoop dough into 2-tablespoon mounds on a baking sheet. Cover and <strong>refrigerate at least 2 hours, up to overnight.</strong> Freeze marshmallows if you haven't already.</li><li>Heat oven to 350°F. Line 2 baking sheets with parchment. Mix the granulated sugar and remaining 1 tsp cinnamon in a small bowl.</li><li>Let dough sit 5 minutes at room temperature if very stiff. Flatten a mound in your palm, pile 5 frozen marshmallows in the center, and bring the dough up and over to fully enclose them. Roll into a ball, then roll in cinnamon sugar. Place 3 inches apart on prepared sheets.</li><li>Bake 10–12 minutes, rotating halfway, until cookies puff and bits of molten marshmallow peek through. Cool on the sheet 5 minutes, then transfer to a wire rack.</li></ol><p style=\"margin-top:16px;font-size:14px;color:var(--muted)\"><strong>Tip:</strong> Uncoated dough balls freeze for up to 3 months. To bake from frozen, thaw 5 minutes, roll in cinnamon sugar, and bake 13–15 minutes.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "rec8",
+    "name": "Arroz",
+    "cuisine": "Mexican",
+    "time": 35,
+    "serves": 4,
+    "tagline": "Toasted rice, roasted garlic, tomato. The chicken broth is doing all the work.",
+    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 1 cup white rice</li><li><input type='checkbox'> 3 tomatoes, chopped</li><li><input type='checkbox'> 5 cloves garlic</li><li><input type='checkbox'> 1/2 onion</li><li><input type='checkbox'> 2 cups chicken broth</li><li><input type='checkbox'> Oil</li></ul><h3>Method</h3><ol><li>Warm the chicken broth in a separate pot. Keep it hot — you'll need it.</li><li>Heat a pan with oil over low heat. When warm, pour in the rice and toast, stirring occasionally.</li><li>Add the garlic cloves and onion half <em>unchopped</em> to the rice. Stir and roast together until the rice turns light brown.</li><li>Add the chopped tomatoes and enough chicken broth to just cover the rice.</li><li>Cover and cook on low heat for 20 minutes.</li><li><strong>Keep a pot of hot water nearby</strong> in case the rice dries out before it's done. <em>Do not use cold water — it will shock the rice.</em></li></ol>",
+    "createdAt": "2026-05-29"
+  },
+  {
     "id": "rec7",
     "name": "Pozole Verde de Pollo",
     "cuisine": "Mexican",
