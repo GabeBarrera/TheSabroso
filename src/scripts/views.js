@@ -349,6 +349,30 @@ function RecipesView({ recipes, openManage, navigate }) {
     });
   };
 
+  const [struckSteps, setStruckSteps] = useStateV(new Set());
+  const bodyRef = useRefV(null);
+
+  useEffectV(() => { setStruckSteps(new Set()); }, [selectedId]);
+
+  useEffectV(() => {
+    if (!bodyRef.current) return;
+    bodyRef.current.querySelectorAll("ol li").forEach((li, i) => {
+      li.classList.toggle("step-struck", struckSteps.has(i));
+    });
+  }, [struckSteps, selectedId]);
+
+  const handleBodyClick = (e) => {
+    const li = e.target.closest("ol li");
+    if (!li || !bodyRef.current) return;
+    const idx = [...bodyRef.current.querySelectorAll("ol li")].indexOf(li);
+    if (idx === -1) return;
+    setStruckSteps((prev) => {
+      const next = new Set(prev);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
+      return next;
+    });
+  };
+
   const handleSelectRecipe = (id) => {
     setSelectedId(id);
     setSidebarOpen(false);
@@ -542,7 +566,7 @@ function RecipesView({ recipes, openManage, navigate }) {
                   <div className="v">{selected.cuisine || "—"}</div>
                 </div>
               </div>
-              <div className="recipe-body" dangerouslySetInnerHTML={{ __html: selected.description || "" }} />
+              <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick} dangerouslySetInnerHTML={{ __html: selected.description || "" }} />
             </>
           )}
         </div>

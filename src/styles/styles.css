@@ -855,6 +855,8 @@ a { color: inherit; }
 .recipe-body ul { list-style: none; padding-left: 4px; }
 .recipe-body ul input[type="checkbox"] { accent-color: var(--terracotta); cursor: pointer; margin-right: 8px; flex-shrink: 0; }
 .recipe-body li { margin-bottom: 6px; }
+.recipe-body ol li { cursor: pointer; user-select: none; }
+.recipe-body ol li.step-struck { text-decoration: line-through; color: var(--muted); }
 .recipe-body ul li { display: flex; align-items: baseline; }
 .recipe-body strong { font-weight: 800; }
 .recipe-body em { font-style: italic; }
