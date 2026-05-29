@@ -11,16 +11,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
-<!-- Main app component styles (modals, forms, buttons, rich editor, etc.) -->
+<!-- All component CSS from the main app (modals, rich editor, star rating, forms…) -->
 <link rel="stylesheet" href="../src/styles/styles.css" />
 
 <style>
-  /* Override main app's fixed-height viewport shell so editor can scroll */
+  /* Override main app's fixed-height viewport shell so editor scrolls */
   html, body, #root {
     height: auto !important;
     min-height: 100vh;
     overflow: auto !important;
+    scrollbar-width: none;
   }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  #root::-webkit-scrollbar { display: none; }
 
   /* ── Editor chrome ── */
   .ed-header {
@@ -110,11 +114,7 @@
     margin-bottom: 16px;
     gap: 12px;
   }
-  .ed-panel-title {
-    font-family: var(--serif);
-    font-size: 22px;
-    font-weight: 700;
-  }
+  .ed-panel-title { font-family: var(--serif); font-size: 22px; font-weight: 700; }
   .ed-panel-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
   /* ── Notice ── */
@@ -131,7 +131,7 @@
   .ed-notice code { font-family: var(--mono); color: var(--terracotta); }
   .ed-notice strong { color: var(--ink); }
 
-  /* ── Entry list ── */
+  /* ── Entry rows ── */
   .ed-list { display: flex; flex-direction: column; gap: 1px; }
   .ed-row {
     background: var(--paper);
@@ -174,10 +174,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 14px;
-    height: 14px;
-    font-size: 8px;
-    font-weight: 700;
+    width: 14px; height: 14px;
+    font-size: 8px; font-weight: 700;
     font-family: var(--mono);
     color: #fff;
     flex-shrink: 0;
@@ -185,7 +183,7 @@
   .ed-pip-r { background: var(--terracotta); }
   .ed-pip-b { background: var(--marine); }
 
-  /* ── Small button variant for editor UI ── */
+  /* ── Small button variant ── */
   .btn-sm {
     display: inline-flex;
     align-items: center;
@@ -208,7 +206,6 @@
   .btn-sm.accent { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
   .btn-sm.accent:hover { background: var(--terracotta-2); border-color: var(--terracotta-2); }
 
-  /* ── Empty / loading states ── */
   .ed-empty, .ed-loading {
     padding: 48px;
     text-align: center;
@@ -223,30 +220,537 @@
 <body>
 <div id="root"></div>
 
-<!-- React + Babel (same versions as main app) -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<!-- Shared app scripts (paths relative to data/) -->
+<!-- Storage helpers — plain JS, no JSX needed -->
 <script src="../src/scripts/storage.js"></script>
-<script type="text/babel" src="../src/scripts/components.js"></script>
-<script type="text/babel" src="../src/scripts/forms.js"></script>
 
+<!-- Everything else is inlined in one Babel block to avoid async src-load issues -->
 <script type="text/babel">
-/* global React, ReactDOM, SDStore, RestaurantForm, RecipeForm, ToastProvider, useToast */
-const { useState, useEffect } = React;
+/* global React, ReactDOM, SDStore */
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
+/* ============================================================
+   TOAST
+   ============================================================ */
+const ToastCtx = React.createContext(null);
+
+function ToastProvider({ children }) {
+  const [toasts, setToasts] = useState([]);
+  const push = useCallback((message, kind = "ok", ms = 3000) => {
+    const id = Math.random().toString(36).slice(2, 9);
+    setToasts(t => [...t, { id, message, kind }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), ms);
+  }, []);
+  return (
+    <ToastCtx.Provider value={push}>
+      {children}
+      <div className="toast-stack">
+        {toasts.map(t => (
+          <div key={t.id} className={`toast ${t.kind}`}>{t.message}</div>
+        ))}
+      </div>
+    </ToastCtx.Provider>
+  );
+}
+
+function useToast() { return React.useContext(ToastCtx); }
+
+/* ============================================================
+   MODAL SHELL
+   ============================================================ */
+function Modal({ eyebrow, title, italicTitle, onClose, children, footer, wide }) {
+  useEffect(() => {
+    const onEsc = e => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  }, [onClose]);
+
+  return (
+    <div className="modal-bg" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="modal" style={wide ? { maxWidth: 900 } : {}}>
+        <div className="modal-head">
+          <div>
+            {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+            <div className="h">{title}{italicTitle && <span className="it"> {italicTitle}</span>}</div>
+          </div>
+          <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
+        </div>
+        <div className="modal-body">{children}</div>
+        {footer && <div className="modal-foot">{footer}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   STAR RATING
+   ============================================================ */
+function StarRating({ value, onChange, size = 28 }) {
+  const [hover, setHover] = useState(null);
+
+  const handle = (e, idx) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const f = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    return Math.max(0, Math.min(5, Math.round((idx + f) * 10) / 10));
+  };
+
+  const display = hover !== null ? hover : value;
+
+  return (
+    <div className="stars-input">
+      {[0,1,2,3,4].map(i => {
+        const fill = Math.max(0, Math.min(1, display - i));
+        return (
+          <div key={i} className="star-slot" style={{ width: size, height: size }}
+            onMouseMove={e => setHover(handle(e, i))}
+            onMouseLeave={() => setHover(null)}
+            onClick={e => onChange(handle(e, i))}>
+            <div className="star-bg" style={{ fontSize: size, lineHeight: `${size}px` }}>★</div>
+            <div className="star-fg" style={{ fontSize: size, lineHeight: `${size}px`, width: `${fill*100}%` }}>★</div>
+          </div>
+        );
+      })}
+      <div className="num">{value.toFixed(1)} / 5.0</div>
+    </div>
+  );
+}
+
+/* ============================================================
+   RICH TEXT EDITOR
+   — image paths use ../src/img/ since this file lives in data/
+   ============================================================ */
+function RichEditor({ value, onChange, placeholder = "Write…" }) {
+  const editorRef    = useRef(null);
+  const [activeMarks, setActiveMarks] = useState({});
+  const [imgOpen, setImgOpen]         = useState(false);
+  const [imgFilename, setImgFilename] = useState("");
+  const [manifest, setManifest]       = useState([]);
+  const uploadRef      = useRef(null);
+  const savedRangeRef  = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== (value || "")) {
+      editorRef.current.innerHTML = value || "";
+    }
+  }, []); // mount only
+
+  useEffect(() => {
+    fetch("../src/img/manifest.json", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setManifest(Array.isArray(data) ? data : (data.images || [])))
+      .catch(() => setManifest([]));
+  }, []);
+
+  const saveRange = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
+      savedRangeRef.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+  const restoreRange = () => {
+    editorRef.current?.focus();
+    const sel = window.getSelection();
+    if (savedRangeRef.current) { sel.removeAllRanges(); sel.addRange(savedRangeRef.current); }
+  };
+
+  const exec = (cmd, arg) => {
+    editorRef.current?.focus();
+    document.execCommand(cmd, false, arg);
+    updateActive();
+    onChange(editorRef.current.innerHTML);
+  };
+
+  const insertImage = (src, alt = "") => {
+    restoreRange();
+    const html = `<figure class="rt-fig"><img src="${src}" alt="${alt.replace(/"/g,"&quot;")}" />${alt ? `<figcaption>${alt}</figcaption>` : ""}</figure><p><br/></p>`;
+    document.execCommand("insertHTML", false, html);
+    onChange(editorRef.current.innerHTML);
+    setImgOpen(false);
+    setImgFilename("");
+  };
+
+  const insertFromFilename = () => {
+    const name = imgFilename.trim();
+    if (!name) return;
+    const url = name.startsWith("http") || name.startsWith("../src/img/") || name.startsWith("/")
+      ? name
+      : `../src/img/${name}`;
+    insertImage(url, name.split("/").pop().replace(/\.[^.]+$/, ""));
+  };
+
+  const handleUpload = f => {
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => insertImage(reader.result, f.name.replace(/\.[^.]+$/, ""));
+    reader.readAsDataURL(f);
+  };
+
+  const updateActive = () => {
+    try {
+      setActiveMarks({
+        bold:      document.queryCommandState("bold"),
+        italic:    document.queryCommandState("italic"),
+        underline: document.queryCommandState("underline"),
+        ul:        document.queryCommandState("insertUnorderedList"),
+        ol:        document.queryCommandState("insertOrderedList"),
+      });
+    } catch (e) { /* no-op */ }
+  };
+
+  return (
+    <div style={{ position: "relative" }}>
+      <div className="rt-toolbar">
+        <button type="button" className={`rt-tool bold${activeMarks.bold ? " active" : ""}`} onClick={() => exec("bold")}>B</button>
+        <button type="button" className={`rt-tool italic${activeMarks.italic ? " active" : ""}`} onClick={() => exec("italic")}>I</button>
+        <button type="button" className={`rt-tool under${activeMarks.underline ? " active" : ""}`} onClick={() => exec("underline")}>U</button>
+        <div className="rt-divider" />
+        <button type="button" className="rt-tool" onClick={() => exec("formatBlock","p")} title="Body"><span className="sz-sm">P</span></button>
+        <button type="button" className="rt-tool" onClick={() => exec("formatBlock","h3")} title="Heading"><span className="sz-md">H₃</span></button>
+        <button type="button" className="rt-tool" onClick={() => exec("formatBlock","h2")} title="Big Heading"><span className="sz-lg">H₂</span></button>
+        <div className="rt-divider" />
+        <button type="button" className={`rt-tool${activeMarks.ul ? " active" : ""}`} onClick={() => exec("insertUnorderedList")}>• —</button>
+        <button type="button" className={`rt-tool${activeMarks.ol ? " active" : ""}`} onClick={() => exec("insertOrderedList")}>1.</button>
+        <div className="rt-divider" />
+        <button type="button" className={`rt-tool${imgOpen ? " active" : ""}`}
+          onMouseDown={e => { e.preventDefault(); saveRange(); }}
+          onClick={() => setImgOpen(!imgOpen)}>▢ Photo</button>
+        <div className="rt-divider" />
+        <button type="button" className="rt-tool" onClick={() => exec("removeFormat")} title="Clear">⌫</button>
+      </div>
+
+      {imgOpen && (
+        <div className="img-picker">
+          <div className="img-picker-head">
+            <div className="img-picker-title">Insert photo</div>
+            <button className="img-picker-close" onClick={() => setImgOpen(false)}>×</button>
+          </div>
+          {manifest.length > 0 && (
+            <div className="img-picker-section">
+              <div className="img-picker-label">From <span className="mono">src/img/</span></div>
+              <div className="img-grid">
+                {manifest.map(m => {
+                  const file  = typeof m === "string" ? m : m.file;
+                  const label = typeof m === "string" ? m : (m.label || m.file);
+                  return (
+                    <button key={file} type="button" className="img-thumb"
+                      onClick={() => insertImage(`../src/img/${file}`, label)}>
+                      <img src={`../src/img/${file}`} alt={label} />
+                      <span className="img-thumb-name">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          <div className="img-picker-section">
+            <div className="img-picker-label">Filename in <span className="mono">src/img/</span></div>
+            <div className="img-picker-row">
+              <input className="img-picker-input" placeholder="photo.jpg"
+                value={imgFilename} onChange={e => setImgFilename(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); insertFromFilename(); } }} />
+              <button type="button" className="btn primary" onClick={insertFromFilename}>Insert</button>
+            </div>
+          </div>
+          <div className="img-picker-section">
+            <div className="img-picker-label">Upload from device <span className="hint">(embedded as base64)</span></div>
+            <button type="button" className="btn ghost" onClick={() => uploadRef.current?.click()}>Choose file…</button>
+            <input ref={uploadRef} type="file" accept="image/*" className="hidden-file"
+              onChange={e => handleUpload(e.target.files?.[0])} />
+          </div>
+        </div>
+      )}
+
+      <div ref={editorRef} className="rt-editor" contentEditable suppressContentEditableWarning
+        data-placeholder={placeholder}
+        onInput={e => onChange(e.currentTarget.innerHTML)}
+        onKeyUp={() => { updateActive(); saveRange(); }}
+        onMouseUp={() => { updateActive(); saveRange(); }}
+        onFocus={updateActive}
+        onBlur={saveRange} />
+    </div>
+  );
+}
+
+/* ============================================================
+   RESTAURANT FORM  (identical to main app's Manage → Edit)
+   ============================================================ */
+const CUISINE_OPTIONS = [
+  "American","Mexican","Italian","Japanese","Coastal American",
+  "Modern Mexican","Brunch","Seafood","Vegetarian","Steakhouse",
+  "Thai","Korean","Vietnamese","Indian","Mediterranean","French",
+  "Spanish","Pizza","BBQ","Bakery","Café","Cocktail Bar",
+];
+
+function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
+  const toast = useToast();
+  const [name,          setName]         = useState(initial?.name          || "");
+  const [address,       setAddress]      = useState(initial?.address       || "");
+  const [cuisine,       setCuisine]      = useState(initial?.cuisine       || "");
+  const [customCuisine, setCustomCuisine]= useState("");
+  const [rating,        setRating]       = useState(initial?.rating        ?? 4.0);
+  const [description,   setDescription] = useState(initial?.description   || "");
+  const [lat,           setLat]          = useState(initial?.lat           ?? 32.7157);
+  const [lng,           setLng]          = useState(initial?.lng           ?? -117.1611);
+  const [tags,          setTags]         = useState(initial?.tags          || ["restaurant"]);
+  const [contacts,      setContacts]     = useState(initial?.contacts      || []);
+
+  const addContact    = () => setContacts(p => [...p, { title: "", name: "" }]);
+  const removeContact = i  => setContacts(p => p.filter((_,idx) => idx !== i));
+  const updateContact = (i, key, val) => setContacts(p => p.map((c,idx) => idx===i ? {...c,[key]:val} : c));
+  const toggleTag     = tag => setTags(p => p.includes(tag) ? p.filter(t=>t!==tag) : [...p, tag]);
+
+  const cuisineIsCustom = cuisine === "__custom";
+  const finalCuisine    = cuisineIsCustom ? customCuisine.trim() : cuisine;
+
+  const handleSave = () => {
+    if (!name.trim())   { toast("Name is required",    "warn"); return; }
+    if (!address.trim()){ toast("Address is required", "warn"); return; }
+    if (!finalCuisine)  { toast("Choose a cuisine",    "warn"); return; }
+    onSave({
+      id:          initial?.id || SDStore.newId("r"),
+      name:        name.trim(),
+      address:     address.trim(),
+      cuisine:     finalCuisine,
+      rating:      Math.round(rating * 10) / 10,
+      tags:        tags.length > 0 ? tags : ["restaurant"],
+      lat:         Number(lat),
+      lng:         Number(lng),
+      description,
+      contacts:    contacts.filter(c => c.title.trim() || c.name.trim()),
+      createdAt:   initial?.createdAt || new Date().toISOString().slice(0,10),
+    });
+  };
+
+  const exportOne = fmt => {
+    if (fmt === "json") {
+      const e = { id: initial?.id||"draft", name, address, cuisine: finalCuisine, rating, lat, lng, description };
+      SDStore.download(`${(name||"restaurant").replace(/\s+/g,"_").toLowerCase()}.json`, JSON.stringify(e,null,2));
+      toast("Exported JSON","ok");
+    } else {
+      const row = { name, address, cuisine: finalCuisine, rating, lat, lng, description };
+      const csv = SDStore.toCSV([row],["name","address","cuisine","rating","lat","lng","description"]);
+      SDStore.download(`${(name||"restaurant").replace(/\s+/g,"_").toLowerCase()}.csv`, csv, "text/csv");
+      toast("Exported CSV","ok");
+    }
+  };
+
+  return (
+    <Modal
+      eyebrow={mode==="new" ? "New entry" : "Edit entry"}
+      title={mode==="new" ? "Log a" : "Refine"}
+      italicTitle={mode==="new" ? "restaurant" : "the entry"}
+      onClose={onCancel}
+      wide
+      footer={
+        <>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {mode==="edit" && onDelete && (
+              <button className="btn danger" onClick={onDelete}>Delete</button>
+            )}
+            <div className="export-group">
+              <span className="lbl">Export</span>
+              <button onClick={() => exportOne("json")}>.json</button>
+              <button onClick={() => exportOne("csv")}>.csv</button>
+            </div>
+          </div>
+          <div className="row">
+            <button className="btn ghost" onClick={onCancel}>Cancel</button>
+            <button className="btn accent" onClick={handleSave}>{mode==="new" ? "Publish entry" : "Save changes"}</button>
+          </div>
+        </>
+      }
+    >
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Name</label>
+          <input className="field-input" value={name} onChange={e=>setName(e.target.value)} placeholder="The Crab Shack" />
+        </div>
+        <div className="field">
+          <label className="field-label">Cuisine</label>
+          <select className="field-select" value={cuisine} onChange={e=>setCuisine(e.target.value)}>
+            <option value="">—</option>
+            {CUISINE_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+            <option value="__custom">Custom…</option>
+          </select>
+          {cuisineIsCustom && (
+            <input className="field-input" style={{marginTop:8}} value={customCuisine}
+              onChange={e=>setCustomCuisine(e.target.value)} placeholder="e.g. Peruvian–Japanese" />
+          )}
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Tags</label>
+        <div className="tag-toggles">
+          <button type="button" className={`tag-toggle${tags.includes("restaurant")?" on":""}`} onClick={()=>toggleTag("restaurant")}>
+            <span className="tb-badge r">R</span> Restaurant
+          </button>
+          <button type="button" className={`tag-toggle${tags.includes("bar")?" on":""}`} onClick={()=>toggleTag("bar")}>
+            <span className="tb-badge b">B</span> Bar
+          </button>
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Address</label>
+        <input className="field-input" value={address} onChange={e=>setAddress(e.target.value)} placeholder="1234 Coast Hwy, San Diego, CA" />
+      </div>
+
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Latitude</label>
+          <input className="field-input" type="number" step="0.0001" value={lat} onChange={e=>setLat(e.target.value)} />
+        </div>
+        <div className="field">
+          <label className="field-label">Longitude</label>
+          <input className="field-input" type="number" step="0.0001" value={lng} onChange={e=>setLng(e.target.value)} />
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Rating (drag for fractional)</label>
+        <StarRating value={rating} onChange={setRating} />
+      </div>
+
+      <div className="field">
+        <label className="field-label">The review</label>
+        <RichEditor value={description} onChange={setDescription}
+          placeholder="Walk in. First impressions. The kitchen. The order. Skip the niceties." />
+      </div>
+
+      {isAdmin && (
+        <div className="field">
+          <label className="field-label">Contacts</label>
+          {contacts.map((c,i) => (
+            <div key={i} className="contact-editor-row">
+              <input className="field-input" placeholder="Title" value={c.title} onChange={e=>updateContact(i,"title",e.target.value)} />
+              <input className="field-input" placeholder="Name"  value={c.name}  onChange={e=>updateContact(i,"name", e.target.value)} />
+              <button type="button" className="btn ghost contact-del" onClick={()=>removeContact(i)}>✕</button>
+            </div>
+          ))}
+          <button type="button" className="btn ghost" style={{marginTop: contacts.length>0 ? 4 : 0}} onClick={addContact}>+ Add contact</button>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+/* ============================================================
+   RECIPE FORM  (identical to main app's Manage → Edit)
+   ============================================================ */
+function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
+  const toast = useToast();
+  const [name,        setName]        = useState(initial?.name        || "");
+  const [cuisine,     setCuisine]     = useState(initial?.cuisine     || "");
+  const [time,        setTime]        = useState(initial?.time        || 30);
+  const [serves,      setServes]      = useState(initial?.serves      || 2);
+  const [tagline,     setTagline]     = useState(initial?.tagline     || "");
+  const [description, setDescription]= useState(initial?.description || "");
+
+  const handleSave = () => {
+    if (!name.trim()) { toast("Name is required","warn"); return; }
+    onSave({
+      id:          initial?.id || SDStore.newId("rec"),
+      name:        name.trim(),
+      cuisine:     cuisine.trim(),
+      time:        Number(time)   || 0,
+      serves:      Number(serves) || 0,
+      tagline:     tagline.trim(),
+      description,
+      createdAt:   initial?.createdAt || new Date().toISOString().slice(0,10),
+    });
+  };
+
+  const exportOne = fmt => {
+    if (fmt === "json") {
+      const e = { id: initial?.id||"draft", name, cuisine, time, serves, tagline, description };
+      SDStore.download(`${(name||"recipe").replace(/\s+/g,"_").toLowerCase()}.json`, JSON.stringify(e,null,2));
+      toast("Exported JSON","ok");
+    } else {
+      const row = { name, cuisine, time, serves, tagline, description };
+      const csv = SDStore.toCSV([row],["name","cuisine","time","serves","tagline","description"]);
+      SDStore.download(`${(name||"recipe").replace(/\s+/g,"_").toLowerCase()}.csv`, csv, "text/csv");
+      toast("Exported CSV","ok");
+    }
+  };
+
+  return (
+    <Modal
+      eyebrow={mode==="new" ? "New recipe" : "Edit recipe"}
+      title={mode==="new" ? "Add a" : "Refine"}
+      italicTitle={mode==="new" ? "recipe" : "the recipe"}
+      onClose={onCancel}
+      wide
+      footer={
+        <>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {mode==="edit" && onDelete && (
+              <button className="btn danger" onClick={onDelete}>Delete</button>
+            )}
+            <div className="export-group">
+              <span className="lbl">Export</span>
+              <button onClick={()=>exportOne("json")}>.json</button>
+              <button onClick={()=>exportOne("csv")}>.csv</button>
+            </div>
+          </div>
+          <div className="row">
+            <button className="btn ghost" onClick={onCancel}>Cancel</button>
+            <button className="btn accent" onClick={handleSave}>{mode==="new" ? "Publish recipe" : "Save changes"}</button>
+          </div>
+        </>
+      }
+    >
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Name</label>
+          <input className="field-input" value={name} onChange={e=>setName(e.target.value)} placeholder="Fish Tacos, San Diego" />
+        </div>
+        <div className="field">
+          <label className="field-label">Cuisine / Category</label>
+          <input className="field-input" value={cuisine} onChange={e=>setCuisine(e.target.value)} placeholder="Mexican" />
+        </div>
+      </div>
+
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Time (minutes)</label>
+          <input className="field-input" type="number" value={time} onChange={e=>setTime(e.target.value)} />
+        </div>
+        <div className="field">
+          <label className="field-label">Serves</label>
+          <input className="field-input" type="number" value={serves} onChange={e=>setServes(e.target.value)} />
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Tagline</label>
+        <input className="field-input" value={tagline} onChange={e=>setTagline(e.target.value)} placeholder="One sentence. Make it sting." />
+      </div>
+
+      <div className="field">
+        <label className="field-label">Ingredients &amp; method</label>
+        <RichEditor value={description} onChange={setDescription}
+          placeholder="Ingredients. Method. No filler. The reader is hungry." />
+      </div>
+    </Modal>
+  );
+}
+
+/* ============================================================
+   EDITOR APP
+   ============================================================ */
 const R_KEY   = "sabroso_restaurants";
 const REC_KEY = "sabroso_recipes";
 
-/* ── Root app ── */
 function EditorApp() {
-  const [tab, setTab]           = useState("restaurants");
-  const [restaurants, setRests] = useState([]);
-  const [recipes, setRecs]      = useState([]);
-  const [modal, setModal]       = useState(null); // null | { kind, entry? }
-  const [loading, setLoading]   = useState(true);
+  const [tab,   setTab]   = useState("restaurants");
+  const [rests, setRests] = useState([]);
+  const [recs,  setRecs]  = useState([]);
+  const [modal, setModal] = useState(null); // { kind: "restaurant"|"recipe", entry? }
+  const [loading, setLoading] = useState(true);
   const toast = useToast();
 
   useEffect(() => { loadData(); }, []);
@@ -254,7 +758,6 @@ function EditorApp() {
   async function loadData() {
     setLoading(true);
     let rOk = false, recOk = false;
-
     try {
       const res = await fetch("./restaurants.json?_=" + Date.now());
       if (!res.ok) throw new Error(res.status);
@@ -263,10 +766,9 @@ function EditorApp() {
       localStorage.setItem(R_KEY, JSON.stringify(data));
       rOk = true;
     } catch {
-      const cached = localStorage.getItem(R_KEY);
-      if (cached) { setRests(JSON.parse(cached)); rOk = true; }
+      const c = localStorage.getItem(R_KEY);
+      if (c) { setRests(JSON.parse(c)); rOk = true; }
     }
-
     try {
       const res = await fetch("./recipes.json?_=" + Date.now());
       if (!res.ok) throw new Error(res.status);
@@ -275,14 +777,13 @@ function EditorApp() {
       localStorage.setItem(REC_KEY, JSON.stringify(data));
       recOk = true;
     } catch {
-      const cached = localStorage.getItem(REC_KEY);
-      if (cached) { setRecs(JSON.parse(cached)); recOk = true; }
+      const c = localStorage.getItem(REC_KEY);
+      if (c) { setRecs(JSON.parse(c)); recOk = true; }
     }
-
     setLoading(false);
-    if (rOk && recOk)     toast("Loaded from JSON files", "ok");
+    if (rOk && recOk)        toast("Loaded from JSON files", "ok");
     else if (!rOk && !recOk) toast("Fetch failed — serve via HTTP, not file://", "warn");
-    else                  toast("Partially loaded — one file fell back to cache", "warn");
+    else                     toast("One file fell back to cache", "warn");
   }
 
   /* ── Restaurant CRUD ── */
@@ -335,7 +836,7 @@ function EditorApp() {
 
   /* ── Export ── */
   function exportJSON(kind) {
-    const list = kind === "restaurant" ? restaurants : recipes;
+    const list = kind === "restaurant" ? rests : recs;
     const filename = kind === "restaurant" ? "restaurants.json" : "recipes.json";
     SDStore.download(filename, JSON.stringify(list, null, 2));
     toast("Exported " + filename, "ok");
@@ -343,52 +844,47 @@ function EditorApp() {
 
   return (
     <>
-      {/* ── Header ── */}
       <header className="ed-header">
         <div className="ed-wordmark">The <span>Sabroso</span> · Data Editor</div>
         <div className="ed-header-right">
           <button className="ed-header-btn" onClick={loadData}>↺ Reload JSON</button>
-          <button className="ed-header-btn" onClick={() => { exportJSON("restaurant"); exportJSON("recipe"); }}>
-            Export All
-          </button>
+          <button className="ed-header-btn" onClick={() => { exportJSON("restaurant"); exportJSON("recipe"); }}>Export All</button>
         </div>
       </header>
 
-      {/* ── Tabs ── */}
       <nav className="ed-tabs">
-        <button className={`ed-tab${tab === "restaurants" ? " active" : ""}`} onClick={() => setTab("restaurants")}>
-          Restaurants <span className="ed-count">{restaurants.length}</span>
+        <button className={`ed-tab${tab==="restaurants"?" active":""}`} onClick={() => setTab("restaurants")}>
+          Restaurants <span className="ed-count">{rests.length}</span>
         </button>
-        <button className={`ed-tab${tab === "recipes" ? " active" : ""}`} onClick={() => setTab("recipes")}>
-          Recipes <span className="ed-count">{recipes.length}</span>
+        <button className={`ed-tab${tab==="recipes"?" active":""}`} onClick={() => setTab("recipes")}>
+          Recipes <span className="ed-count">{recs.length}</span>
         </button>
       </nav>
 
-      {/* ── Panels ── */}
       {loading ? (
         <div className="ed-loading">Loading…</div>
       ) : (
         <div className="ed-panel">
           {tab === "restaurants" && (
             <RestaurantPanel
-              restaurants={restaurants}
+              restaurants={rests}
               onNew={() => setModal({ kind: "restaurant" })}
-              onEdit={(r) => setModal({ kind: "restaurant", entry: r })}
+              onEdit={r  => setModal({ kind: "restaurant", entry: r })}
               onExport={() => exportJSON("restaurant")}
             />
           )}
           {tab === "recipes" && (
             <RecipePanel
-              recipes={recipes}
+              recipes={recs}
               onNew={() => setModal({ kind: "recipe" })}
-              onEdit={(r) => setModal({ kind: "recipe", entry: r })}
+              onEdit={r  => setModal({ kind: "recipe", entry: r })}
               onExport={() => exportJSON("recipe")}
             />
           )}
         </div>
       )}
 
-      {/* ── Modals — same forms as the main app's Manage button ── */}
+      {/* ── Forms: identical to main app Manage button ── */}
       {modal?.kind === "restaurant" && (
         <RestaurantForm
           initial={modal.entry}
@@ -412,7 +908,7 @@ function EditorApp() {
   );
 }
 
-/* ── Restaurant list panel ── */
+/* ── Restaurant list ── */
 function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
   return (
     <>
@@ -424,10 +920,10 @@ function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>restaurants.json</code>. Edit freely, then click <strong>Export JSON</strong> to download the updated file for git push.
+        Loaded from <code>restaurants.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
       </div>
       {restaurants.length === 0 ? (
-        <div className="ed-empty">No restaurants yet. Click + New Restaurant to add one.</div>
+        <div className="ed-empty">No restaurants yet.</div>
       ) : (
         <div className="ed-list">
           {restaurants.map(r => {
@@ -453,7 +949,7 @@ function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
   );
 }
 
-/* ── Recipe list panel ── */
+/* ── Recipe list ── */
 function RecipePanel({ recipes, onNew, onEdit, onExport }) {
   return (
     <>
@@ -465,19 +961,17 @@ function RecipePanel({ recipes, onNew, onEdit, onExport }) {
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>recipes.json</code>. Edit freely, then click <strong>Export JSON</strong> to download the updated file for git push.
+        Loaded from <code>recipes.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
       </div>
       {recipes.length === 0 ? (
-        <div className="ed-empty">No recipes yet. Click + New Recipe to add one.</div>
+        <div className="ed-empty">No recipes yet.</div>
       ) : (
         <div className="ed-list">
           {recipes.map(r => (
             <div key={r.id} className="ed-row">
               <div className="ed-row-info">
                 <div className="ed-row-name">{r.name}</div>
-                <div className="ed-row-meta">
-                  {r.cuisine || "—"} · {r.time || 0} min · serves {r.serves || 0}
-                </div>
+                <div className="ed-row-meta">{r.cuisine || "—"} · {r.time || 0} min · serves {r.serves || 0}</div>
               </div>
               <button className="btn-sm" onClick={() => onEdit(r)}>Edit</button>
             </div>

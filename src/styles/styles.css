@@ -2386,6 +2386,27 @@ a { color: inherit; }
 }
 
 /* ============================================================
+   ABOUT PAGE — scrollable on all non-mobile screens
+   :has() targets only the panel that wraps the about view so the
+   map and recipes panels are not affected. The grid grows to its
+   natural content height; the panel scrolls the excess silently.
+   min-width guard keeps mobile portrait phones on the 640px path.
+   ============================================================ */
+
+@media (min-width: 641px) {
+  .panel:has(.about) {
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+  }
+  .panel:has(.about)::-webkit-scrollbar { display: none; } /* Chrome / Safari */
+
+  .about {
+    height: auto;
+    min-height: 100%;
+  }
+}
+
+/* ============================================================
    LANDSCAPE — phones rotated (small viewport height)
    ============================================================ */
 
