@@ -54,7 +54,7 @@ function AboutView({ goLeft, goRight }) {
         </div>
 
         <p className="about-intro">
-          <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the city; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. Bon appétit, and welcome to the Sabroso.
+          <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the classroom; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. <br></br><br></br>Welcome to the place where<br></br>you either find delicious food or make it.<br></br><br></br><i>Buen provecho, bon appétit, and just eat gud y'all!</i><br></br><b>~ G</b>
         </p>
 
         <div className="about-mobile-nav">
@@ -73,7 +73,6 @@ function AboutView({ goLeft, goRight }) {
 
       <div className="about-meta">
         <span>Edited by <a href="https://www.gabebarrera.dev" target="_blank" rel="noopener noreferrer">Gabe</a> · Chef &amp; Cyber Nerd</span>
-        <span className="coords">⌂ Local-first · saved to your device</span>
       </div>
     </div>
   );
@@ -310,20 +309,71 @@ function RecipesView({ recipes, openManage, navigate }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
+  const [sort, setSort] = useStateV(null);
+  const [sortOpen, setSortOpen] = useStateV(false);
+  const [favorites, setFavorites] = useStateV(() => SDStore.loadFavorites());
+  const [openCuisines, setOpenCuisines] = useStateV(() => new Set());
+  const sortWrapRef = useRefV(null);
+
+  useEffectV(() => {
+    if (!sortOpen) return;
+    const onDoc = (e) => { if (!sortWrapRef.current?.contains(e.target)) setSortOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [sortOpen]);
+
+  const toggleFavorite = (id, e) => {
+    e.stopPropagation();
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      SDStore.saveFavorites(next);
+      return next;
+    });
+  };
+
+  const toggleCuisine = (cuisine) => {
+    setOpenCuisines((prev) => {
+      const next = new Set(prev);
+      if (next.has(cuisine)) next.delete(cuisine); else next.add(cuisine);
+      return next;
+    });
+  };
 
   const handleSelectRecipe = (id) => {
     setSelectedId(id);
     setSidebarOpen(false);
   };
 
+  const SORT_BTN_LABELS = { az: "A–Z", za: "Z–A", time: "Time", serves: "Serves", cuisine: "Cuisine" };
+  const SORT_MENU_LABELS = { az: "Sort A → Z", za: "Sort Z → A", time: "By Time", serves: "By Serving Size", cuisine: "By Cuisine" };
+
   const filtered = useMemoV(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return recipes;
-    return recipes.filter((r) => {
-      const fields = [r.name, r.cuisine, r.tagline, r.description].filter(Boolean).join(" ").toLowerCase();
-      return fields.includes(s);
+    let list = s
+      ? recipes.filter((r) => {
+          const fields = [r.name, r.cuisine, r.tagline, r.description].filter(Boolean).join(" ").toLowerCase();
+          return fields.includes(s);
+        })
+      : [...recipes];
+
+    if (sort === "az") list.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sort === "za") list.sort((a, b) => b.name.localeCompare(a.name));
+    else if (sort === "time") list.sort((a, b) => (a.time || 0) - (b.time || 0));
+    else if (sort === "serves") list.sort((a, b) => (a.serves || 0) - (b.serves || 0));
+    return list;
+  }, [q, recipes, sort]);
+
+  const cuisineGroups = useMemoV(() => {
+    if (sort !== "cuisine") return null;
+    const groups = {};
+    filtered.forEach((r) => {
+      const c = r.cuisine || "Other";
+      if (!groups[c]) groups[c] = [];
+      groups[c].push(r);
     });
-  }, [q, recipes]);
+    return Object.keys(groups).sort().map((c) => ({ cuisine: c, recipes: groups[c] }));
+  }, [sort, filtered]);
 
   useEffectV(() => {
     if (!filtered.find((r) => r.id === selectedId)) {
@@ -332,6 +382,32 @@ function RecipesView({ recipes, openManage, navigate }) {
   }, [filtered, selectedId]);
 
   const selected = recipes.find((r) => r.id === selectedId);
+
+  const renderRecipeRow = (r) => (
+    <div
+      key={r.id}
+      className={`recipe-row${r.id === selectedId ? " active" : ""}${favorites.has(r.id) ? " starred" : ""}`}
+      onClick={() => handleSelectRecipe(r.id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleSelectRecipe(r.id); }}
+    >
+      <div className="r-row-top">
+        <div className="r-name">{r.name}</div>
+        <button
+          className={`star-btn${favorites.has(r.id) ? " on" : ""}`}
+          onClick={(e) => toggleFavorite(r.id, e)}
+          title={favorites.has(r.id) ? "Remove from favorites" : "Add to favorites"}
+          tabIndex={-1}
+        >★</button>
+      </div>
+      <div className="r-meta">{r.cuisine || "—"} · {r.time}m · serves {r.serves}</div>
+    </div>
+  );
+
+  const starredItems = filtered.filter((r) => favorites.has(r.id));
+  const regularItems = filtered.filter((r) => !favorites.has(r.id));
+  const isEmpty = filtered.length === 0;
 
   return (
     <div className="recipes-view" data-screen-label="03 Recipes">
@@ -360,32 +436,73 @@ function RecipesView({ recipes, openManage, navigate }) {
 
       <div className={`recipes-body${!sidebarOpen ? " sidebar-closed" : ""}`}>
         <div className="recipes-sidebar">
-          <div className="search-field">
-            <span className="icon" />
-            <input
-              placeholder="Search recipes, keywords…"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
+          <div className="search-bar-row">
+            <div className="search-field">
+              <span className="icon" />
+              <input
+                placeholder="Search Keyword"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
+            </div>
+            <div className="sort-wrap" ref={sortWrapRef}>
+              <button
+                className={`sort-btn${sort ? " active" : ""}`}
+                onClick={() => setSortOpen((v) => !v)}
+                title="Sort recipes"
+              >
+                {sort ? SORT_BTN_LABELS[sort] : "Sort"}
+                <span className="sort-chev" />
+              </button>
+              {sortOpen && (
+                <div className="sort-menu">
+                  <button className={!sort ? "active" : ""} onClick={() => { setSort(null); setSortOpen(false); }}>Default</button>
+                  {["az", "za", "time", "serves", "cuisine"].map((s) => (
+                    <button key={s} className={sort === s ? "active" : ""} onClick={() => { setSort(s); setSortOpen(false); }}>
+                      {SORT_MENU_LABELS[s]}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="recipe-list">
-            {filtered.length === 0 && (
+            {isEmpty && (
               <div style={{ padding: "40px 8px", textAlign: "center" }} className="muted">
                 <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18, marginBottom: 4 }}>Nothing matches.</div>
                 <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".22em", textTransform: "uppercase" }}>Try another word</div>
               </div>
             )}
-            {filtered.map((r) => (
-              <button
-                key={r.id}
-                className={`recipe-row ${r.id === selectedId ? "active" : ""}`}
-                onClick={() => handleSelectRecipe(r.id)}
-              >
-                <div className="r-name">{r.name}</div>
-                <div className="r-meta">{r.cuisine || "—"} · {r.time}m · serves {r.serves}</div>
-              </button>
-            ))}
+
+            {!isEmpty && sort === "cuisine" ? (
+              cuisineGroups && cuisineGroups.map(({ cuisine, recipes: cRecipes }) => (
+                <div key={cuisine} className="cuisine-section">
+                  <button
+                    className={`cuisine-header${openCuisines.has(cuisine) ? " expanded" : ""}`}
+                    onClick={() => toggleCuisine(cuisine)}
+                  >
+                    <span className="cuisine-label">{cuisine}</span>
+                    <span className="cuisine-count">{cRecipes.length}</span>
+                    <span className="cuisine-chev" />
+                  </button>
+                  {openCuisines.has(cuisine) && cRecipes.map(renderRecipeRow)}
+                </div>
+              ))
+            ) : (
+              !isEmpty && (
+                <>
+                  {starredItems.length > 0 && (
+                    <>
+                      <div className="recipe-section-label">Favorites</div>
+                      {starredItems.map(renderRecipeRow)}
+                      {regularItems.length > 0 && <div className="recipe-list-divider" />}
+                    </>
+                  )}
+                  {regularItems.map(renderRecipeRow)}
+                </>
+              )
+            )}
           </div>
         </div>
 

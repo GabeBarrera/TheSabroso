@@ -190,5 +190,77 @@
     "tags": ["restaurant", "bar"],
     "description": "<p>Gaslamp Quarter Russian restaurant and lounge that covers more ground than the address suggests — full kitchen, serious bar program, hookah lounge in the back. The pelmeni and the borscht are both done correctly, which is the minimum requirement and also not guaranteed anywhere else in this zip code. The vibe runs late and gets louder as the night progresses.</p><h3>The order</h3><ul><li>Borscht — the beet kind, the proper kind, arrive with smetana</li><li>Pelmeni, beef and pork mix, in broth</li><li>Blini flight with caviar if the occasion justifies it</li></ul><p>The bar list leans vodka and Eastern European spirits. This is the correct orientation. Order accordingly.</p>",
     "createdAt": "2026-05-03"
+  },
+  {
+    "id": "r17",
+    "name": "Gelato Vero",
+    "address": "3753 India St, San Diego, CA 92103",
+    "cuisine": "Gelato",
+    "rating": 4.7,
+    "lat": 32.7432214,
+    "lng": -117.1810028,
+    "tags": ["restaurant"],
+    "description": "<p>Mission Hills gelato operation in a narrow spot on India Street. Made with Italian bases, rotates with the season — but the pistachio is always there and always correct. The stracciatella is the other constant. Both are better than anything made with a stabilizer in the mix.</p><h3>The order</h3><ul><li>Pistachio — the benchmark, non-negotiable on a first visit</li><li>Stracciatella — the second scoop, every time</li><li>Whatever the seasonal flavor is — usually worth it</li></ul><p>Small shop, long line on weekends. Go on a weekday afternoon.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "r18",
+    "name": "Nishiki Ramen",
+    "address": "Mira Mesa, San Diego, CA",
+    "cuisine": "Japanese",
+    "rating": 4.3,
+    "lat": 32.8196839,
+    "lng": -117.1501556,
+    "tags": ["restaurant"],
+    "description": "<p>Mira Mesa ramen counter that takes the soup seriously. The tonkotsu has the right depth and the right grease level — not oppressive, just present. The chashu is braised properly and arrives in thick slices. The noodles are firm. The soft egg is seasoned. Nothing surprising, everything correct.</p><h3>The order</h3><ul><li>Tonkotsu — the whole point of coming here</li><li>Extra chashu — add it without deliberating</li><li>Soft egg — properly seasoned, always</li></ul><p>Lunch counter hours. Go before the line builds.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "r19",
+    "name": "Tajima Ramen",
+    "address": "Mira Mesa, San Diego, CA",
+    "cuisine": "Japanese",
+    "rating": 4.2,
+    "lat": 32.8203611,
+    "lng": -117.1486528,
+    "tags": ["restaurant"],
+    "description": "<p>One of several Tajima locations, this one anchoring the Mira Mesa corridor. The broth runs long and comes out opaque and properly rich. The kakuni bowl is the move — pork belly slow-braised until it barely holds together, set over a tonkotsu base that justifies the drive north.</p><h3>The order</h3><ul><li>Kakuni ramen — pork belly, the reason to be here</li><li>Tonkotsu if you want the classic baseline</li><li>Gyoza to start, pan-fried, no arguments</li></ul><p>Reliable anchor for the area. Consistent across visits.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "r20",
+    "name": "The Friendly Tavern",
+    "address": "Normal Heights, San Diego, CA",
+    "cuisine": "American",
+    "rating": 4.0,
+    "lat": 32.748657,
+    "lng": -117.135492,
+    "tags": ["restaurant", "bar"],
+    "description": "<p>Normal Heights neighborhood bar that also happens to make a good burger. No pretense, no craft cocktail program — just a well-poured beer and a patty that earns its price. The regulars have been sitting at the same barstools since before you moved to the neighborhood. That is a good sign.</p><h3>The order</h3><ul><li>Burger — straightforward, priced right, no complaints</li><li>Whatever is cheapest on draft</li><li>Fries, nothing fancy, salted correctly</li></ul><p>A neighborhood bar that functions as one. Increasingly rare.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "r21",
+    "name": "KT Donuts #2",
+    "address": "South San Diego, CA",
+    "cuisine": "Bakery",
+    "rating": 4.1,
+    "lat": 32.6970431,
+    "lng": -117.018145,
+    "tags": ["restaurant"],
+    "description": "<p>South San Diego donut counter that opens early and closes when they run out. The glazed is the benchmark — fried fresh, thin crisp exterior, doughy interior. The apple fritter is the oversized one that justifies the drive. Cash operation, fluorescent lights, exactly what a donut shop should be.</p><h3>The order</h3><ul><li>Glazed — the reference point, order at least two</li><li>Apple fritter — large, unapologetic, correct</li><li>Old fashioned if they have it — underrated</li></ul><p>Opens before 6 AM. Go before work or don't go at all.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "r22",
+    "name": "Dockside",
+    "address": "Middletown, San Diego, CA",
+    "cuisine": "American",
+    "rating": 4.3,
+    "lat": 32.7194586,
+    "lng": -117.1735913,
+    "tags": ["restaurant", "bar"],
+    "description": "<p>Bar and grill near the water with a menu that doesn't require much deliberation — burgers, fish, something cold on draft. The patio works on a good evening. The food is better than it needs to be for a bar this casual, which is the only bar worth going to.</p><h3>The order</h3><ul><li>Fish tacos — better than expected, order them when available</li><li>Burger — solid, nothing more needs to be said</li><li>Whatever is on draft — rotating, usually local</li></ul><p>Patio seating is the move. Arrive before sunset if you want a spot.</p>",
+    "createdAt": "2026-05-29"
   }
 ]
