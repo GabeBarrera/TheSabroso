@@ -88,5 +88,45 @@
     "tagline": "Tomatillo-blended broth, fall-apart chicken, three cans of hominy. The green is the whole point.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 2 lb chicken thighs, bone-in</li><li><input type='checkbox'> 1 lb tomatillos, husked and rinsed</li><li><input type='checkbox'> 2 large white onions, divided — one for broth, one for garnish</li><li><input type='checkbox'> 3 jalapeño peppers, halved, seeds and membranes removed</li><li><input type='checkbox'> 2 cloves garlic</li><li><input type='checkbox'> 1 tbsp Mexican oregano</li><li><input type='checkbox'> 1 tsp kosher salt</li><li><input type='checkbox'> 6 cups chicken broth</li><li><input type='checkbox'> 1 cup cilantro, stems and leaves</li><li><input type='checkbox'> 50 oz white hominy, drained and rinsed (3 cans)</li><li><input type='checkbox'> 4–5 limes, halved</li><li><input type='checkbox'> 1 bunch radishes, thinly sliced</li><li><input type='checkbox'> ½ head cabbage, thinly shredded</li></ul><h3>Garnishes</h3><ul><li><input type='checkbox'> Sliced radishes</li><li><input type='checkbox'> Shredded cabbage</li><li><input type='checkbox'> Chopped cilantro</li><li><input type='checkbox'> Diced white onion</li><li><input type='checkbox'> Lime wedges</li><li><input type='checkbox'> Mexican oregano</li></ul><h3>Method</h3><ol><li>Add chicken thighs, tomatillos, one rough-chopped onion, jalapeños, garlic, oregano, salt, and broth to a large pot or Dutch oven.</li><li>Bring to a boil over high heat. Reduce to low, partially cover, and simmer 40 minutes until the chicken is fall-apart tender.</li><li>Transfer chicken to a cutting board. Shred with two forks. Set aside.</li><li>Using a slotted spoon, transfer the cooked tomatillos, onion, jalapeños, and garlic to a blender. Add 1 cup of the cooking liquid and the cilantro. Blend until completely smooth.</li><li>Pour the green sauce back into the pot. Stir in the shredded chicken and drained hominy.</li><li>Bring to a simmer over medium-high heat. Cook uncovered 15 minutes. Taste and season with salt and a squeeze of lime.</li><li>Ladle into bowls. Serve with cabbage, radishes, cilantro, diced onion, lime wedges, and a sprinkle of oregano.</li></ol><p style=\"margin-top:20px;font-size:14px;color:var(--muted)\">Recipe via <a href=\"https://isabeleats.com/pozole-verde-de-pollo/\" target=\"_blank\" rel=\"noopener\">Isabel Eats</a></p>",
     "createdAt": "2026-05-29"
+  },
+  {
+    "id": "rec10",
+    "name": "The Barrera Cheddar Salmon",
+    "cuisine": "Seafood",
+    "time": 35,
+    "serves": 2,
+    "tagline": "Poached in Chardonnay, cheddar-crusted, on a spinach bed. Treat it like a king.",
+    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 16oz salmon</li><li><input type='checkbox'> 1 cup Chardonnay or white wine</li><li><input type='checkbox'> 1–2 cups water (or replace entirely with white wine — do it, you won't)</li><li><input type='checkbox'> 6–7 bay leaves</li><li><input type='checkbox'> Peppercorns</li><li><input type='checkbox'> Salt</li><li><input type='checkbox'> ¼–½ onion</li><li><input type='checkbox'> Sharp cheddar, grated — a lot</li><li><input type='checkbox'> Spinach — a lot</li><li><input type='checkbox'> Butter (optional)</li></ul><h3>Method</h3><ol><li>Grate a big bowl of sharp cheddar. Set aside.</li><li>Sauté onions in butter. Add spinach and sauté until wilted.</li><li>Transfer spinach to an oven-safe dish. Spread into a bed wide enough for the salmon to rest on. <em>Treat your salmon like a king — he'll take care of you.</em></li><li>Poach salmon in Chardonnay and water with salt, peppercorns, and bay leaves, about 10 minutes. Halfway cooked. We're pregaming, don't get lit yet.</li><li>Place poached salmon on the spinach bed. Cover with the grated cheddar.</li><li>Cover dish with foil. Bake at 400°F for ~15 minutes until the cheese melts.</li><li>Remove foil. Release the dank.</li></ol>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "rec11",
+    "name": "Banana Bread",
+    "cuisine": "Baking",
+    "time": 65,
+    "serves": 16,
+    "tagline": "Four ripe bananas, oil not butter, two loaves. The ratio is the whole recipe.",
+    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 2 cups mashed bananas (~4 ripe bananas)</li><li><input type='checkbox'> 2 cups flour</li><li><input type='checkbox'> 2 eggs</li><li><input type='checkbox'> ¾ cup vegetable oil</li><li><input type='checkbox'> 1¼ cups sugar</li><li><input type='checkbox'> 1 tbsp baking soda</li></ul><h3>Method</h3><ol><li>Preheat oven to 350°F.</li><li>Whisk flour and baking soda together. Set aside.</li><li>Beat the eggs. Mix in sugar, vegetable oil, and mashed bananas.</li><li>Add the flour mixture and stir until no dry spots remain.</li><li>Pour into two greased bread pans.</li><li>Bake 50–55 minutes. Test with a toothpick — comes out clean when done.</li></ol>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "rec12",
+    "name": "Puppy Chow",
+    "cuisine": "Snacks",
+    "time": 15,
+    "serves": 10,
+    "tagline": "Chex, chocolate, peanut butter, powdered sugar. The bag shake is the whole technique.",
+    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 9 cups Chex cereal</li><li><input type='checkbox'> 1 cup / 6oz semi-sweet chocolate chips</li><li><input type='checkbox'> ½ cup smooth peanut butter</li><li><input type='checkbox'> ¼ cup butter</li><li><input type='checkbox'> 1–2 tsp vanilla</li><li><input type='checkbox'> 1½ cups powdered sugar</li></ul><h3>Method</h3><ol><li>Measure cereal into a large bowl. Set aside.</li><li>Microwave chocolate chips, peanut butter, and butter for 1 minute on high. Stir. Microwave another 30 seconds until smooth. Stir in vanilla.</li><li>Pour mixture over cereal and stir until fully coated.</li><li>Transfer to a large Ziploc bag. Add powdered sugar, seal, and shake until well coated.</li><li>Spread on waxed paper to cool. Store in a sealed bag or container.</li></ol><p style='margin-top:16px;font-size:14px;color:var(--muted)'><strong>Note:</strong> If you only have small bags, add the cereal a little at a time when shaking with the powdered sugar.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
+    "id": "rec13",
+    "name": "Cowboy Butter",
+    "cuisine": "Sauces",
+    "time": 10,
+    "serves": 4,
+    "tagline": "Six tablespoons of butter, Dijon, cayenne, garlic. Melt and stir — that's the recipe.",
+    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 6 tbsp butter</li><li><input type='checkbox'> 4 garlic cloves, minced</li><li><input type='checkbox'> 1 tbsp Dijon mustard</li><li><input type='checkbox'> Zest of 1 lemon + juice of ½ lemon</li><li><input type='checkbox'> 1 tsp paprika</li><li><input type='checkbox'> ½ tsp cayenne</li><li><input type='checkbox'> 1 tsp chili flakes</li><li><input type='checkbox'> 1 tsp fresh thyme</li><li><input type='checkbox'> 2 tbsp fresh parsley, chopped</li><li><input type='checkbox'> Salt & pepper</li></ul><h3>Method</h3><ol><li>Melt butter in a pan. Add Dijon, cayenne, paprika, lemon zest, and garlic. Stir to combine.</li><li>Stir in chili flakes, thyme, parsley, lemon juice, salt, and pepper.</li></ol>",
+    "createdAt": "2026-05-29"
   }
 ]
