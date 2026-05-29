@@ -37,54 +37,46 @@ function isVoiceHidden(r, hiddenFilters) {
 function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFilters, setView, setVoiceResult, setProfile, mapActionsRef) {
   const t = transcript.toLowerCase().trim();
 
-  // Surprise Me
   if (t.includes("surprise me")) {
     const pool = restaurants.filter((r) => !isVoiceHidden(r, hiddenFilters));
-    if (!pool.length) return;
+    if (!pool.length) return true;
     const r = pool[Math.floor(Math.random() * pool.length)];
     setView(VIEW_MAP);
     setTimeout(() => mapActionsRef.current?.zoomTo(r), 400);
-    return;
+    return true;
   }
 
-  // I'm Craving [cuisine]
   const cravingMatch = t.match(/(?:i(?:'m| am) craving|craving)\s+(.+)/);
   if (cravingMatch) {
     const craving = cravingMatch[1].trim();
     const pool = restaurants.filter(
       (r) => (r.cuisine || "").toLowerCase().includes(craving) && !isVoiceHidden(r, hiddenFilters)
     );
-    if (!pool.length) {
-      setVoiceResult({ type: "none", query: craving });
-      return;
-    }
+    if (!pool.length) { setVoiceResult({ type: "none", query: craving }); return true; }
     const r = pool[Math.floor(Math.random() * pool.length)];
     setView(VIEW_MAP);
     setTimeout(() => mapActionsRef.current?.zoomTo(r), 400);
-    return;
+    return true;
   }
 
-  // Hide all / Show all
-  if (/hide all/.test(t)) { setHiddenFilters(["all"]); return; }
-  if (/show all/.test(t)) { setHiddenFilters([]); return; }
+  if (/hide all/.test(t)) { setHiddenFilters(["all"]); return true; }
+  if (/show all/.test(t)) { setHiddenFilters([]); return true; }
 
-  // Hide / Show [tag or cuisine]
   const hideShowMatch = t.match(/^(hide|show)\s+(.+)/);
   if (hideShowMatch) {
     const action = hideShowMatch[1];
     const filter = hideShowMatch[2].trim().toLowerCase();
     setHiddenFilters((prev) => {
-      const base = prev.filter((f) => f !== "all"); // drop "all" when switching to specific
+      const base = prev.filter((f) => f !== "all");
       if (action === "hide") return base.includes(filter) ? base : [...base, filter];
       return base.filter((f) => f !== filter);
     });
-    return;
+    return true;
   }
 
-  // Find nearest
   if (/find\s+nearest|nearest\s+restaurant/.test(t)) {
     const geo = navigator.geolocation;
-    if (!geo) return;
+    if (!geo) return true;
     geo.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -99,15 +91,12 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
           setVoiceResult({ type: "nearest", items: nearby });
         }, 400);
       },
-      () => {
-        setVoiceResult({ type: "none", query: "your location (permission denied)" });
-      },
+      () => { setVoiceResult({ type: "none", query: "your location (permission denied)" }); },
       { timeout: 6000 }
     );
-    return;
+    return true;
   }
 
-  // Find [string]
   const findMatch = t.match(/^find\s+(.+)/);
   if (findMatch) {
     const query = findMatch[1].trim();
@@ -116,18 +105,17 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
         .join(" ").toLowerCase();
       return text.includes(query);
     });
-    if (matches.length === 0) {
-      setVoiceResult({ type: "none", query });
-      return;
-    }
+    if (matches.length === 0) { setVoiceResult({ type: "none", query }); return true; }
     if (matches.length === 1) {
       setView(VIEW_MAP);
       setTimeout(() => mapActionsRef.current?.zoomTo(matches[0]), 400);
-      return;
+      return true;
     }
     setVoiceResult({ type: "list", items: matches, query });
-    return;
+    return true;
   }
+
+  return false;
 }
 
 function App() {
@@ -395,6 +383,40 @@ function AppInner(props) {
   isAdmin, setIsAdmin,
   } = props;
   const toast = useToast();
+  const [kbdActive, setKbdActive] = useState(false);
+  const [kbdText, setKbdText] = useState("");
+  const [cmdError, setCmdError] = useState(null);
+  const [cmdErrorKey, setCmdErrorKey] = useState(0);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [dockOpen, setDockOpen] = useState(false);
+  const errorTimerRef = useRef(null);
+  const kbdRef = useRef(null);
+
+  useEffect(() => {
+    if (kbdActive && kbdRef.current) kbdRef.current.focus();
+  }, [kbdActive]);
+
+  const showCmdError = (msg) => {
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    setCmdError(msg);
+    setCmdErrorKey((k) => k + 1);
+    errorTimerRef.current = setTimeout(() => setCmdError(null), 2000);
+  };
+
+  const submitKbd = () => {
+    const t = kbdText.trim();
+    if (!t) return;
+    if (t.toLowerCase() === "help") {
+      setHelpOpen(true);
+      setKbdText("");
+      return;
+    }
+    const ok = handleVoiceCommand(
+      t, restaurants, hiddenFilters, setHiddenFilters, setView, setVoiceResult, setProfile, mapActionsRef
+    );
+    if (!ok) showCmdError(`Not recognized: "${t}"`);
+    setKbdText("");
+  };
 
   const handleAdminLogout = () => {
     SDStore.adminLogout();
@@ -492,57 +514,102 @@ function AppInner(props) {
         <button className={view === 2 ? "active" : ""} onClick={() => setView(2)} aria-label="Recipes" />
       </div>
 
-      {/* theme toggle (sun ↔ moon) */}
-      <button
-        className="theme-toggle"
-        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-        title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-        aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-      >
-        {theme === "light" ? (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/>
-          </svg>
-        )}
-      </button>
+      <div className={`btn-dock${dockOpen ? " dock-open" : ""}`}>
+        <button
+          className="theme-toggle"
+          onClick={() => { setTheme(theme === "light" ? "dark" : "light"); setDockOpen(false); }}
+          title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        >
+          {theme === "light" ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/>
+            </svg>
+          )}
+        </button>
 
-      {/* chat toggle */}
-      <button
-        className={`chat-toggle${chatActive ? " active" : ""}`}
-        onClick={() => setChatActive((v) => !v)}
-        title={chatActive ? "Stop listening" : "Voice commands"}
-        aria-label={chatActive ? "Stop voice commands" : "Start voice commands"}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="9" y="2" width="6" height="11" rx="3"/>
-          <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
-        </svg>
-      </button>
+        <button
+          className={`kbd-toggle${kbdActive ? " active" : ""}`}
+          onClick={() => { setKbdActive((v) => !v); setDockOpen(false); }}
+          title="Type a command"
+          aria-label="Type a command"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2"/>
+            <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>
+          </svg>
+        </button>
 
-      {/* admin toggle — lock icon; click to login or logout */}
-      <button
-        className={`admin-toggle${isAdmin ? " authed" : ""}`}
-        onClick={() => isAdmin ? handleAdminLogout() : setModal({ kind: "login" })}
-        title={isAdmin ? "Log out of admin" : "Admin login"}
-        aria-label={isAdmin ? "Log out of admin" : "Admin login"}
-      >
-        {isAdmin ? (
+        <button
+          className={`chat-toggle${chatActive ? " active" : ""}`}
+          onClick={() => { setChatActive((v) => !v); setDockOpen(false); }}
+          title={chatActive ? "Stop listening" : "Voice commands"}
+          aria-label={chatActive ? "Stop voice commands" : "Start voice commands"}
+        >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 019.9-1"/>
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
           </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
-          </svg>
-        )}
-      </button>
+        </button>
+
+        <button
+          className={`admin-toggle${isAdmin ? " authed" : ""}`}
+          onClick={() => { isAdmin ? handleAdminLogout() : setModal({ kind: "login" }); setDockOpen(false); }}
+          title={isAdmin ? "Log out of admin" : "Admin login"}
+          aria-label={isAdmin ? "Log out of admin" : "Admin login"}
+        >
+          {isAdmin ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 019.9-1"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          )}
+        </button>
+
+        <button className={`dock-fab${dockOpen ? " open" : ""}`} onClick={() => setDockOpen((v) => !v)} aria-label="Toggle actions">
+          {dockOpen ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/>
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {kbdActive && (
+        <div className="kbd-input-box">
+          <input
+            ref={kbdRef}
+            className="kbd-input"
+            value={kbdText}
+            onChange={(e) => setKbdText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") submitKbd();
+              if (e.key === "Escape") { setKbdActive(false); setKbdText(""); }
+            }}
+            placeholder='Type a command… or "help"'
+          />
+          <button className="kbd-send" onClick={submitKbd} title="Run">↵</button>
+          <button className="kbd-close" onClick={() => { setKbdActive(false); setKbdText(""); }} title="Close">×</button>
+        </div>
+      )}
+
+      {cmdError && (
+        <div className="cmd-error" key={cmdErrorKey}>{cmdError}</div>
+      )}
 
       {/* PROFILE OVERLAY */}
       {profile && (
@@ -589,6 +656,29 @@ function AppInner(props) {
           onCommit={commitImport}
         />
       )}
+      {helpOpen && (
+        <Modal eyebrow="Keyboard" title="Available" italicTitle="Commands" onClose={() => setHelpOpen(false)}>
+          <div className="help-commands">
+            {[
+              { cmd: "surprise me",           desc: "Picks a random visible restaurant and zooms to it on the map" },
+              { cmd: "i'm craving [cuisine]",  desc: "Finds a restaurant matching the cuisine and zooms to it" },
+              { cmd: "hide all",               desc: "Hides all restaurant markers on the map" },
+              { cmd: "show all",               desc: "Shows all restaurant markers" },
+              { cmd: "hide [cuisine or tag]",  desc: "Hides markers for that cuisine or tag (e.g. japanese, bar)" },
+              { cmd: "show [cuisine or tag]",  desc: "Shows hidden markers for that cuisine or tag" },
+              { cmd: "find nearest",           desc: "Zooms to the restaurant closest to your current location" },
+              { cmd: "find [name]",            desc: "Searches for a restaurant by name or keyword" },
+              { cmd: "help",                   desc: "Shows this command reference" },
+            ].map(({ cmd, desc }) => (
+              <div key={cmd} className="help-row">
+                <code className="help-cmd">{cmd}</code>
+                <span className="help-desc">{desc}</span>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
+
       {modal?.kind === "resync" && (
         <Modal eyebrow="Warning" title="Resync" italicTitle="Data" onClose={closeModal}
           footer={
