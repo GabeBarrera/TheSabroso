@@ -73,6 +73,11 @@ window.SDStore = {
   adminLogout() { sessionStorage.removeItem(ADMIN_SESSION_KEY); },
   isAdmin()     { return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1"; },
 
+  clearData() {
+    localStorage.removeItem(RESTAURANTS_KEY);
+    localStorage.removeItem(RECIPES_KEY);
+  },
+
   loadFavorites() {
     try {
       const raw = localStorage.getItem(FAVORITES_KEY);

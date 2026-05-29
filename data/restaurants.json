@@ -252,6 +252,18 @@
     "createdAt": "2026-05-29"
   },
   {
+    "id": "r23",
+    "name": "Starlite",
+    "address": "3175 India St, San Diego, CA 92103",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.5,
+    "lat": 32.73645,
+    "lng": -117.174989,
+    "tags": ["restaurant", "bar"],
+    "description": "<p>Middletown cocktail bar with a retro-modern interior that earns the aesthetic without making it the whole personality. The bar program is the reason to be here — well-sourced spirits, technique that doesn't announce itself, and a list that rewards reading past the first page. The kitchen turns out small plates that are better than an afterthought.</p><h3>The order</h3><ul><li>Bartender's choice — give them a spirit and a direction, trust the rest</li><li>Whatever the rotating seasonal cocktail is — usually the best thing on the menu</li><li>Small plates to share — the cheese board if it's available</li></ul><p>Low lighting, good sound level, the kind of bar you stay at longer than planned. Go midweek if you want a seat without a wait.</p>",
+    "createdAt": "2026-05-29"
+  },
+  {
     "id": "r22",
     "name": "Dockside",
     "address": "Middletown, San Diego, CA",

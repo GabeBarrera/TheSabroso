@@ -156,8 +156,8 @@ function App() {
   useEffect(() => {
     if (dataReady) return;
     Promise.all([
-      fetch("./data/restaurants.json").then((r) => r.json()).catch(() => []),
-      fetch("./data/recipes.json").then((r) => r.json()).catch(() => []),
+      fetch("./data/restaurants.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
+      fetch("./data/recipes.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
     ]).then(([r, rec]) => {
       setRestaurants(r);
       setRecipes(rec);
@@ -279,6 +279,7 @@ function App() {
       { label: "Edit existing", hint: "modify", onClick: () => setModal({ kind: "pick", target }) },
       { label: "Import .json", hint: "merge", onClick: () => setModal({ kind: "import", target }) },
       { label: "Backup all", hint: "export", onClick: () => doBackup(target, list) },
+      { label: "Resync data", hint: "reset", onClick: () => setModal({ kind: "resync" }) },
     ];
   }, [restaurants, recipes]);
 
@@ -318,6 +319,11 @@ function App() {
 function doBackup(target, list) {
   const filename = target === "restaurant" ? "sabroso_restaurants.json" : "sabroso_recipes.json";
   SDStore.download(filename, JSON.stringify(list, null, 2));
+}
+
+function doResync() {
+  SDStore.clearData();
+  window.location.reload();
 }
 
 function VoiceResultModal({ result, onClose, setView, mapActionsRef }) {
@@ -582,6 +588,26 @@ function AppInner(props) {
           onClose={closeModal}
           onCommit={commitImport}
         />
+      )}
+      {modal?.kind === "resync" && (
+        <Modal eyebrow="Warning" title="Resync" italicTitle="Data" onClose={closeModal}
+          footer={
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button className="btn ghost" onClick={closeModal}>Cancel</button>
+              <button className="btn danger" onClick={doResync}>Resync &amp; Reload</button>
+            </div>
+          }
+        >
+          <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 14 }}>
+            This will <strong>delete all locally saved data</strong> — every restaurant entry and recipe, including anything you've added or edited since the last sync.
+          </p>
+          <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 20 }}>
+            The app will reload and reseed from the original source files. This cannot be undone.
+          </p>
+          <p style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase", color: "var(--muted)" }}>
+            Back up your data first via Manage → Backup all
+          </p>
+        </Modal>
       )}
       {modal?.kind === "login" && (
         <LoginModal
