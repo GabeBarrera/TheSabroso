@@ -25,14 +25,6 @@ function AboutView({ goLeft, goRight }) {
       <div className="corner-orn bl" />
       <div className="corner-orn br" />
 
-      <button className="edge-arrow left" onClick={goLeft} aria-label="Open the map">
-        <div className="inner">
-          <span className="glyph-label">← Swipe</span>
-          <span className="glyph">←</span>
-          <span className="glyph-name">Map</span>
-        </div>
-      </button>
-
       <div className="about-center">
         <div className="eyebrow">A field journal of restaurants &amp; recipes</div>
         <div className="rule-top" />
@@ -56,20 +48,7 @@ function AboutView({ goLeft, goRight }) {
         <p className="about-intro">
           <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the classroom; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. <br></br><br></br>Welcome to the place where<br></br>you either find delicious food or make it.<br></br><br></br><i>Buen provecho, bon appétit, and just eat gud y'all!</i><br></br><b>~ G</b>
         </p>
-
-        <div className="about-mobile-nav">
-          <button className="nav-btn" onClick={goLeft}>← Map</button>
-          <button className="nav-btn" onClick={goRight}>Recipes →</button>
-        </div>
       </div>
-
-      <button className="edge-arrow right" onClick={goRight} aria-label="Open the recipes">
-        <div className="inner">
-          <span className="glyph-label">Swipe →</span>
-          <span className="glyph">→</span>
-          <span className="glyph-name">Recipes</span>
-        </div>
-      </button>
 
       <div className="about-meta">
         <span>Edited by <a href="https://www.gabebarrera.dev" target="_blank" rel="noopener noreferrer">Gabe</a> · Chef &amp; Cyber Nerd</span>
@@ -97,7 +76,8 @@ function isFilterHidden(r, hiddenFilters) {
   return false;
 }
 
-function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef }) {
+function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef,
+                   cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive }) {
   const mapDiv = useRefV(null);
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
@@ -253,14 +233,40 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   return (
     <div className="map-view" data-screen-label="02 Map">
       <div className="map-header">
-        <div className="map-header-left">
-          <button className="nav-btn" onClick={() => navigate(1)}>About</button>
-          <button className="nav-btn" onClick={() => navigate(2)}>Recipes</button>
-        </div>
+        <div className="map-header-left" />
         <div className="title">The Map · <span className="it">San Diego</span></div>
         <div className="map-header-right">
           <ManageMenu items={openManage("restaurant")} />
         </div>
+      </div>
+
+      <div className="map-cmd-bar">
+        <button
+          className={`map-cmd-voice${chatActive ? " active" : ""}`}
+          onClick={() => setChatActive((v) => !v)}
+          title={chatActive ? "Stop listening" : "Voice commands"}
+          aria-label={chatActive ? "Stop voice commands" : "Start voice commands"}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
+          </svg>
+        </button>
+        <input
+          className="map-cmd-input"
+          value={cmdText}
+          onChange={(e) => setCmdText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onCmdSubmit();
+            if (e.key === "Escape") setCmdText("");
+          }}
+          placeholder='Find a restaurant, cuisine… or "help"'
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+        />
+        <button className="map-cmd-submit" onClick={onCmdSubmit} title="Run command">↵</button>
       </div>
 
       <div ref={mapDiv} className="map-canvas" />
@@ -292,6 +298,21 @@ function escapeHtml(s) {
 /* ============================================================
    RECIPES VIEW — search + list + detail
    ============================================================ */
+
+function getRecipeBadge(recipe) {
+  const text = `${recipe.name} ${recipe.cuisine || ""}`.toLowerCase();
+  if (/fish|seafood|shrimp|crab|lobster|tuna|salmon|cod|snapper|clam|oyster|prawn|anchovy/.test(text)) return "seafood";
+  if (/cake|cookie|pastry|bread|muffin|biscuit|croissant|scone|tart|pie|baked|french toast|toast|waffle|pancake/.test(text)) return "baked";
+  if (/dessert|sweet|chocolate|ice cream|sorbet|pudding|candy/.test(text)) return "dessert";
+  if (/salad|vegetar|vegan|veggie|vegetable|tofu|mushroom|lentil/.test(text)) return "veg";
+  if (/carne|steak|beef|pork|chicken|lamb|turkey|bacon|sausage|asada|chorizo|meat/.test(text)) return "meat";
+  const cuisine = (recipe.cuisine || "").toLowerCase();
+  if (/breakfast|brunch/.test(cuisine)) return "baked";
+  if (/salad|vegetar|vegan/.test(cuisine)) return "veg";
+  return null;
+}
+
+const BADGE_LABELS = { meat: "Meat", seafood: "Seafood", veg: "Veg", baked: "Baked", dessert: "Sweet" };
 
 function RecipesView({ recipes, openManage, navigate }) {
   const [q, setQ] = useStateV("");
@@ -371,27 +392,33 @@ function RecipesView({ recipes, openManage, navigate }) {
 
   const selected = recipes.find((r) => r.id === selectedId);
 
-  const renderRecipeRow = (r) => (
-    <div
-      key={r.id}
-      className={`recipe-row${r.id === selectedId ? " active" : ""}${favorites.has(r.id) ? " starred" : ""}`}
-      onClick={() => handleSelectRecipe(r.id)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleSelectRecipe(r.id); }}
-    >
-      <div className="r-row-top">
-        <div className="r-name">{r.name}</div>
-        <button
-          className={`star-btn${favorites.has(r.id) ? " on" : ""}`}
-          onClick={(e) => toggleFavorite(r.id, e)}
-          title={favorites.has(r.id) ? "Remove from favorites" : "Add to favorites"}
-          tabIndex={-1}
-        >★</button>
+  const renderRecipeRow = (r) => {
+    const badge = getRecipeBadge(r);
+    return (
+      <div
+        key={r.id}
+        className={`recipe-row${r.id === selectedId ? " active" : ""}${favorites.has(r.id) ? " starred" : ""}`}
+        onClick={() => handleSelectRecipe(r.id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleSelectRecipe(r.id); }}
+      >
+        <div className="r-row-top">
+          <div className="r-name">{r.name}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            {badge && <span className={`recipe-badge ${badge}`}>{BADGE_LABELS[badge]}</span>}
+            <button
+              className={`star-btn${favorites.has(r.id) ? " on" : ""}`}
+              onClick={(e) => toggleFavorite(r.id, e)}
+              title={favorites.has(r.id) ? "Remove from favorites" : "Add to favorites"}
+              tabIndex={-1}
+            >★</button>
+          </div>
+        </div>
+        <div className="r-meta">{r.cuisine || "—"} · {r.time}m · serves {r.serves}</div>
       </div>
-      <div className="r-meta">{r.cuisine || "—"} · {r.time}m · serves {r.serves}</div>
-    </div>
-  );
+    );
+  };
 
   const starredItems = filtered.filter((r) => favorites.has(r.id));
   const regularItems = filtered.filter((r) => !favorites.has(r.id));
@@ -400,14 +427,8 @@ function RecipesView({ recipes, openManage, navigate }) {
   return (
     <div className="recipes-view" data-screen-label="03 Recipes">
       <div className="chrome">
-        <div className="left">
-          <button className="nav-btn" onClick={() => navigate(0)}>The Map</button>
-          <button className="nav-btn" onClick={() => navigate(1)}>About</button>
-        </div>
-        <div className="right">
-          <div style={{ marginLeft: 6 }}>
-            <ManageMenu items={openManage("recipe")} />
-          </div>
+        <div className="right" style={{ marginLeft: "auto" }}>
+          <ManageMenu items={openManage("recipe")} />
         </div>
       </div>
 
@@ -534,6 +555,46 @@ function RecipesView({ recipes, openManage, navigate }) {
    FULL RESTAURANT PROFILE PAGE
    ============================================================ */
 
+function ProfileMiniMap({ lat, lng }) {
+  const containerRef = useRefV(null);
+  const mapRef = useRefV(null);
+
+  useEffectV(() => {
+    if (!containerRef.current || mapRef.current) return;
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const tileUrl = isDark
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+
+    const map = L.map(containerRef.current, {
+      zoomControl: false,
+      attributionControl: false,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      touchZoom: false,
+      keyboard: false,
+    }).setView([lat, lng], 15);
+
+    L.tileLayer(tileUrl, { maxZoom: 19, subdomains: "abcd" }).addTo(map);
+
+    const icon = L.divIcon({
+      className: "",
+      html: '<div class="sd-marker"><div class="pulse"></div><div class="dot"></div></div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+    L.marker([lat, lng], { icon }).addTo(map);
+
+    setTimeout(() => map.invalidateSize(), 80);
+    mapRef.current = map;
+
+    return () => { map.remove(); mapRef.current = null; };
+  }, [lat, lng]);
+
+  return <div ref={containerRef} className="profile-minimap" />;
+}
+
 function RestaurantProfile({ restaurant, onClose, isAdmin }) {
   const [pocOpen, setPocOpen] = useStateV(false);
   const btnRef  = useRefV(null);
@@ -603,6 +664,8 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
           <div className="v" style={{ fontFamily: "var(--mono)", fontSize: 14 }}>{restaurant.createdAt}</div>
         </div>
       </div>
+
+      <ProfileMiniMap lat={restaurant.lat} lng={restaurant.lng} />
 
       <div className="profile-body" dangerouslySetInnerHTML={{ __html: restaurant.description || "<p><em>No review yet.</em></p>" }} />
 

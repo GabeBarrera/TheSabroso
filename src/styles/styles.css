@@ -161,7 +161,7 @@ a { color: inherit; }
 
 .about {
   display: grid;
-  grid-template-columns: 220px 1fr 220px;
+  grid-template-columns: 1fr;
   height: auto;
   min-height: 100%;
   position: relative;
@@ -383,9 +383,66 @@ a { color: inherit; }
 
 .map-canvas {
   position: absolute;
-  inset: 56px 0 0 0;
+  inset: 100px 0 0 0;
   background: var(--cream-2);
 }
+
+/* ---- Map persistent command bar ---- */
+.map-cmd-bar {
+  position: absolute;
+  top: 56px; left: 0; right: 0;
+  height: 44px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--ink);
+  z-index: 40;
+  display: flex;
+  align-items: stretch;
+}
+.map-cmd-voice {
+  flex-shrink: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--hairline);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+.map-cmd-voice:hover { background: var(--cream); color: var(--ink); }
+.map-cmd-voice.active {
+  background: var(--terracotta);
+  color: var(--paper);
+  border-color: var(--terracotta);
+  animation: chat-pulse 2.2s ease-in-out infinite;
+}
+.map-cmd-voice svg { width: 16px; height: 16px; display: block; }
+.map-cmd-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .04em;
+  color: var(--ink);
+}
+.map-cmd-input::placeholder { color: var(--muted-2); }
+.map-cmd-submit {
+  flex-shrink: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--hairline);
+  font-size: 18px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.map-cmd-submit:hover { background: var(--ink); color: var(--paper); }
 
 .map-header {
   position: absolute;
@@ -1473,6 +1530,28 @@ a { color: inherit; }
 .tb-badge.r { background: var(--terracotta); }
 .tb-badge.b { background: var(--marine); }
 
+/* ---- Recipe category badges ---- */
+.recipe-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #fff;
+  flex-shrink: 0;
+}
+.recipe-badge.meat    { background: #c4502d; }
+.recipe-badge.seafood { background: #2563a5; }
+.recipe-badge.veg     { background: #3a7d44; }
+.recipe-badge.baked   { background: #9b6914; }
+.recipe-badge.dessert { background: #9e4060; }
+/* ensure badge stays readable on active (dark) row */
+.recipe-row.active .recipe-badge { opacity: .85; }
+
 .export-group {
   display: inline-flex;
   border: 1px solid var(--ink);
@@ -1670,6 +1749,20 @@ a { color: inherit; }
 }
 .profile-close:hover { background: var(--terracotta); border-color: var(--terracotta); }
 
+/* ---- Profile mini-map ---- */
+.profile-minimap {
+  height: 220px;
+  width: 100%;
+  border-bottom: 1px solid var(--ink);
+  background: var(--cream-2);
+  display: block;
+}
+.profile-minimap .leaflet-container {
+  height: 100%;
+  cursor: default !important;
+  pointer-events: none;
+}
+
 .profile-contacts { padding: 0 60px 80px; }
 .poc-btn {
   background: none;
@@ -1775,7 +1868,7 @@ a { color: inherit; }
 .toast.warn { background: var(--terracotta); }
 
 /* ============================================================
-   NAVIGATION DOTS (bottom)
+   NAVIGATION TABS (bottom)
    ============================================================ */
 
 .nav-dots {
@@ -1784,41 +1877,38 @@ a { color: inherit; }
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: stretch;
   z-index: 60;
   background: var(--paper);
   border: 1px solid var(--ink);
-  padding: 8px 14px;
 }
-.nav-dots .lbl {
+.nav-dots button {
+  padding: 8px 18px;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-right: 4px;
+  border-right: 1px solid var(--hairline);
+  transition: color 160ms ease, background 160ms ease;
 }
-.nav-dots button {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--hairline);
-  transition: all 200ms ease;
-  border: none;
-}
+.nav-dots button:last-child { border-right: none; }
+.nav-dots button:hover { color: var(--ink); background: var(--cream); }
 .nav-dots button.active {
   background: var(--terracotta);
-  width: 24px;
-  border-radius: 4px;
+  color: var(--paper);
+  border-color: var(--terracotta);
 }
-.nav-dots button:hover { background: var(--ink); }
-.nav-dots button.active:hover { background: var(--terracotta); }
 
 /* THEME TOGGLE — sun/moon corner button */
 .theme-toggle {
   position: fixed;
   bottom: 22px;
-  right: 184px;
+  right: 76px;
   width: 44px;
   height: 44px;
   display: grid;
@@ -1844,71 +1934,10 @@ a { color: inherit; }
   display: block;
 }
 
-/* KBD TOGGLE — keyboard command button */
-.kbd-toggle {
-  position: fixed;
-  bottom: 22px;
-  right: 130px;
-  width: 44px;
-  height: 44px;
-  background: var(--paper);
-  color: var(--ink);
-  border: 1px solid var(--ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 60;
-  cursor: pointer;
-  transition: background 200ms ease, color 200ms ease;
-}
-.kbd-toggle:hover { background: var(--ink); color: var(--paper); }
-.kbd-toggle.active { background: var(--ink); color: var(--paper); }
-.kbd-toggle svg { width: 18px; height: 18px; display: block; }
-
-/* KEYBOARD INPUT BOX */
-.kbd-input-box {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(520px, calc(100vw - 40px));
-  display: flex;
-  align-items: stretch;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  box-shadow: 0 4px 20px rgba(0,0,0,.14);
-  z-index: 150;
-}
-.kbd-input {
-  flex: 1;
-  padding: 12px 14px;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: .04em;
-  color: var(--ink);
-}
-.kbd-input::placeholder { color: var(--muted); }
-.kbd-send, .kbd-close {
-  flex-shrink: 0;
-  width: 42px;
-  background: transparent;
-  border: none;
-  border-left: 1px solid var(--hairline);
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--muted);
-  transition: background 120ms ease, color 120ms ease;
-}
-.kbd-send:hover { background: var(--ink); color: var(--paper); }
-.kbd-close:hover { background: var(--terracotta); color: var(--paper); }
-
 /* COMMAND ERROR */
 .cmd-error {
   position: fixed;
-  bottom: 146px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   padding: 8px 18px;
@@ -1957,37 +1986,7 @@ a { color: inherit; }
 /* DOCK FAB — mobile-only trigger */
 .dock-fab { display: none; }
 
-/* CHAT TOGGLE — microphone voice button */
-.chat-toggle {
-  position: fixed;
-  bottom: 22px;
-  right: 76px;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  background: var(--paper);
-  color: var(--ink);
-  border: 1px solid var(--ink);
-  z-index: 60;
-  cursor: pointer;
-  transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
-}
-.chat-toggle:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-.chat-toggle.active {
-  background: var(--terracotta);
-  color: var(--paper);
-  border-color: var(--terracotta);
-  animation: chat-pulse 2.2s ease-in-out infinite;
-}
-.chat-toggle svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
+/* chat-toggle moved into .map-cmd-voice — no separate fixed button on desktop */
 
 /* ADMIN TOGGLE — lock icon */
 .admin-toggle {
@@ -2177,6 +2176,13 @@ a { color: inherit; }
 .muted { color: var(--muted); }
 
 /* ============================================================
+   iOS / TOUCH — prevent auto-zoom on input focus (font-size >= 16px)
+   ============================================================ */
+@media (hover: none) and (pointer: coarse) {
+  input, textarea, select { font-size: 16px; }
+}
+
+/* ============================================================
    MOBILE — max-width 640px
    ============================================================ */
 
@@ -2236,7 +2242,7 @@ a { color: inherit; }
 
   .recipes-view .chrome { position: relative; z-index: 100; }
 
-  .map-canvas { inset: 56px 0 0 0; }
+  .map-canvas { inset: 100px 0 0 0; }
 
   .map-stat {
     bottom: 68px;
@@ -2327,7 +2333,9 @@ a { color: inherit; }
   .profile-meta { grid-template-columns: 1fr 1fr; }
   .profile-meta .cell { padding: 14px 16px; }
   .profile-meta .cell .v { font-size: 18px; }
+  .profile-minimap { height: 160px; }
   .profile-body { padding: 28px 20px 60px; font-size: 16px; }
+  .profile-contacts { padding: 0 20px 60px; }
   .profile-close { top: 12px; right: 12px; padding: 8px 12px; font-size: 10px; }
 
   /* ---- TOAST ---- */
@@ -2339,7 +2347,7 @@ a { color: inherit; }
 
   .nav-dots { bottom: 14px; }
   /* ---- MOBILE BUTTON DOCK ---- */
-  .theme-toggle, .kbd-toggle, .chat-toggle, .admin-toggle {
+  .theme-toggle, .admin-toggle {
     right: 14px;
     bottom: 14px;
     left: auto;
@@ -2350,17 +2358,13 @@ a { color: inherit; }
     transform: translateY(0) scale(0.85);
     transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 200ms ease;
   }
-  /* Stagger closing (top buttons fold first) */
+  /* Stagger closing */
   .theme-toggle  { transition-delay: 0ms; }
-  .kbd-toggle    { transition-delay: 30ms; }
-  .chat-toggle   { transition-delay: 60ms; }
-  .admin-toggle  { transition-delay: 90ms; }
+  .admin-toggle  { transition-delay: 30ms; }
 
-  /* Open: telescope upward; admin closest, theme farthest */
+  /* Open: telescope upward */
   .dock-open .admin-toggle  { transform: translateY(-50px)  scale(1); opacity: 1; pointer-events: auto; transition-delay: 0ms; }
-  .dock-open .chat-toggle   { transform: translateY(-100px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 40ms; }
-  .dock-open .kbd-toggle    { transform: translateY(-150px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 80ms; }
-  .dock-open .theme-toggle  { transform: translateY(-200px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 120ms; }
+  .dock-open .theme-toggle  { transform: translateY(-100px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 40ms; }
 
   .dock-fab {
     display: flex;
@@ -2381,8 +2385,7 @@ a { color: inherit; }
   .dock-fab:hover, .dock-fab.open { background: var(--ink); color: var(--paper); }
   .dock-fab svg { width: 18px; height: 18px; display: block; }
 
-  .kbd-input-box { bottom: 68px; }
-  .cmd-error { bottom: 130px; }
+  .cmd-error { bottom: 80px; }
 
 }
 

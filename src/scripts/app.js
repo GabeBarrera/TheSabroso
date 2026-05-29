@@ -410,15 +410,9 @@ function AppInner(props) {
   cmdError, cmdErrorKey, showCmdError,
   } = props;
   const toast = useToast();
-  const [kbdActive, setKbdActive] = useState(false);
   const [kbdText, setKbdText] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
-  const kbdRef = useRef(null);
-
-  useEffect(() => {
-    if (kbdActive && kbdRef.current) kbdRef.current.focus();
-  }, [kbdActive]);
 
   const submitKbd = () => {
     const t = kbdText.trim();
@@ -433,6 +427,7 @@ function AppInner(props) {
     );
     if (!ok) showCmdError(`No results for "${t}"`);
     setKbdText("");
+    setView(VIEW_MAP);
   };
 
   const handleAdminLogout = () => {
@@ -509,6 +504,11 @@ function AppInner(props) {
             theme={theme}
             hiddenFilters={hiddenFilters}
             mapActionsRef={mapActionsRef}
+            cmdText={kbdText}
+            setCmdText={setKbdText}
+            onCmdSubmit={submitKbd}
+            chatActive={chatActive}
+            setChatActive={setChatActive}
           />
         </div>
         <div className="panel panel-about" data-screen-label="01 About">
@@ -523,12 +523,11 @@ function AppInner(props) {
         </div>
       </div>
 
-      {/* bottom nav dots */}
+      {/* bottom nav tabs */}
       <div className="nav-dots">
-        <span className="lbl">View</span>
-        <button className={view === 0 ? "active" : ""} onClick={() => setView(0)} aria-label="Map" />
-        <button className={view === 1 ? "active" : ""} onClick={() => setView(1)} aria-label="About" />
-        <button className={view === 2 ? "active" : ""} onClick={() => setView(2)} aria-label="Recipes" />
+        <button className={view === 0 ? "active" : ""} onClick={() => setView(0)}>Map</button>
+        <button className={view === 1 ? "active" : ""} onClick={() => setView(1)}>About</button>
+        <button className={view === 2 ? "active" : ""} onClick={() => setView(2)}>Recipes</button>
       </div>
 
       <div className={`btn-dock${dockOpen ? " dock-open" : ""}`}>
@@ -548,30 +547,6 @@ function AppInner(props) {
               <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/>
             </svg>
           )}
-        </button>
-
-        <button
-          className={`kbd-toggle${kbdActive ? " active" : ""}`}
-          onClick={() => { setKbdActive((v) => !v); setDockOpen(false); }}
-          title="Type a command"
-          aria-label="Type a command"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="6" width="20" height="12" rx="2"/>
-            <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>
-          </svg>
-        </button>
-
-        <button
-          className={`chat-toggle${chatActive ? " active" : ""}`}
-          onClick={() => { setChatActive((v) => !v); setDockOpen(false); }}
-          title={chatActive ? "Stop listening" : "Voice commands"}
-          aria-label={chatActive ? "Stop voice commands" : "Start voice commands"}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="9" y="2" width="6" height="11" rx="3"/>
-            <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
-          </svg>
         </button>
 
         <button
@@ -605,24 +580,6 @@ function AppInner(props) {
           )}
         </button>
       </div>
-
-      {kbdActive && (
-        <div className="kbd-input-box">
-          <input
-            ref={kbdRef}
-            className="kbd-input"
-            value={kbdText}
-            onChange={(e) => setKbdText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") submitKbd();
-              if (e.key === "Escape") { setKbdActive(false); setKbdText(""); }
-            }}
-            placeholder='Type a command… or "help"'
-          />
-          <button className="kbd-send" onClick={submitKbd} title="Run">↵</button>
-          <button className="kbd-close" onClick={() => { setKbdActive(false); setKbdText(""); }} title="Close">×</button>
-        </div>
-      )}
 
       {cmdError && (
         <div className="cmd-error" key={cmdErrorKey}>{cmdError}</div>
