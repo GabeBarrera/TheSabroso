@@ -2227,8 +2227,10 @@ a { color: inherit; }
     height: 40px;
     background: var(--paper);
     border-bottom: 1px solid var(--hairline);
-    z-index: 40;
+    z-index: 100;
   }
+
+  .recipes-view .chrome { position: relative; z-index: 100; }
 
   .map-view .chrome .right { display: none; }
 

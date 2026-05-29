@@ -105,7 +105,7 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
         .join(" ").toLowerCase();
       return text.includes(query);
     });
-    if (matches.length === 0) { setVoiceResult({ type: "none", query }); return true; }
+    if (matches.length === 0) { setVoiceResult({ type: "none", query }); return false; }
     if (matches.length === 1) {
       setView(VIEW_MAP);
       setTimeout(() => mapActionsRef.current?.zoomTo(matches[0]), 400);
@@ -115,7 +115,20 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
     return true;
   }
 
-  return false;
+  // No explicit command matched — fall back to keyword search
+  const matches = restaurants.filter((r) => {
+    const text = [r.name, r.cuisine, r.address, (r.description || "").replace(/<[^>]+>/g, "")]
+      .join(" ").toLowerCase();
+    return text.includes(t);
+  });
+  if (matches.length === 0) return false;
+  if (matches.length === 1) {
+    setView(VIEW_MAP);
+    setTimeout(() => mapActionsRef.current?.zoomTo(matches[0]), 400);
+    return true;
+  }
+  setVoiceResult({ type: "list", items: matches, query: transcript });
+  return true;
 }
 
 function App() {
@@ -134,6 +147,15 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(() => SDStore.isAdmin());
   const [hiddenFilters, setHiddenFilters] = useState([]);
   const [voiceResult, setVoiceResult] = useState(null);
+  const [cmdError, setCmdError] = useState(null);
+  const [cmdErrorKey, setCmdErrorKey] = useState(0);
+  const cmdErrorTimerRef = useRef(null);
+  const showCmdError = useCallback((msg) => {
+    if (cmdErrorTimerRef.current) clearTimeout(cmdErrorTimerRef.current);
+    setCmdError(msg);
+    setCmdErrorKey((k) => k + 1);
+    cmdErrorTimerRef.current = setTimeout(() => setCmdError(null), 2000);
+  }, []);
   const touchRef = useRef(null);
   const mapActionsRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -175,7 +197,7 @@ function App() {
     rec.lang = "en-US";
     rec.onresult = (e) => {
       const transcript = e.results[e.results.length - 1][0].transcript.trim();
-      handleVoiceCommand(
+      const ok = handleVoiceCommand(
         transcript,
         SDStore.loadRestaurants() ?? [],
         hiddenFiltersRef.current,
@@ -185,6 +207,7 @@ function App() {
         setProfile,
         mapActionsRef
       );
+      if (!ok) showCmdError(`No results for "${transcript}"`);
     };
     rec.onerror = (e) => { if (e.error === "not-allowed") setChatActive(false); };
     rec.onend = () => { if (chatActive) { try { rec.start(); } catch (e) { /* ignore */ } } };
@@ -299,6 +322,9 @@ function App() {
         mapActionsRef={mapActionsRef}
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
+        cmdError={cmdError}
+        cmdErrorKey={cmdErrorKey}
+        showCmdError={showCmdError}
       />
     </ToastProvider>
   );
@@ -381,27 +407,18 @@ function AppInner(props) {
     chatActive, setChatActive, hiddenFilters, setHiddenFilters,
     voiceResult, setVoiceResult, mapActionsRef,
   isAdmin, setIsAdmin,
+  cmdError, cmdErrorKey, showCmdError,
   } = props;
   const toast = useToast();
   const [kbdActive, setKbdActive] = useState(false);
   const [kbdText, setKbdText] = useState("");
-  const [cmdError, setCmdError] = useState(null);
-  const [cmdErrorKey, setCmdErrorKey] = useState(0);
   const [helpOpen, setHelpOpen] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
-  const errorTimerRef = useRef(null);
   const kbdRef = useRef(null);
 
   useEffect(() => {
     if (kbdActive && kbdRef.current) kbdRef.current.focus();
   }, [kbdActive]);
-
-  const showCmdError = (msg) => {
-    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
-    setCmdError(msg);
-    setCmdErrorKey((k) => k + 1);
-    errorTimerRef.current = setTimeout(() => setCmdError(null), 2000);
-  };
 
   const submitKbd = () => {
     const t = kbdText.trim();
@@ -414,7 +431,7 @@ function AppInner(props) {
     const ok = handleVoiceCommand(
       t, restaurants, hiddenFilters, setHiddenFilters, setView, setVoiceResult, setProfile, mapActionsRef
     );
-    if (!ok) showCmdError(`Not recognized: "${t}"`);
+    if (!ok) showCmdError(`No results for "${t}"`);
     setKbdText("");
   };
 
