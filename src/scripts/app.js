@@ -511,7 +511,7 @@ function AppInner(props) {
             mapActionsRef={mapActionsRef}
           />
         </div>
-        <div className="panel" data-screen-label="01 About">
+        <div className="panel panel-about" data-screen-label="01 About">
           <AboutView goLeft={goLeft} goRight={goRight} />
         </div>
         <div className="panel" data-screen-label="03 Recipes">

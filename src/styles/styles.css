@@ -162,7 +162,8 @@ a { color: inherit; }
 .about {
   display: grid;
   grid-template-columns: 220px 1fr 220px;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   position: relative;
   background:
     radial-gradient(ellipse 60% 50% at 50% 60%, rgba(196,80,45,.04), transparent 70%),
@@ -2386,25 +2387,18 @@ a { color: inherit; }
 }
 
 /* ============================================================
-   ABOUT PAGE — scrollable on all non-mobile screens
-   :has() targets only the panel that wraps the about view so the
-   map and recipes panels are not affected. The grid grows to its
-   natural content height; the panel scrolls the excess silently.
-   min-width guard keeps mobile portrait phones on the 640px path.
+   ABOUT PAGE — scrollable, hidden scrollbar
+   .panel-about is stamped directly in app.js so this never
+   accidentally targets the map or recipes panels.
+   The about grid height is set to auto so it can grow beyond the
+   viewport; the panel then scrolls the overflow invisibly.
    ============================================================ */
 
-@media (min-width: 641px) {
-  .panel:has(.about) {
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-  }
-  .panel:has(.about)::-webkit-scrollbar { display: none; } /* Chrome / Safari */
-
-  .about {
-    height: auto;
-    min-height: 100%;
-  }
+.panel-about {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
 }
+.panel-about::-webkit-scrollbar { display: none; } /* Chrome / Safari / Edge */
 
 /* ============================================================
    LANDSCAPE — phones rotated (small viewport height)
