@@ -1883,8 +1883,8 @@ a { color: inherit; }
   border: 1px solid var(--ink);
 }
 .nav-dots button {
+  flex: 1;
   padding: 8px 18px;
-  width: auto;
   height: auto;
   border-radius: 0;
   background: transparent;
@@ -1892,6 +1892,7 @@ a { color: inherit; }
   font-size: 10px;
   letter-spacing: .22em;
   text-transform: uppercase;
+  text-align: center;
   color: var(--muted);
   border-right: 1px solid var(--hairline);
   transition: color 160ms ease, background 160ms ease;
