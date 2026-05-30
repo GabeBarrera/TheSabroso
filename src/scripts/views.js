@@ -11,8 +11,8 @@ function AboutView({ goLeft, goRight }) {
     <div className="about" data-screen-label="01 About">
       <div className="chrome">
         <div className="left">
-          <span className="vol">Vol. I</span>
-          <span>Established · 5.27.2026</span>
+          <span className="vol">v1.0.0</span>
+          <span>Established · MMXXVI</span>
         </div>
         <div className="right">
           <span>San Diego · CA</span>
@@ -33,16 +33,16 @@ function AboutView({ goLeft, goRight }) {
           Sabroso
         </h1>
         <div className="masthead-sub">
-          Your San Diego <em>Digest</em> <span className="emo">:D</span>
+          Your San Diego+ Food <em>Digest</em> <span className="emo">:D</span>
         </div>
         <div className="rule-bot" />
 
         <div className="about-byline">
-          <span>Issue No. 07</span>
+          <span>A Passion Project</span>
           <span className="dot" />
-          <span>Coast → Counter</span>
+          <span>Stomach → Nom Noms</span>
           <span className="dot" />
-          <span>Read in 90 seconds</span>
+          <span>SD Born & Raised</span>
         </div>
 
         <p className="about-intro">
@@ -278,7 +278,10 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
             <div id="stars-${r.id}"></div>
             <div class="out">/ 5.0</div>
           </div>
-          <button class="pop-select" data-id="${r.id}">Open profile →</button>
+          <div class="pop-actions">
+            <a class="pop-dir" href="https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}" target="_blank" rel="noopener noreferrer">Directions ↗</a>
+            <button class="pop-select" data-id="${r.id}">Open profile →</button>
+          </div>
         </div>
       `;
       m.bindPopup(popHtml, { maxWidth: 300 });
@@ -405,6 +408,17 @@ function getRecipeBadge(recipe) {
 
 const BADGE_LABELS = { meat: "Meat", seafood: "Seafood", veg: "Veg", baked: "Baked", dessert: "Sweet" };
 
+function scaleHtml(html, factor) {
+  if (factor === 1) return html;
+  return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, text) => {
+    if (tag) return tag;
+    return text.replace(/\b(\d+(?:\.\d+)?)\b/g, (n) => {
+      const scaled = parseFloat(n) * factor;
+      return Number.isInteger(scaled) ? scaled : parseFloat(scaled.toFixed(2));
+    });
+  });
+}
+
 function RecipesView({ recipes, openManage, navigate }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
@@ -441,21 +455,22 @@ function RecipesView({ recipes, openManage, navigate }) {
   };
 
   const [struckSteps, setStruckSteps] = useStateV(new Set());
+  const [scale, setScale] = useStateV(1);
   const bodyRef = useRefV(null);
 
-  useEffectV(() => { setStruckSteps(new Set()); }, [selectedId]);
+  useEffectV(() => { setStruckSteps(new Set()); setScale(1); }, [selectedId]);
 
   useEffectV(() => {
     if (!bodyRef.current) return;
-    bodyRef.current.querySelectorAll("ol li").forEach((li, i) => {
+    bodyRef.current.querySelectorAll("li").forEach((li, i) => {
       li.classList.toggle("step-struck", struckSteps.has(i));
     });
   }, [struckSteps, selectedId]);
 
   const handleBodyClick = (e) => {
-    const li = e.target.closest("ol li");
+    const li = e.target.closest("li");
     if (!li || !bodyRef.current) return;
-    const idx = [...bodyRef.current.querySelectorAll("ol li")].indexOf(li);
+    const idx = [...bodyRef.current.querySelectorAll("li")].indexOf(li);
     if (idx === -1) return;
     setStruckSteps((prev) => {
       const next = new Set(prev);
@@ -657,7 +672,13 @@ function RecipesView({ recipes, openManage, navigate }) {
                   <div className="v">{selected.cuisine || "—"}</div>
                 </div>
               </div>
-              <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick} dangerouslySetInnerHTML={{ __html: selected.description || "" }} />
+              <div className="r-scaler">
+                <span className="r-scaler-label">Scale</span>
+                {[1, 2, 3].map((n) => (
+                  <button key={n} className={`scaler-btn${scale === n ? " active" : ""}`} onClick={() => setScale(n)}>×{n}</button>
+                ))}
+              </div>
+              <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick} dangerouslySetInnerHTML={{ __html: scaleHtml(selected.description || "", scale) }} />
             </>
           )}
         </div>

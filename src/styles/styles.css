@@ -630,8 +630,30 @@ a { color: inherit; }
   font-size: 9px;
   color: var(--muted);
 }
+.pin-pop .pop-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+.pin-pop .pop-dir {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 160ms ease, color 160ms ease;
+}
+.pin-pop .pop-dir:hover { background: var(--ink); color: var(--paper); }
 .pin-pop .pop-select {
-  width: 100%;
+  flex: 1;
   background: var(--ink);
   color: var(--paper);
   padding: 10px 0;
@@ -874,6 +896,34 @@ a { color: inherit; }
   margin-top: 2px;
 }
 
+.r-scaler {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.r-scaler-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.scaler-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  padding: 4px 10px;
+  border: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 140ms, color 140ms, border-color 140ms;
+}
+.scaler-btn:hover { border-color: var(--ink); color: var(--ink); }
+.scaler-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
 .recipe-body {
   font-family: var(--serif);
   font-size: 17px;
@@ -887,12 +937,10 @@ a { color: inherit; }
   margin-bottom: 8px;
 }
 .recipe-body ol { padding-left: 22px; }
-.recipe-body ul { list-style: none; padding-left: 4px; }
-.recipe-body ul input[type="checkbox"] { accent-color: var(--terracotta); cursor: pointer; margin-right: 8px; flex-shrink: 0; }
-.recipe-body li { margin-bottom: 6px; }
-.recipe-body ol li { cursor: pointer; user-select: none; }
-.recipe-body ol li.step-struck { text-decoration: line-through; color: var(--muted); }
-.recipe-body ul li { display: flex; align-items: baseline; }
+.recipe-body ul { list-style: disc; padding-left: 20px; }
+.recipe-body ul input[type="checkbox"] { display: none; }
+.recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; }
+.recipe-body li.step-struck { text-decoration: line-through; color: var(--muted); }
 .recipe-body strong { font-weight: 800; }
 .recipe-body em { font-style: italic; }
 
