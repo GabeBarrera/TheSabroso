@@ -83,6 +83,8 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const tileLayerRef = useRefV(null);
   const markersRef = useRefV([]);
   const userMarkerRef = useRefV(null);
+  const cityTimerRef = useRefV(null);
+  const [cityName, setCityName] = useStateV("San Diego");
   const toast = useToast();
 
   // build map once
@@ -104,6 +106,25 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     }).addTo(map);
 
     mapInstance.current = map;
+
+    // reverse-geocode center on move to update title
+    const fetchCity = () => {
+      clearTimeout(cityTimerRef.current);
+      cityTimerRef.current = setTimeout(async () => {
+        const { lat, lng } = map.getCenter();
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json();
+          const a = data.address || {};
+          setCityName(a.city || a.town || a.suburb || a.village || a.county || "San Diego");
+        } catch {}
+      }, 600);
+    };
+    map.on("moveend", fetchCity);
+    fetchCity();
 
     // try geolocation
     if (navigator.geolocation) {
@@ -234,7 +255,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     <div className="map-view" data-screen-label="02 Map">
       <div className="map-header">
         <div className="map-header-left" />
-        <div className="title">The Map · <span className="it">San Diego</span></div>
+        <div className="title">The Map · <span className="it">{cityName}</span></div>
         <div className="map-header-right">
           <ManageMenu items={openManage("restaurant")} />
         </div>
