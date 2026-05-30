@@ -1990,6 +1990,32 @@ a { color: inherit; }
   border-color: var(--terracotta);
 }
 
+/* WIDGET TOGGLE — eye icon, shows/hides map stat + weather widgets */
+.widget-toggle {
+  position: fixed;
+  bottom: 22px;
+  right: 130px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  z-index: 60;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+.widget-toggle:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.widget-toggle svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
 /* THEME TOGGLE — sun/moon corner button */
 .theme-toggle {
   position: fixed;
@@ -2429,7 +2455,7 @@ a { color: inherit; }
 
   .nav-dots { bottom: 14px; }
   /* ---- MOBILE BUTTON DOCK ---- */
-  .theme-toggle, .admin-toggle {
+  .widget-toggle, .theme-toggle, .admin-toggle {
     right: 14px;
     bottom: 14px;
     left: auto;
@@ -2440,13 +2466,20 @@ a { color: inherit; }
     transform: translateY(0) scale(0.85);
     transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 200ms ease;
   }
-  /* Stagger closing */
-  .theme-toggle  { transition-delay: 0ms; }
-  .admin-toggle  { transition-delay: 30ms; }
+  /* Stagger closing (top-most first) */
+  .widget-toggle { transition-delay: 0ms; }
+  .theme-toggle  { transition-delay: 30ms; }
+  .admin-toggle  { transition-delay: 60ms; }
 
   /* Open: telescope upward */
   .dock-open .admin-toggle  { transform: translateY(-50px)  scale(1); opacity: 1; pointer-events: auto; transition-delay: 0ms; }
   .dock-open .theme-toggle  { transform: translateY(-100px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 40ms; }
+  .dock-open .widget-toggle { transform: translateY(-150px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 80ms; }
+
+  /* ---- MAP HEADER — left-align title on mobile ---- */
+  .map-header { grid-template-columns: 0 1fr auto; }
+  .map-header-left { display: none; }
+  .map-header .title { text-align: left; }
 
   .dock-fab {
     display: flex;
