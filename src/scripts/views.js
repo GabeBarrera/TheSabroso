@@ -61,6 +61,66 @@ function AboutView({ goLeft, goRight }) {
    MAP VIEW — leaflet + restaurant pins + manage
    ============================================================ */
 
+function wxInfo(code) {
+  if (code === 0)             return { label: "Clear",         icon: "sunny" };
+  if (code <= 2)              return { label: "Partly Cloudy", icon: "partly" };
+  if (code === 3)             return { label: "Overcast",      icon: "cloudy" };
+  if (code <= 48)             return { label: "Foggy",         icon: "foggy"  };
+  if (code <= 67)             return { label: "Rain",          icon: "rainy"  };
+  if (code <= 77)             return { label: "Snow",          icon: "snowy"  };
+  if (code <= 82)             return { label: "Showers",       icon: "rainy"  };
+  return                             { label: "Stormy",        icon: "stormy" };
+}
+
+function WxIcon({ icon }) {
+  const s = { width: 28, height: 28, display: "block", flexShrink: 0 };
+  const stroke = "currentColor";
+  const sw = "1.6";
+  if (icon === "sunny") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+  );
+  if (icon === "partly") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <circle cx="10" cy="9" r="3"/>
+      <path d="M10 2v1.5M4.22 4.22l1.06 1.06M2 10h1.5M4.22 15.78l1.06-1.06"/>
+      <path d="M8 15.5a5 5 0 1 1 9.9-1 3.5 3.5 0 0 1-.4 7H8a3 3 0 0 1 0-6z"/>
+    </svg>
+  );
+  if (icon === "cloudy") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <path d="M6 19a5 5 0 1 1 9.9-1 3.5 3.5 0 0 1-.4 7H6a4 4 0 0 1 0-8z"/>
+    </svg>
+  );
+  if (icon === "foggy") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <path d="M5 8a5 5 0 0 1 9.9-1 3.5 3.5 0 0 1 .1 7H5"/>
+      <line x1="3" y1="18" x2="21" y2="18"/><line x1="5" y1="21" x2="19" y2="21"/>
+    </svg>
+  );
+  if (icon === "rainy") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <path d="M6 16a5 5 0 1 1 9.9-1 3.5 3.5 0 0 1-.4 7H6a4 4 0 0 1 0-8z"/>
+      <line x1="8" y1="22" x2="6" y2="26"/><line x1="12" y1="22" x2="10" y2="26"/><line x1="16" y1="22" x2="14" y2="26"/>
+    </svg>
+  );
+  if (icon === "snowy") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <path d="M6 15a5 5 0 1 1 9.9-1 3.5 3.5 0 0 1-.4 6H6a3.5 3.5 0 0 1 0-7z"/>
+      <circle cx="8" cy="22" r="1" fill={stroke}/><circle cx="12" cy="24" r="1" fill={stroke}/><circle cx="16" cy="22" r="1" fill={stroke}/>
+    </svg>
+  );
+  // stormy
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" style={s}>
+      <path d="M6 16a5 5 0 1 1 9.9-1 3.5 3.5 0 0 1-.4 7H6a4 4 0 0 1 0-8z"/>
+      <polyline points="13 18 11 22 14 22 12 26"/>
+    </svg>
+  );
+}
+
 function isFilterHidden(r, hiddenFilters) {
   if (!hiddenFilters || !hiddenFilters.length) return false;
   if (hiddenFilters.includes("all")) return true;
@@ -85,6 +145,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const userMarkerRef = useRefV(null);
   const cityTimerRef = useRefV(null);
   const [cityName, setCityName] = useStateV("San Diego");
+  const [weather, setWeather] = useStateV(null);
   const toast = useToast();
 
   // build map once
@@ -107,19 +168,20 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
 
     mapInstance.current = map;
 
-    // reverse-geocode center on move to update title
+    // reverse-geocode center + fetch weather on move
     const fetchCity = () => {
       clearTimeout(cityTimerRef.current);
       cityTimerRef.current = setTimeout(async () => {
         const { lat, lng } = map.getCenter();
         try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-            { headers: { "Accept-Language": "en" } }
-          );
-          const data = await res.json();
-          const a = data.address || {};
+          const [geoRes, wxRes] = await Promise.all([
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, { headers: { "Accept-Language": "en" } }),
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&forecast_days=1`),
+          ]);
+          const [geoData, wxData] = await Promise.all([geoRes.json(), wxRes.json()]);
+          const a = geoData.address || {};
           setCityName(a.city || a.town || a.suburb || a.village || a.county || "San Diego");
+          if (wxData.current) setWeather({ temp: Math.round(wxData.current.temperature_2m), code: wxData.current.weather_code });
         } catch {}
       }, 600);
     };
@@ -296,6 +358,14 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         <div className="k">Logged in the savor</div>
         <div className="v">{restaurants.length}<small>restaurants</small></div>
       </div>
+
+      {weather && (() => { const { label, icon } = wxInfo(weather.code); return (
+        <div className="weather-widget">
+          <WxIcon icon={icon} />
+          <div className="wx-temp">{weather.temp}°<span className="wx-unit">F</span></div>
+          <div className="wx-label">{label}</div>
+        </div>
+      ); })()}
     </div>
   );
 }

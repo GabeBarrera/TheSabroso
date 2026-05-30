@@ -454,7 +454,7 @@ a { color: inherit; }
   padding: 0 16px;
   background: var(--paper);
   border-bottom: 1px solid var(--ink);
-  z-index: 40;
+  z-index: 50;
 }
 .map-header-left {
   display: flex;
@@ -507,6 +507,41 @@ a { color: inherit; }
   color: var(--muted);
   font-weight: 400;
   margin-left: 6px;
+}
+
+.weather-widget {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 12px 16px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+}
+.wx-temp {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+.wx-unit {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-left: 1px;
+}
+.wx-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 /* leaflet override — light, editorial */
