@@ -2477,8 +2477,7 @@ a { color: inherit; }
   .dock-open .widget-toggle { transform: translateY(-150px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 80ms; }
 
   /* ---- MAP HEADER — left-align title on mobile ---- */
-  .map-header { grid-template-columns: 0 1fr auto; }
-  .map-header-left { display: none; }
+  .map-header { grid-template-columns: auto 1fr auto; }
   .map-header .title { text-align: left; }
 
   .dock-fab {
