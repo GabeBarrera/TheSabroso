@@ -137,7 +137,7 @@ function isFilterHidden(r, hiddenFilters) {
 }
 
 function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef,
-                   cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive }) {
+                   cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive, widgetsVisible }) {
   const mapDiv = useRefV(null);
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
@@ -357,12 +357,14 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
 
       <div ref={mapDiv} className="map-canvas" />
 
-      <div className="map-stat">
-        <div className="k">Logged in the savor</div>
-        <div className="v">{restaurants.length}<small>restaurants</small></div>
-      </div>
+      {widgetsVisible && (
+        <div className="map-stat">
+          <div className="k">Logged in the savor</div>
+          <div className="v">{restaurants.length}<small>restaurants</small></div>
+        </div>
+      )}
 
-      {weather && (() => { const { label, icon } = wxInfo(weather.code); return (
+      {widgetsVisible && weather && (() => { const { label, icon } = wxInfo(weather.code); return (
         <div className="weather-widget">
           <WxIcon icon={icon} />
           <div className="wx-temp">{weather.temp}°<span className="wx-unit">F</span></div>
