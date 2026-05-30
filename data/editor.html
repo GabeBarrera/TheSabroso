@@ -475,6 +475,50 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
 }
 
 /* ============================================================
+   FILE SYSTEM ACCESS HELPERS
+   ============================================================ */
+async function pickSaveFile(filename, content, mimeType = "application/json") {
+  const ext = filename.split(".").pop();
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: ext.toUpperCase() + " file", accept: { [mimeType]: ["." + ext] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return true;
+    } catch (e) {
+      if (e.name !== "AbortError") throw e;
+      return false; // user cancelled
+    }
+  }
+  SDStore.download(filename, content, mimeType);
+  return true;
+}
+
+async function pickDirectory(files) {
+  if (window.showDirectoryPicker) {
+    try {
+      const dir = await window.showDirectoryPicker({ mode: "readwrite" });
+      for (const { name, content } of files) {
+        const fh = await dir.getFileHandle(name, { create: true });
+        const writable = await fh.createWritable();
+        await writable.write(content);
+        await writable.close();
+      }
+      return true;
+    } catch (e) {
+      if (e.name !== "AbortError") throw e;
+      return false;
+    }
+  }
+  files.forEach(({ name, content }) => SDStore.download(name, content));
+  return true;
+}
+
+/* ============================================================
    RESTAURANT FORM  (identical to main app's Manage → Edit)
    ============================================================ */
 const CUISINE_OPTIONS = [
@@ -524,16 +568,17 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
     });
   };
 
-  const exportOne = fmt => {
+  const exportOne = async fmt => {
+    const slug = (name || "restaurant").replace(/\s+/g, "_").toLowerCase();
     if (fmt === "json") {
       const e = { id: initial?.id||"draft", name, address, cuisine: finalCuisine, rating, lat, lng, description };
-      SDStore.download(`${(name||"restaurant").replace(/\s+/g,"_").toLowerCase()}.json`, JSON.stringify(e,null,2));
-      toast("Exported JSON","ok");
+      const saved = await pickSaveFile(`${slug}.json`, JSON.stringify(e, null, 2));
+      if (saved) toast("Exported JSON", "ok");
     } else {
       const row = { name, address, cuisine: finalCuisine, rating, lat, lng, description };
-      const csv = SDStore.toCSV([row],["name","address","cuisine","rating","lat","lng","description"]);
-      SDStore.download(`${(name||"restaurant").replace(/\s+/g,"_").toLowerCase()}.csv`, csv, "text/csv");
-      toast("Exported CSV","ok");
+      const csv = SDStore.toCSV([row], ["name","address","cuisine","rating","lat","lng","description"]);
+      const saved = await pickSaveFile(`${slug}.csv`, csv, "text/csv");
+      if (saved) toast("Exported CSV", "ok");
     }
   };
 
@@ -664,16 +709,17 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
     });
   };
 
-  const exportOne = fmt => {
+  const exportOne = async fmt => {
+    const slug = (name || "recipe").replace(/\s+/g, "_").toLowerCase();
     if (fmt === "json") {
       const e = { id: initial?.id||"draft", name, cuisine, time, serves, tagline, description };
-      SDStore.download(`${(name||"recipe").replace(/\s+/g,"_").toLowerCase()}.json`, JSON.stringify(e,null,2));
-      toast("Exported JSON","ok");
+      const saved = await pickSaveFile(`${slug}.json`, JSON.stringify(e, null, 2));
+      if (saved) toast("Exported JSON", "ok");
     } else {
       const row = { name, cuisine, time, serves, tagline, description };
-      const csv = SDStore.toCSV([row],["name","cuisine","time","serves","tagline","description"]);
-      SDStore.download(`${(name||"recipe").replace(/\s+/g,"_").toLowerCase()}.csv`, csv, "text/csv");
-      toast("Exported CSV","ok");
+      const csv = SDStore.toCSV([row], ["name","cuisine","time","serves","tagline","description"]);
+      const saved = await pickSaveFile(`${slug}.csv`, csv, "text/csv");
+      if (saved) toast("Exported CSV", "ok");
     }
   };
 
@@ -835,11 +881,20 @@ function EditorApp() {
   }
 
   /* ── Export ── */
-  function exportJSON(kind) {
+  async function exportJSON(kind) {
     const list = kind === "restaurant" ? rests : recs;
     const filename = kind === "restaurant" ? "restaurants.json" : "recipes.json";
-    SDStore.download(filename, JSON.stringify(list, null, 2));
-    toast("Exported " + filename, "ok");
+    const saved = await pickSaveFile(filename, JSON.stringify(list, null, 2));
+    if (saved) toast("Exported " + filename, "ok");
+  }
+
+  async function exportAll() {
+    const files = [
+      { name: "restaurants.json", content: JSON.stringify(rests, null, 2) },
+      { name: "recipes.json",     content: JSON.stringify(recs,  null, 2) },
+    ];
+    const saved = await pickDirectory(files);
+    if (saved) toast("Exported restaurants.json + recipes.json", "ok");
   }
 
   return (
@@ -848,7 +903,7 @@ function EditorApp() {
         <div className="ed-wordmark">The <span>Sabroso</span> · Data Editor</div>
         <div className="ed-header-right">
           <button className="ed-header-btn" onClick={loadData}>↺ Reload JSON</button>
-          <button className="ed-header-btn" onClick={() => { exportJSON("restaurant"); exportJSON("recipe"); }}>Export All</button>
+          <button className="ed-header-btn" onClick={exportAll}>Export All</button>
         </div>
       </header>
 

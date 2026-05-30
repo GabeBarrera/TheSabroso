@@ -108,7 +108,7 @@ a { color: inherit; }
   width: 33.3333%;
   height: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* ============================================================
@@ -383,6 +383,7 @@ a { color: inherit; }
   position: absolute;
   inset: 100px 0 0 0;
   background: var(--cream-2);
+  z-index: 1;
 }
 
 /* ---- Map persistent command bar ---- */
@@ -509,7 +510,7 @@ a { color: inherit; }
 
 .weather-widget {
   position: absolute;
-  bottom: 24px;
+  top: 108px;
   right: 24px;
   background: var(--paper);
   border: 1px solid var(--ink);
@@ -2272,10 +2273,6 @@ a { color: inherit; }
    ============================================================ */
 
 @media (max-width: 640px) {
-
-  /* Let dropdowns (manage-menu, sort-menu) escape panel clip.
-     .app { overflow: hidden } still prevents cross-panel bleed. */
-  .panel { overflow: visible; }
 
   /* ---- ABOUT VIEW ---- */
 
