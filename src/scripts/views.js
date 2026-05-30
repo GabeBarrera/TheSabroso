@@ -410,12 +410,19 @@ const BADGE_LABELS = { meat: "Meat", seafood: "Seafood", veg: "Veg", baked: "Bak
 
 function scaleHtml(html, factor) {
   if (factor === 1) return html;
+  // Order matters: try mixed fraction ("1 1/2"), then simple fraction ("1/2"), then decimal/integer
   return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, text) => {
     if (tag) return tag;
-    return text.replace(/\b(\d+(?:\.\d+)?)\b/g, (n) => {
-      const scaled = parseFloat(n) * factor;
-      return Number.isInteger(scaled) ? scaled : parseFloat(scaled.toFixed(2));
-    });
+    return text.replace(/\b(\d+)\s+(\d+)\/(\d+)\b|\b(\d+)\/(\d+)\b|\b(\d+(?:\.\d+)?)\b/g,
+      (match, wn, wfn, wfd, fn, fd, plain) => {
+        let val;
+        if (wn  !== undefined) val = parseInt(wn)  + parseInt(wfn) / parseInt(wfd);
+        else if (fn !== undefined) val = parseInt(fn) / parseInt(fd);
+        else val = parseFloat(plain);
+        const scaled = val * factor;
+        return Number.isInteger(scaled) ? scaled.toString() : parseFloat(scaled.toFixed(2)).toString();
+      }
+    );
   });
 }
 
@@ -665,7 +672,7 @@ function RecipesView({ recipes, openManage, navigate }) {
                 </div>
                 <div className="stat">
                   <div className="k">Serves</div>
-                  <div className="v">{selected.serves}</div>
+                  <div className="v">{selected.serves ? selected.serves * scale : "—"}</div>
                 </div>
                 <div className="stat">
                   <div className="k">Category</div>
