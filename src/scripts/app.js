@@ -413,7 +413,7 @@ function AppInner(props) {
   const [kbdText, setKbdText] = useState("");
   const [helpOpen, setHelpOpen] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
-  const [widgetsVisible, setWidgetsVisible] = useState(true);
+  const [widgetsVisible, setWidgetsVisible] = useState(false);
 
   const submitKbd = () => {
     const t = kbdText.trim();

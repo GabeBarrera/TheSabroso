@@ -146,6 +146,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const cityTimerRef = useRefV(null);
   const [cityName, setCityName] = useStateV("San Diego");
   const [weather, setWeather] = useStateV(null);
+  const [listOpen, setListOpen] = useStateV(false);
   const toast = useToast();
 
   // build map once
@@ -353,9 +354,41 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           spellCheck={false}
         />
         <button className="map-cmd-submit" onClick={onCmdSubmit} title="Run command">↵</button>
+        <button
+          className={`map-cmd-list${listOpen ? " active" : ""}`}
+          onClick={() => setListOpen((v) => !v)}
+          title="Restaurant list"
+        >≡ List</button>
       </div>
 
       <div ref={mapDiv} className="map-canvas" />
+
+      {listOpen && (
+        <div className="map-list-panel">
+          <div className="map-list-head">
+            <div className="map-list-title">
+              All Restaurants
+              <span className="map-list-count">{restaurants.filter(r => !isFilterHidden(r, hiddenFilters)).length}</span>
+            </div>
+            <button className="map-list-close" onClick={() => setListOpen(false)}>✕</button>
+          </div>
+          <div className="map-list-body">
+            {[...restaurants]
+              .filter((r) => !isFilterHidden(r, hiddenFilters))
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((r) => (
+                <button key={r.id} className="map-list-row" onClick={() => {
+                  setListOpen(false);
+                  mapActionsRef?.current?.zoomTo(r);
+                }}>
+                  <div className="mlr-name">{r.name}</div>
+                  <div className="mlr-meta">{r.cuisine || "—"} · ★ {(r.rating || 0).toFixed(1)}</div>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      )}
 
       {widgetsVisible && (
         <div className="map-stat">
@@ -813,6 +846,17 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
       <ProfileMiniMap lat={restaurant.lat} lng={restaurant.lng} />
 
       <div className="profile-body" dangerouslySetInnerHTML={{ __html: restaurant.description || "<p><em>No review yet.</em></p>" }} />
+
+      {(restaurant.website || restaurant.reservationLink) && (
+        <div className="profile-links">
+          {restaurant.website && (
+            <a className="profile-link" href={restaurant.website} target="_blank" rel="noopener noreferrer">Website ↗</a>
+          )}
+          {restaurant.reservationLink && (
+            <a className="profile-link profile-link-reserve" href={restaurant.reservationLink} target="_blank" rel="noopener noreferrer">Reserve a Table ↗</a>
+          )}
+        </div>
+      )}
 
       {isAdmin && (
         <div className="profile-contacts" ref={wrapRef}>

@@ -25,6 +25,8 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
   const [lng, setLng] = useStateF(initial?.lng ?? -117.1611);
   const [tags, setTags] = useStateF(initial?.tags || ["restaurant"]);
   const [contacts, setContacts] = useStateF(initial?.contacts || []);
+  const [website, setWebsite] = useStateF(initial?.website || "");
+  const [reservationLink, setReservationLink] = useStateF(initial?.reservationLink || "");
 
   const addContact = () => setContacts(prev => [...prev, { title: "", name: "" }]);
   const removeContact = (i) => setContacts(prev => prev.filter((_, idx) => idx !== i));
@@ -52,6 +54,8 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
       lng: Number(lng),
       description,
       contacts: contacts.filter(c => c.title.trim() || c.name.trim()),
+      website: website.trim() || undefined,
+      reservationLink: reservationLink.trim() || undefined,
       createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
     };
     onSave(entry);
@@ -132,6 +136,17 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
       <div className="field">
         <label className="field-label">Address</label>
         <input className="field-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="1234 Coast Hwy, San Diego, CA" />
+      </div>
+
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Website <span className="field-optional">optional</span></label>
+          <input className="field-input" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://restaurant.com" />
+        </div>
+        <div className="field">
+          <label className="field-label">Reservation Link <span className="field-optional">optional</span></label>
+          <input className="field-input" value={reservationLink} onChange={(e) => setReservationLink(e.target.value)} placeholder="OpenTable, Tock, Resy URL…" />
+        </div>
       </div>
 
       <div className="field-row">

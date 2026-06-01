@@ -443,6 +443,108 @@ a { color: inherit; }
 }
 .map-cmd-submit:hover { background: var(--ink); color: var(--paper); }
 
+.map-cmd-list {
+  flex-shrink: 0;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--hairline);
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease, color 120ms ease;
+}
+.map-cmd-list:hover { background: var(--cream); color: var(--ink); }
+.map-cmd-list.active { background: var(--ink); color: var(--paper); }
+
+/* ---- Map restaurant list panel ---- */
+.map-list-panel {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background: var(--paper);
+  border-right: 1px solid var(--ink);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 16px rgba(0,0,0,.12);
+}
+.map-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--hairline);
+  flex-shrink: 0;
+}
+.map-list-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.map-list-count {
+  background: var(--terracotta);
+  color: var(--paper);
+  font-size: 9px;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+.map-list-close {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+}
+.map-list-close:hover { color: var(--ink); }
+.map-list-body {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: none;
+}
+.map-list-body::-webkit-scrollbar { display: none; }
+.map-list-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.map-list-row:hover { background: var(--cream); }
+.mlr-name {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.mlr-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--muted);
+}
+
 .map-header {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -1818,6 +1920,43 @@ a { color: inherit; }
 .profile-body strong { font-weight: 800; }
 .profile-body em { font-style: italic; }
 
+.profile-links {
+  display: flex;
+  gap: 10px;
+  padding: 0 60px 40px;
+  flex-wrap: wrap;
+}
+.profile-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 140ms ease, color 140ms ease;
+}
+.profile-link:hover { background: var(--ink); color: var(--paper); }
+.profile-link-reserve {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: var(--paper);
+}
+.profile-link-reserve:hover { background: var(--terracotta-2); border-color: var(--terracotta-2); color: var(--paper); }
+
+.field-optional {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-left: 6px;
+  font-weight: 400;
+}
+
 .profile-close {
   position: fixed;
   top: 24px; right: 28px;
@@ -2359,6 +2498,9 @@ a { color: inherit; }
     min-width: 160px;
   }
   .map-stat .v { font-size: 24px; }
+
+  .map-list-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--ink); top: 100px; bottom: 50%; }
+  .profile-links { padding: 0 20px 32px; }
 
   /* ---- RECIPES VIEW ---- */
 
