@@ -1,33 +1,23 @@
 [
   {
     "id": "rec1",
-    "name": "Carne Asada — The Only Way",
+    "name": "Carne Asada",
     "cuisine": "Mexican",
     "time": 45,
     "serves": 4,
-    "tagline": "Skirt steak, charred lime, no shortcuts. The marinade is the recipe.",
+    "tagline": "Skirt steak, charred lime, no shortcuts. This is the güey.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 2 lb skirt steak, trimmed</li><li><input type='checkbox'> 4 garlic cloves, smashed</li><li><input type='checkbox'> 1 bunch cilantro, stems &amp; all</li><li><input type='checkbox'> 3 limes, juiced</li><li><input type='checkbox'> 1 orange, juiced</li><li><input type='checkbox'> 2 tbsp soy sauce</li><li><input type='checkbox'> 1 tbsp ground cumin</li><li><input type='checkbox'> 1 jalapeño, sliced</li></ul><h3>Method</h3><ol><li><strong>Marinade.</strong> Blitz everything except the steak. Pour over the meat. Bag it. <em>Six hours minimum, twelve is better.</em></li><li><strong>Heat.</strong> The grill must scream. Smoke point or you've already failed.</li><li><strong>Sear.</strong> Two minutes per side. No moving the meat around like an amateur.</li><li><strong>Rest.</strong> Ten minutes. Under foil. Walk away.</li><li><strong>Slice.</strong> Against the grain. Thin. Salt on the cutting board.</li></ol>",
     "createdAt": "2025-09-20"
   },
   {
     "id": "rec2",
-    "name": "Fish Tacos, San Diego",
+    "name": "Fish Tacos",
     "cuisine": "Mexican",
     "time": 30,
     "serves": 4,
-    "tagline": "Beer battered, cabbage, crema, that's the whole law. Don't get clever.",
+    "tagline": "Beer battered, cabbage, crema. A San Diego classic.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 1 lb cod or rockfish, cut into fingers</li><li><input type='checkbox'> 1 cup flour</li><li><input type='checkbox'> 1 cup cold lager</li><li><input type='checkbox'> 1 tsp baking powder</li><li><input type='checkbox'> Cabbage, shredded fine</li><li><input type='checkbox'> Crema, lime, hot sauce</li><li><input type='checkbox'> Corn tortillas, warmed on flame</li></ul><h3>Method</h3><ol><li>Whisk the batter cold. <strong>Cold</strong>. Lumps are fine.</li><li>Oil at 375°F. Test with a wooden spoon — should hiss.</li><li>Dip fish, fry 3 minutes, drain on rack — never paper towels, you'll steam them soggy.</li><li>Build: tortilla, fish, cabbage, crema, lime. Done.</li></ol>",
     "createdAt": "2025-10-08"
-  },
-  {
-    "id": "rec3",
-    "name": "Charred Little Gems",
-    "cuisine": "Salad",
-    "time": 12,
-    "serves": 2,
-    "tagline": "Five-minute side that costs nothing and tastes like the coast.",
-    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 4 heads little gem lettuce, halved</li><li><input type='checkbox'> 3 anchovy fillets</li><li><input type='checkbox'> 1 egg yolk</li><li><input type='checkbox'> 1 lemon</li><li><input type='checkbox'> Olive oil, parmesan, black pepper</li></ul><h3>Method</h3><ol><li>Cast iron, smoking hot, no oil. Lettuce cut-side down. <em>Sixty seconds.</em></li><li>Mash anchovies with yolk, lemon, oil. That's the dressing.</li><li>Spoon over the charred lettuce. Shower of parmesan. Crack of pepper.</li></ol>",
-    "createdAt": "2025-10-22"
   },
   {
     "id": "rec5",
@@ -35,7 +25,7 @@
     "cuisine": "Breakfast",
     "time": 10,
     "serves": 2,
-    "tagline": "Butter bread, egg custard, maple syrup. The bread is the whole argument.",
+    "tagline": "Butter bread, egg custard, maple syrup. A breakfast maple staple.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 2 large eggs</li><li><input type='checkbox'> 4 slices Martin's Old-Fashioned Real Butter Bread</li><li><input type='checkbox'> 1/4 cup milk</li><li><input type='checkbox'> 1 tsp vanilla extract</li><li><input type='checkbox'> 1/2 tsp ground cinnamon</li><li><input type='checkbox'> Pinch of salt</li><li><input type='checkbox'> 2 tbsp butter</li><li><input type='checkbox'> 1/2 cup maple syrup, warmed</li><li><input type='checkbox'> Powdered sugar, for serving</li></ul><h3>Method</h3><ol><li>Crack eggs into a shallow dish. Add milk and whisk to combine.</li><li>Whisk in vanilla, cinnamon, and a pinch of salt.</li><li>Melt butter in a medium skillet over medium heat.</li><li>Dip bread slices in egg mixture on both sides — coated, not soaked through.</li><li>Fry until golden brown, about 2–3 minutes per side.</li><li>Serve warm with butter and maple syrup. Powdered sugar if you want.</li></ol>",
     "createdAt": "2026-05-27"
   },
@@ -51,11 +41,11 @@
   },
   {
     "id": "rec4",
-    "name": "Cacio e Pepe — Properly",
+    "name": "Cacio e Pepe",
     "cuisine": "Italian",
     "time": 20,
     "serves": 2,
-    "tagline": "Three ingredients. Four if you count the water. There is nowhere to hide.",
+    "tagline": "Three ingredients. Four if you count the water.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 200g tonnarelli or spaghetti</li><li><input type='checkbox'> 100g pecorino romano, finely grated</li><li><input type='checkbox'> Black peppercorns, freshly cracked</li><li><input type='checkbox'> Pasta water — heavily starchy</li></ul><h3>Method</h3><ol><li><strong>Toast the pepper.</strong> Dry pan, low heat, smell it bloom.</li><li>Pasta in salted water — less salt than you think. The cheese is salty.</li><li>Reserve a cup of water. Drain pasta one minute under.</li><li>Off the heat: pecorino, splash of water, whisk to a paste. Add pasta. <em>Toss like you mean it.</em></li><li>If it breaks, you added cheese too hot. Start again.</li></ol>",
     "createdAt": "2025-11-05"
   },
@@ -75,7 +65,7 @@
     "cuisine": "Mexican",
     "time": 35,
     "serves": 4,
-    "tagline": "Toasted rice, roasted garlic, tomato. The chicken broth is doing all the work.",
+    "tagline": "The legendary red rice. The chicken broth is doing all the work.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 1 cup white rice</li><li><input type='checkbox'> 3 tomatoes, chopped</li><li><input type='checkbox'> 5 cloves garlic</li><li><input type='checkbox'> 1/2 onion</li><li><input type='checkbox'> 2 cups chicken broth</li><li><input type='checkbox'> Oil</li></ul><h3>Method</h3><ol><li>Warm the chicken broth in a separate pot. Keep it hot — you'll need it.</li><li>Heat a pan with oil over low heat. When warm, pour in the rice and toast, stirring occasionally.</li><li>Add the garlic cloves and onion half <em>unchopped</em> to the rice. Stir and roast together until the rice turns light brown.</li><li>Add the chopped tomatoes and enough chicken broth to just cover the rice.</li><li>Cover and cook on low heat for 20 minutes.</li><li><strong>Keep a pot of hot water nearby</strong> in case the rice dries out before it's done. <em>Do not use cold water — it will shock the rice.</em></li></ol>",
     "createdAt": "2026-05-29"
   },
@@ -91,12 +81,12 @@
   },
   {
     "id": "rec10",
-    "name": "The Barrera Cheddar Salmon",
+    "name": "The Cheddar Salmon",
     "cuisine": "Seafood",
     "time": 35,
     "serves": 2,
     "tagline": "Poached in Chardonnay, cheddar-crusted, on a spinach bed. Treat it like a king.",
-    "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 16oz salmon</li><li><input type='checkbox'> 1 cup Chardonnay or white wine</li><li><input type='checkbox'> 1–2 cups water (or replace entirely with white wine — do it, you won't)</li><li><input type='checkbox'> 6–7 bay leaves</li><li><input type='checkbox'> Peppercorns</li><li><input type='checkbox'> Salt</li><li><input type='checkbox'> ¼–½ onion</li><li><input type='checkbox'> Sharp cheddar, grated — a lot</li><li><input type='checkbox'> Spinach — a lot</li><li><input type='checkbox'> Butter (optional)</li></ul><h3>Method</h3><ol><li>Grate a big bowl of sharp cheddar. Set aside.</li><li>Sauté onions in butter. Add spinach and sauté until wilted.</li><li>Transfer spinach to an oven-safe dish. Spread into a bed wide enough for the salmon to rest on. <em>Treat your salmon like a king — he'll take care of you.</em></li><li>Poach salmon in Chardonnay and water with salt, peppercorns, and bay leaves, about 10 minutes. Halfway cooked. We're pregaming, don't get lit yet.</li><li>Place poached salmon on the spinach bed. Cover with the grated cheddar.</li><li>Cover dish with foil. Bake at 400°F for ~15 minutes until the cheese melts.</li><li>Remove foil. Release the dank.</li></ol>",
+    "description": "<h3>Ingredients</h3><ul><li><input type=\"checkbox\"> 16oz salmon</li><li><input type=\"checkbox\"> 1 cup Chardonnay or white wine</li><li><input type=\"checkbox\"> 1–2 cups water (or replace entirely with white wine — do it, you won't)</li><li><input type=\"checkbox\"> 6–7 bay leaves</li><li><input type=\"checkbox\"> Peppercorns</li><li><input type=\"checkbox\"> Salt</li><li><input type=\"checkbox\"> ¼–½ onion</li><li><input type=\"checkbox\"> Sharp cheddar, grated — a lot</li><li><input type=\"checkbox\"> Spinach — a lot</li><li><input type=\"checkbox\"> Butter (optional)</li></ul><h3>Method</h3><ol><li>Grate a big bowl of sharp cheddar. Set aside.</li><li>Sauté onions in butter. Add spinach and sauté until wilted.</li><li>Transfer spinach to an oven-safe dish. Spread into a bed wide enough for the salmon to rest on. <em>Treat your salmon like a king — he'll take care of you.</em></li><li>Poach salmon in Chardonnay and water with salt, peppercorns, and bay leaves, about 10 minutes. As this point the salmon is halfway cooked.</li><li>Place poached salmon on the spinach bed. Cover with the grated cheddar.</li><li>Cover dish with foil. Bake at 400°F for ~15 minutes until the cheese melts.</li><li>Remove foil, cool, and eat.</li></ol>",
     "createdAt": "2026-05-29"
   },
   {
@@ -115,7 +105,7 @@
     "cuisine": "Snacks",
     "time": 15,
     "serves": 10,
-    "tagline": "Chex, chocolate, peanut butter, powdered sugar. The bag shake is the whole technique.",
+    "tagline": "Chex, chocolate, peanut butter, powdered sugar. Diabetes never tasted so good.",
     "description": "<h3>Ingredients</h3><ul><li><input type='checkbox'> 9 cups Chex cereal</li><li><input type='checkbox'> 1 cup / 6oz semi-sweet chocolate chips</li><li><input type='checkbox'> ½ cup smooth peanut butter</li><li><input type='checkbox'> ¼ cup butter</li><li><input type='checkbox'> 1–2 tsp vanilla</li><li><input type='checkbox'> 1½ cups powdered sugar</li></ul><h3>Method</h3><ol><li>Measure cereal into a large bowl. Set aside.</li><li>Microwave chocolate chips, peanut butter, and butter for 1 minute on high. Stir. Microwave another 30 seconds until smooth. Stir in vanilla.</li><li>Pour mixture over cereal and stir until fully coated.</li><li>Transfer to a large Ziploc bag. Add powdered sugar, seal, and shake until well coated.</li><li>Spread on waxed paper to cool. Store in a sealed bag or container.</li></ol><p style='margin-top:16px;font-size:14px;color:var(--muted)'><strong>Note:</strong> If you only have small bags, add the cereal a little at a time when shaking with the powdered sugar.</p>",
     "createdAt": "2026-05-29"
   },

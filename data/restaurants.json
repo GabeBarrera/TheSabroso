@@ -21,14 +21,15 @@
     "name": "Underbelly",
     "address": "750 W Fir St #101, San Diego, CA 92101",
     "cuisine": "Japanese",
-    "rating": 4.4,
-    "lat": 32.72449282219502,
-    "lng": -117.16924736256803,
+    "rating": 4.5,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Downtown ramen counter with a tonkotsu broth that runs 18 hours. The chashu comes from a low braise that's been going since Tuesday. The soft egg is seasoned overnight. Cramped, loud, worth every inconvenience.</p><h3>The order</h3><ul><li>Tonkotsu — rich, porky, the correct depth</li><li>Extra chashu — add it, don't think about it</li><li>Gyoza, pan-fried, order them when you sit down</li></ul><p><em>No substitutions on the broth.</em> This is non-negotiable and the right call.</p>",
+    "lat": 32.72449282219502,
+    "lng": -117.16924736256803,
+    "description": "<p>If you're into ramen and the cyberpunk aesthetic as much as I am, this is the spot for you. Underbelly is a downtown ramen counter with a tonkotsu broth that runs 18 hours. The chashu comes from a low braise that's been going since Tuesday. The soft egg is seasoned overnight. Cramped, loud, worth every inconvenience. This is yet another Consortium Holdings offering that does not disappoint.&nbsp;</p><h3>The order</h3><ul><li>Tonkotsu — rich, porky, the correct depth</li><li>Extra chashu — add it, don't think about it</li><li>Gyoza, pan-fried, order them when you sit down</li></ul><p><em>No substitutions on the broth.</em> This is non-negotiable and the right call.</p>",
+    "contacts": [],
     "createdAt": "2026-01-22"
   },
   {
