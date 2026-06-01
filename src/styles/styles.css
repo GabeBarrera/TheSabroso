@@ -576,6 +576,9 @@ a { color: inherit; }
 }
 .map-header .title .it { font-style: italic; font-weight: 400; }
 
+/* Desktop: city tag hidden — city name lives in the header title */
+.map-city-tag { display: none; }
+
 .map-mobile-bar { display: none; }
 
 .map-stat {
@@ -2631,9 +2634,25 @@ a { color: inherit; }
   .dock-open .theme-toggle  { transform: translateY(-100px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 40ms; }
   .dock-open .widget-toggle { transform: translateY(-150px) scale(1); opacity: 1; pointer-events: auto; transition-delay: 80ms; }
 
-  /* ---- MAP HEADER — left-align title on mobile ---- */
+  /* ---- MAP HEADER — left-align title, city name drops to map ---- */
   .map-header { grid-template-columns: auto 1fr auto; }
   .map-header .title { text-align: left; }
+  .title-city { display: none; }
+  .map-city-tag {
+    display: block;
+    position: absolute;
+    top: 103px;
+    left: 12px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+    z-index: 29;
+    pointer-events: none;
+    line-height: 1;
+    background: color-mix(in srgb, var(--paper) 80%, transparent);
+    padding: 3px 7px;
+  }
 
   .dock-fab {
     display: flex;
