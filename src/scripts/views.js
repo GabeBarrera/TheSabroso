@@ -784,38 +784,11 @@ function ProfileMiniMap({ lat, lng }) {
 }
 
 function RestaurantProfile({ restaurant, onClose, isAdmin }) {
-  const [pocOpen, setPocOpen] = useStateV(false);
-  const btnRef  = useRefV(null);
-  const wrapRef = useRefV(null);
-  const natWRef = useRefV(null);
-
   useEffectV(() => {
     const onEsc = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onEsc);
     return () => document.removeEventListener("keydown", onEsc);
   }, [onClose]);
-
-  useEffectV(() => {
-    if (btnRef.current) natWRef.current = btnRef.current.offsetWidth;
-  }, []);
-
-  const togglePoc = () => {
-    const btn = btnRef.current;
-    if (!btn) return;
-    if (!pocOpen) {
-      const natW = natWRef.current || btn.offsetWidth;
-      const fullW = wrapRef.current ? wrapRef.current.offsetWidth : 360;
-      btn.style.transition = "none";
-      btn.style.width = natW + "px";
-      void btn.offsetWidth; // flush layout so transition has a start value
-      btn.style.transition = "";
-      btn.style.width = fullW + "px";
-      setPocOpen(true);
-    } else {
-      btn.style.width = (natWRef.current || 80) + "px";
-      setPocOpen(false);
-    }
-  };
 
   const contacts = restaurant.contacts || [];
 
@@ -855,8 +828,6 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
 
       <ProfileMiniMap lat={restaurant.lat} lng={restaurant.lng} />
 
-      <div className="profile-body" dangerouslySetInnerHTML={{ __html: restaurant.description || "<p><em>No review yet.</em></p>" }} />
-
       {(restaurant.website || restaurant.reservationLink) && (
         <div className="profile-links">
           {restaurant.website && (
@@ -868,32 +839,25 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
         </div>
       )}
 
+      <div className="profile-body" dangerouslySetInnerHTML={{ __html: restaurant.description || "<p><em>No review yet.</em></p>" }} />
+
       {isAdmin && (
-        <div className="profile-contacts" ref={wrapRef}>
-          <button
-            ref={btnRef}
-            className={`poc-btn${pocOpen ? " poc-open" : ""}`}
-            onClick={togglePoc}
-          >
-            POCs
-          </button>
-          {pocOpen && (
-            <div className="contacts-list">
-              {contacts.length === 0
-                ? <div className="contacts-list-empty">No contacts on file</div>
-                : contacts.map((c, i) => (
-                    <div
-                      key={i}
-                      className="contact-row"
-                      style={{ animationDelay: `${400 + i * 80}ms` }}
-                    >
-                      <span className="contact-title">{c.title}</span>
-                      <span className="contact-name">{c.name}</span>
-                    </div>
-                  ))
-              }
-            </div>
-          )}
+        <div className="profile-contacts">
+          <div className="contacts-list">
+            {contacts.length === 0
+              ? <div className="contacts-list-empty">No contacts on file</div>
+              : contacts.map((c, i) => (
+                  <div
+                    key={i}
+                    className="contact-row"
+                    style={{ animationDelay: `${400 + i * 80}ms` }}
+                  >
+                    <span className="contact-title">{c.title}</span>
+                    <span className="contact-name">{c.name}</span>
+                  </div>
+                ))
+            }
+          </div>
         </div>
       )}
     </div>

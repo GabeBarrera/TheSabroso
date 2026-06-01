@@ -62,7 +62,7 @@ window.SDStore = {
   async adminLogin(pw) {
     const hash = await this.hashPw(pw);
     let stored = localStorage.getItem(ADMIN_PW_KEY);
-    if (!stored) stored = await this.hashPw("admin");
+    if (!stored) stored = await this.hashPw("anyonecancook");
     if (hash === stored) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
       return true;
