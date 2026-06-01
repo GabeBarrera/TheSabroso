@@ -1794,12 +1794,14 @@ a { color: inherit; }
 }
 .edit-row:last-child { border-bottom: none; }
 .edit-row:hover { background: var(--cream); }
-.edit-row .er-name {
+.edit-row .er-name,
+.restaurant-list-row-main .er-name {
   font-family: var(--serif);
   font-weight: 700;
   font-size: 18px;
 }
-.edit-row .er-meta {
+.edit-row .er-meta,
+.restaurant-list-row-main .er-meta {
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: .22em;
@@ -1813,6 +1815,42 @@ a { color: inherit; }
   color: var(--muted);
 }
 .edit-row:hover .er-go { color: var(--terracotta); }
+
+.restaurant-list-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--hairline);
+  transition: background 140ms ease;
+}
+.restaurant-list-row:last-child { border-bottom: none; }
+.restaurant-list-row:hover { background: var(--cream); }
+.restaurant-list-row-main {
+  flex: 1;
+  text-align: left;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  min-width: 0;
+}
+.restaurant-list-edit-btn {
+  flex-shrink: 0;
+  margin-right: 14px;
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  color: var(--ink);
+  transition: background 140ms ease, color 140ms ease;
+}
+.restaurant-list-edit-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
 
 /* import duplicate panel */
 .dup-row {

@@ -1,6 +1,6 @@
 (function () {
 /* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile,
-          RestaurantForm, RecipeForm, NoteForm, EditPicker, ImportDialog, LoginModal,
+          RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, ImportDialog, LoginModal,
           ContactsImportDialog, BothImportDialog,
           ToastProvider, useToast, SDStore */
 
@@ -291,10 +291,8 @@ function App() {
     const list = target === "restaurant" ? restaurants : target === "recipe" ? recipes : notes;
     const items = [
       { label: target === "note" ? "New note" : "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
-      { label: "Edit existing", hint: "modify", onClick: () => setModal({ kind: "pick", target }) },
-      { label: "Import", hint: "merge", onClick: () => setModal(
-        target === "restaurant" ? { kind: "import-pick" } : { kind: "import", target }
-      ) },
+      { label: target === "restaurant" ? "List entries" : "Edit existing", hint: "modify", onClick: () => setModal(target === "restaurant" ? { kind: "list-entries" } : { kind: "pick", target }) },
+      { label: "Import", hint: "merge", onClick: () => setModal({ kind: "import", target }) },
       { label: "Backup", hint: "export", onClick: () =>
         target === "restaurant" ? setModal({ kind: "backup" }) : doBackup(target, list)
       },
@@ -710,6 +708,14 @@ function AppInner(props) {
           onCancel={closeModal}
         />
       )}
+      {modal?.kind === "list-entries" && (
+        <RestaurantListModal
+          restaurants={restaurants}
+          onClose={closeModal}
+          onOpenProfile={(r) => setProfile(r)}
+          onEdit={(r) => setModal({ kind: "edit", target: "restaurant", initial: r })}
+        />
+      )}
       {modal?.kind === "new" && modal.target === "note" && (
         <NoteForm
           defaultLat={modal.lat}
@@ -834,35 +840,6 @@ function AppInner(props) {
                     SDStore.download("contacts.json", JSON.stringify(SDStore.loadContacts(), null, 2));
                     closeModal();
                   }}>
-                  Both files
-                </button>
-              </>
-            )}
-          </div>
-        </Modal>
-      )}
-
-      {modal?.kind === "import-pick" && (
-        <Modal eyebrow="Import" title="Choose what to" italicTitle="import"
-          onClose={closeModal}
-          footer={<button className="btn ghost" onClick={closeModal}>Cancel</button>}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
-            <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 6 }}>
-              Select a backup file to import.
-            </p>
-            <button className="btn primary"
-              onClick={() => setModal({ kind: "import", target: "restaurant" })}>
-              restaurants.json
-            </button>
-            {isAdmin && (
-              <>
-                <button className="btn primary"
-                  onClick={() => setModal({ kind: "import-contacts" })}>
-                  contacts.json
-                </button>
-                <button className="btn primary"
-                  onClick={() => setModal({ kind: "import-both" })}>
                   Both files
                 </button>
               </>
