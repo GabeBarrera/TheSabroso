@@ -332,5 +332,103 @@
     ],
     "description": "<p>Bar and grill near the water with a menu that doesn't require much deliberation — burgers, fish, something cold on draft. The patio works on a good evening. The food is better than it needs to be for a bar this casual, which is the only bar worth going to.</p><h3>The order</h3><ul><li>Fish tacos — better than expected, order them when available</li><li>Burger — solid, nothing more needs to be said</li><li>Whatever is on draft — rotating, usually local</li></ul><p>Patio seating is the move. Arrive before sunset if you want a spot.</p>",
     "createdAt": "2026-05-29"
+  },
+  {
+    "id": "r24",
+    "name": "Oculto 477",
+    "address": "2414 San Diego Ave, San Diego, CA 92110",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.7,
+    "lat": 32.75358,
+    "lng": -117.19614,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Old Town speakeasy concealed behind a door that looks like it belongs to an apothecary. The cocktail program leans into the mystical aesthetic without losing its grip on technique — batched spirits, house-made syrups, and a menu that changes with intention. The space is small, deliberate, and decorated with the kind of care that rewards a second look.</p><h3>The order</h3><ul><li>Whatever the bartender is most excited about — this is the correct entry point</li><li>Any cocktail featuring house-made infusions — they're the reason the menu works</li><li>Mezcal-forward options if available — the smokiness is handled correctly here</li></ul><p><strong>Reservations strongly recommended.</strong> Walk-ins during peak hours are turned away and the disappointment is earned.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r25",
+    "name": "False Idol",
+    "address": "675 W Beech St, San Diego, CA 92101",
+    "cuisine": "Tiki Bar",
+    "rating": 4.8,
+    "lat": 32.72076,
+    "lng": -117.16896,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Hidden below Craft & Commerce, through a door that isn't marked. One of the best tiki bars in the country — and not a modest claim. The drinks are technically precise and arrive in vessels that match the ambition: ceramic tiki mugs, scorpion bowls, fogged glasses. The rum sourcing is serious. The banana daiquiri is not a joke.</p><h3>The order</h3><ul><li>Banana daiquiri — this is not the blended version, approach accordingly</li><li>Scorpion bowl — commit to the group format, it earns it</li><li>Whatever the bartender is running on the specials list — always something worth ordering</li></ul><p>The space fills early and stays full. Walk in before 8 PM or accept what the night gives you.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r26",
+    "name": "Prohibition",
+    "address": "548 5th Ave, San Diego, CA 92101",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.4,
+    "lat": 32.71285,
+    "lng": -117.16015,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Gaslamp speakeasy that commits to the 1920s premise without becoming a costume party. The entrance requires knowing where to look — that's part of the contract. Live jazz most nights, candlelight, leather booths. The cocktail list runs classic with house variations, built with the right ratio of respect to creativity.</p><h3>The order</h3><ul><li>Old Fashioned — the benchmark for any bar calling itself a speakeasy</li><li>French 75 — correct for the era and the room</li><li>Whatever the bar manager has on the seasonal list</li></ul><p>Best on a weeknight when the jazz is playing and the crowd hasn't arrived en masse. The room is the experience.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r27",
+    "name": "Convoy Music Bar",
+    "address": "4646 Convoy St, San Diego, CA 92111",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.6,
+    "lat": 32.82988,
+    "lng": -117.15205,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Japanese-inspired cocktail bar and live music venue anchoring the Convoy District. The room is warm and considered — low lighting, good acoustics, a sound system that respects the music. Natural wine list that's been thought through, cocktails that don't overstay their welcome, and a kitchen that keeps people seated longer than they planned.</p><h3>The order</h3><ul><li>Whatever is on draft — rotating list, usually something local and interesting</li><li>Ask about the natural wine by the glass — the list changes frequently and rewards the conversation</li><li>Check the live music calendar before you go — timing matters here</li></ul><p>The Convoy District is having a moment and this bar is part of why. Go before the lines get longer.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r28",
+    "name": "Part Time Lover",
+    "address": "3829 30th St, San Diego, CA 92104",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.6,
+    "lat": 32.74905,
+    "lng": -117.13130,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>North Park listening bar and record store from CH Projects and Folk Arts Rare Records. The format is Japanese kissa-bar — vinyl through a high-fidelity sound system, cocktails built with the same attention the records get, a room designed to make you sit still and actually listen. Natural wine list, minimal menu, the kind of bar that changes what you think a bar can be.</p><h3>The order</h3><ul><li>Whatever the bartender recommends — give them a spirit and defer the rest</li><li>Natural wine by the glass — the list rotates and is taken seriously</li><li>Check what's on the turntable before you order — it tells you everything about what kind of night this will be</li></ul><p>Not a loud bar. Not a late bar. Go early, find a seat, and let the music run.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r29",
+    "name": "Seven Grand",
+    "address": "3054 University Ave, San Diego, CA 92104",
+    "cuisine": "Whiskey Bar",
+    "rating": 4.5,
+    "lat": 32.74793,
+    "lng": -117.13925,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>North Park whiskey bar with a selection that will take you an hour to get through and a room dark enough to make that feel appropriate. The hunting lodge aesthetic — mounted heads, wood paneling, green lamps — is executed rather than approximated. The cocktail list exists and is competent. The whiskey list is the reason to be here: Scotch, bourbon, rye, Japanese, Irish, in depth.</p><h3>The order</h3><ul><li>Ask for something you haven't tried — the staff knows the back wall</li><li>Peated Scotch if you haven't gone there yet — this is the room for it</li><li>Whiskey sour if cocktails are the move — the acid is balanced correctly</li></ul><p>Happy hour runs until 8 PM and the pour is generous for the price. Arrive before then.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r30",
+    "name": "The Grass Skirt",
+    "address": "910 Grand Ave, San Diego, CA 92109",
+    "cuisine": "Tiki Bar",
+    "rating": 4.7,
+    "lat": 32.79862,
+    "lng": -117.25117,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Pacific Beach tiki bar hidden behind Good Time Poke — the burger joint at the front is the door. Through it: bamboo, thatch, tropical lighting, and one of the better rum programs in San Diego. The drinks are serious inside the tiki tradition: house-made orgeat, fresh citrus, layered rum builds. The Zombie is not a novelty here.</p><h3>The order</h3><ul><li>Zombie — the classic, executed correctly, and the two-drink limit is the policy and the correct one</li><li>Mai Tai — the benchmark for any tiki bar, and this version earns it</li><li>Whatever the seasonal special is — usually built around a house infusion</li></ul><p>Book ahead for weekend nights. The room is intimate, the line is real, and the walk-in wait can push past an hour.</p>",
+    "createdAt": "2026-06-01"
   }
 ]
