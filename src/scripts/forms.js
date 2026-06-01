@@ -13,7 +13,7 @@ const CUISINE_OPTIONS = [
   "Spanish", "Pizza", "BBQ", "Bakery", "Café", "Cocktail Bar"
 ];
 
-function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
+function RestaurantForm({ initial, defaultLat, defaultLng, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
   const [address, setAddress] = useStateF(initial?.address || "");
@@ -21,8 +21,8 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
   const [customCuisine, setCustomCuisine] = useStateF("");
   const [rating, setRating] = useStateF(initial?.rating ?? 4.0);
   const [description, setDescription] = useStateF(initial?.description || "");
-  const [lat, setLat] = useStateF(initial?.lat ?? 32.7157);
-  const [lng, setLng] = useStateF(initial?.lng ?? -117.1611);
+  const [lat, setLat] = useStateF(initial?.lat ?? defaultLat ?? 32.7157);
+  const [lng, setLng] = useStateF(initial?.lng ?? defaultLng ?? -117.1611);
   const [tags, setTags] = useStateF(initial?.tags || ["restaurant"]);
   const [contacts, setContacts] = useStateF(() => initial?.id ? SDStore.getRestaurantContacts(initial.id) : []);
   const [website, setWebsite] = useStateF(initial?.website || "");
@@ -530,6 +530,89 @@ function ImportDialog({ existing, kind, onClose, onCommit }) {
 }
 
 /* ============================================================
+   NOTE FORM (new + edit)
+   ============================================================ */
+
+function NoteForm({ initial, defaultLat, defaultLng, onSave, onCancel, onDelete, mode = "new" }) {
+  const toast = useToast();
+  const [name, setName] = useStateF(initial?.name || "");
+  const [address, setAddress] = useStateF(initial?.address || "");
+  const [tag, setTag] = useStateF(initial?.tag || "");
+  const [lat, setLat] = useStateF(initial?.lat ?? defaultLat ?? 32.7157);
+  const [lng, setLng] = useStateF(initial?.lng ?? defaultLng ?? -117.1611);
+  const [description, setDescription] = useStateF(initial?.description || "");
+
+  const handleSave = () => {
+    if (!name.trim()) { toast("Name is required", "warn"); return; }
+    const entry = {
+      id: initial?.id || SDStore.newId("n"),
+      name: name.trim(),
+      address: address.trim() || undefined,
+      tag: tag.trim() || "Note",
+      lat: Number(lat),
+      lng: Number(lng),
+      description,
+      createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
+    };
+    onSave(entry);
+  };
+
+  return (
+    <Modal
+      eyebrow={mode === "new" ? "New note" : "Edit note"}
+      title={mode === "new" ? "Pin a" : "Edit the"}
+      italicTitle="note"
+      onClose={onCancel}
+      wide
+      footer={
+        <>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {mode === "edit" && onDelete && (
+              <button className="btn danger" onClick={onDelete}>Delete</button>
+            )}
+          </div>
+          <div className="row">
+            <button className="btn ghost" onClick={onCancel}>Cancel</button>
+            <button className="btn accent" onClick={handleSave}>{mode === "new" ? "Save note" : "Save changes"}</button>
+          </div>
+        </>
+      }
+    >
+      <div className="field">
+        <label className="field-label">Name</label>
+        <input className="field-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Sunset viewpoint" />
+      </div>
+
+      <div className="field">
+        <label className="field-label">Tag</label>
+        <input className="field-input" value={tag} onChange={(e) => setTag(e.target.value)} placeholder="Viewpoint, Parking, Hidden Gem…" />
+      </div>
+
+      <div className="field">
+        <label className="field-label">Address <span className="field-optional">optional</span></label>
+        <input className="field-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="1234 Coast Hwy, San Diego, CA" />
+      </div>
+
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Latitude</label>
+          <input className="field-input" type="number" step="0.0001" value={lat} onChange={(e) => setLat(e.target.value)} />
+        </div>
+        <div className="field">
+          <label className="field-label">Longitude</label>
+          <input className="field-input" type="number" step="0.0001" value={lng} onChange={(e) => setLng(e.target.value)} />
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Notes</label>
+        <RichEditor value={description} onChange={setDescription} placeholder="What makes this spot worth noting…" />
+      </div>
+    </Modal>
+  );
+}
+
+/* ============================================================
    CONTACTS IMPORT DIALOG
    ============================================================ */
 
@@ -744,6 +827,6 @@ function LoginModal({ onLogin, onCancel }) {
   );
 }
 
-Object.assign(window, { RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
+Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
 
 })();

@@ -8,6 +8,7 @@ const CONTACTS_KEY      = "sabroso_contacts";
 const ADMIN_PW_KEY      = "sabroso_admin_pw";
 const ADMIN_SESSION_KEY = "sabroso_admin_session";
 const FAVORITES_KEY     = "sabroso_recipe_favs";
+const NOTES_KEY         = "sabroso_notes";
 
 window.SDStore = {
   loadRestaurants() {
@@ -113,4 +114,13 @@ window.SDStore = {
   saveFavorites(set) {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify([...set]));
   },
+
+  loadNotes() {
+    try {
+      const raw = localStorage.getItem(NOTES_KEY);
+      return raw !== null ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  },
+
+  saveNotes(list) { localStorage.setItem(NOTES_KEY, JSON.stringify(list)); },
 };

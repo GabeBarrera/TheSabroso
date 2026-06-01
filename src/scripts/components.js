@@ -257,7 +257,7 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
    MANAGE DROPDOWN
    ============================================================ */
 
-function ManageMenu({ items }) {
+function ManageMenu({ items, label = "Manage" }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
 
@@ -278,7 +278,7 @@ function ManageMenu({ items }) {
   return (
     <div className="manage-wrap" ref={wrapRef}>
       <button className={`manage-btn ${open ? "open" : ""}`} onClick={() => setOpen(!open)}>
-        Manage
+        {label}
         <span className="chev" />
       </button>
       {open && (

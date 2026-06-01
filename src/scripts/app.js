@@ -1,6 +1,6 @@
 (function () {
-/* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile,
-          RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal,
+/* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile,
+          RestaurantForm, RecipeForm, NoteForm, EditPicker, ImportDialog, LoginModal,
           ContactsImportDialog, BothImportDialog,
           ToastProvider, useToast, SDStore */
 
@@ -141,6 +141,8 @@ function App() {
     try { return localStorage.getItem("sabroso_theme") || "light"; } catch (e) { return "light"; }
   });
 
+  const [notes, setNotes] = useState(() => SDStore.loadNotes());
+  const [noteProfile, setNoteProfile] = useState(null);
   const [profile, setProfile] = useState(null);
   const [modal, setModal] = useState(null);
   const [animate, setAnimate] = useState(true);
@@ -179,6 +181,7 @@ function App() {
   // persist on change — guarded so we don't write before seed fetch resolves
   useEffect(() => { if (dataReady) SDStore.saveRestaurants(restaurants); }, [restaurants, dataReady]);
   useEffect(() => { if (dataReady) SDStore.saveRecipes(recipes); }, [recipes, dataReady]);
+  useEffect(() => { SDStore.saveNotes(notes); }, [notes]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem("sabroso_theme", theme); } catch (e) { /* no-op */ }
@@ -285,9 +288,9 @@ function App() {
   // ----- Manage menu builders -----
 
   const openManage = useCallback((target) => {
-    const list = target === "restaurant" ? restaurants : recipes;
-    return [
-      { label: "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
+    const list = target === "restaurant" ? restaurants : target === "recipe" ? recipes : notes;
+    const items = [
+      { label: target === "note" ? "New note" : "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
       { label: "Edit existing", hint: "modify", onClick: () => setModal({ kind: "pick", target }) },
       { label: "Import", hint: "merge", onClick: () => setModal(
         target === "restaurant" ? { kind: "import-pick" } : { kind: "import", target }
@@ -295,9 +298,10 @@ function App() {
       { label: "Backup", hint: "export", onClick: () =>
         target === "restaurant" ? setModal({ kind: "backup" }) : doBackup(target, list)
       },
-      { label: "Resync data", hint: "reset", onClick: () => setModal({ kind: "resync" }) },
     ];
-  }, [restaurants, recipes]);
+    if (target !== "note") items.push({ label: "Resync data", hint: "reset", onClick: () => setModal({ kind: "resync" }) });
+    return items;
+  }, [restaurants, recipes, notes]);
 
   return (
     <ToastProvider>
@@ -311,6 +315,10 @@ function App() {
         setRestaurants={setRestaurants}
         recipes={recipes}
         setRecipes={setRecipes}
+        notes={notes}
+        setNotes={setNotes}
+        noteProfile={noteProfile}
+        setNoteProfile={setNoteProfile}
         profile={profile}
         setProfile={setProfile}
         modal={modal}
@@ -336,7 +344,7 @@ function App() {
 }
 
 function doBackup(target, list) {
-  const filename = target === "restaurant" ? "sabroso_restaurants.json" : "sabroso_recipes.json";
+  const filename = target === "recipe" ? "sabroso_recipes.json" : "notes.json";
   SDStore.download(filename, JSON.stringify(list, null, 2));
 }
 
@@ -407,12 +415,13 @@ function AppInner(props) {
   const {
     view, setView, animate, onPointerDown, onPointerUp,
     restaurants, setRestaurants, recipes, setRecipes,
+    notes, setNotes, noteProfile, setNoteProfile,
     profile, setProfile, modal, setModal, openManage,
     theme, setTheme,
     chatActive, setChatActive, hiddenFilters, setHiddenFilters,
     voiceResult, setVoiceResult, mapActionsRef,
-  isAdmin, setIsAdmin,
-  cmdError, cmdErrorKey, showCmdError,
+    isAdmin, setIsAdmin,
+    cmdError, cmdErrorKey, showCmdError,
   } = props;
   const toast = useToast();
   const [kbdText, setKbdText] = useState("");
@@ -446,6 +455,30 @@ function AppInner(props) {
   const goRight = () => setView((v) => Math.min(2, v + 1));
 
   const closeModal = () => setModal(null);
+
+  // PIN DROP → open picker modal
+  const handlePinDrop = useCallback(({ lat, lng }) => {
+    setModal({ kind: "pin-pick", lat, lng });
+  }, []);
+
+  // NOTE handlers
+  const saveNote = (entry) => {
+    const isEdit = !!modal?.initial;
+    setNotes((list) => {
+      if (isEdit) return list.map((n) => (n.id === entry.id ? entry : n));
+      return [...list, entry];
+    });
+    toast(isEdit ? `Updated · ${entry.name}` : `Pinned · ${entry.name}`, "ok");
+    closeModal();
+  };
+
+  const deleteNote = (id) => {
+    const entry = notes.find((n) => n.id === id);
+    setNotes((list) => list.filter((n) => n.id !== id));
+    setNoteProfile(null);
+    toast(`Deleted · ${entry?.name || "note"}`, "ok");
+    closeModal();
+  };
 
   // SAVE handlers
   const saveRestaurant = (entry) => {
@@ -491,7 +524,8 @@ function AppInner(props) {
   // IMPORT commit
   const commitImport = (newList) => {
     if (modal.target === "restaurant") setRestaurants(newList);
-    else setRecipes(newList);
+    else if (modal.target === "recipe") setRecipes(newList);
+    else if (modal.target === "note") setNotes(newList);
     closeModal();
   };
 
@@ -517,6 +551,9 @@ function AppInner(props) {
             chatActive={chatActive}
             setChatActive={setChatActive}
             widgetsVisible={widgetsVisible}
+            notes={notes}
+            openNoteProfile={setNoteProfile}
+            onPinDrop={handlePinDrop}
           />
         </div>
         <div className="panel panel-about" data-screen-label="01 About">
@@ -612,9 +649,17 @@ function AppInner(props) {
         <div className="cmd-error" key={cmdErrorKey}>{cmdError}</div>
       )}
 
-      {/* PROFILE OVERLAY */}
+      {/* PROFILE OVERLAYS */}
       {profile && (
         <RestaurantProfile restaurant={profile} onClose={() => setProfile(null)} isAdmin={isAdmin} />
+      )}
+      {noteProfile && (
+        <NoteProfile
+          note={noteProfile}
+          onClose={() => setNoteProfile(null)}
+          onEdit={(note) => { setNoteProfile(null); setModal({ kind: "edit", target: "note", initial: note }); }}
+          onDelete={() => deleteNote(noteProfile.id)}
+        />
       )}
 
       {/* VOICE RESULT */}
@@ -643,15 +688,53 @@ function AppInner(props) {
       )}
       {modal?.kind === "pick" && (
         <EditPicker
-          entries={modal.target === "restaurant" ? restaurants : recipes}
+          entries={modal.target === "restaurant" ? restaurants : modal.target === "recipe" ? recipes : notes}
           kind={modal.target}
           onPick={pickToEdit}
           onCancel={closeModal}
         />
       )}
+      {modal?.kind === "new" && modal.target === "note" && (
+        <NoteForm
+          defaultLat={modal.lat}
+          defaultLng={modal.lng}
+          onSave={saveNote}
+          onCancel={closeModal}
+          mode="new"
+        />
+      )}
+      {modal?.kind === "edit" && modal.target === "note" && (
+        <NoteForm
+          initial={modal.initial}
+          onSave={saveNote}
+          onCancel={closeModal}
+          onDelete={() => deleteNote(modal.initial.id)}
+          mode="edit"
+        />
+      )}
+      {modal?.kind === "pin-pick" && (
+        <Modal eyebrow="Drop a pin" title="What are you" italicTitle="pinning?"
+          onClose={closeModal}
+          footer={<button className="btn ghost" onClick={closeModal}>Cancel</button>}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
+            <p style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: ".18em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 6 }}>
+              {modal.lat.toFixed(4)}, {modal.lng.toFixed(4)}
+            </p>
+            <button className="btn primary"
+              onClick={() => setModal({ kind: "new", target: "restaurant", lat: modal.lat, lng: modal.lng })}>
+              Restaurant
+            </button>
+            <button className="btn primary"
+              onClick={() => setModal({ kind: "new", target: "note", lat: modal.lat, lng: modal.lng })}>
+              Note
+            </button>
+          </div>
+        </Modal>
+      )}
       {modal?.kind === "import" && (
         <ImportDialog
-          existing={modal.target === "restaurant" ? restaurants : recipes}
+          existing={modal.target === "restaurant" ? restaurants : modal.target === "recipe" ? recipes : notes}
           kind={modal.target}
           onClose={closeModal}
           onCommit={commitImport}

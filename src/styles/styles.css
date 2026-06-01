@@ -809,6 +809,13 @@ a { color: inherit; }
 }
 .bar-pin .pulse { background: var(--marine); }
 
+.note-pin .dot {
+  background: var(--gold);
+  box-shadow: 0 0 0 1px var(--ink), 0 4px 8px rgba(26,24,22,.3);
+  border-radius: 3px;
+}
+.note-pin .pulse { background: var(--gold); border-radius: 3px; }
+
 /* ============================================================
    RECIPES VIEW
    ============================================================ */
@@ -2058,6 +2065,12 @@ a { color: inherit; }
   font-size: 13px !important;
   line-height: 1;
   flex-shrink: 0;
+}
+
+.profile-note-actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 60px 80px;
 }
 
 /* ============================================================

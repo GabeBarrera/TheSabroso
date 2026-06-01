@@ -137,22 +137,30 @@ function isFilterHidden(r, hiddenFilters) {
 }
 
 function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef,
-                   cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive, widgetsVisible }) {
+                   cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive, widgetsVisible,
+                   notes, openNoteProfile, onPinDrop }) {
   const mapDiv = useRefV(null);
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
   const markersRef = useRefV([]);
+  const noteMarkersRef = useRefV([]);
   const userMarkerRef = useRefV(null);
   const cityTimerRef = useRefV(null);
   const [cityName, setCityName] = useStateV("San Diego");
   const [weather, setWeather] = useStateV(null);
   const [listOpen, setListOpen] = useStateV(false);
   const toast = useToast();
-  // Always-current refs so the delegated popup handler doesn't go stale
+  // Always-current refs so delegated handlers don't go stale
   const restaurantsRef = useRefV(restaurants);
   const openProfileRef = useRefV(openProfile);
+  const notesRef = useRefV(notes || []);
+  const openNoteProfileRef = useRefV(openNoteProfile);
+  const onPinDropRef = useRefV(onPinDrop);
   useEffectV(() => { restaurantsRef.current = restaurants; }, [restaurants]);
   useEffectV(() => { openProfileRef.current = openProfile; }, [openProfile]);
+  useEffectV(() => { notesRef.current = notes || []; }, [notes]);
+  useEffectV(() => { openNoteProfileRef.current = openNoteProfile; }, [openNoteProfile]);
+  useEffectV(() => { onPinDropRef.current = onPinDrop; }, [onPinDrop]);
 
   // build map once
   useEffectV(() => {
@@ -174,17 +182,54 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
 
     mapInstance.current = map;
 
-    // Delegated handler for "Open profile" button inside popups.
-    // Runs in capture phase so it fires before Leaflet's closePopupOnClick,
-    // which otherwise swallows the click when the popup was opened via hover.
+    // Delegated handler for popup action buttons (runs in capture to beat Leaflet's close-on-click).
     map.getPanes().popupPane.addEventListener('click', (e) => {
       const btn = e.target.closest('.pop-select');
       if (!btn) return;
       e.stopPropagation();
+      if (btn.dataset.noteId) {
+        const note = notesRef.current.find((n) => n.id === btn.dataset.noteId);
+        if (note) { map.closePopup(); openNoteProfileRef.current?.(note); }
+        return;
+      }
       const id = btn.dataset.id;
       const r = restaurantsRef.current.find((x) => x.id === id);
       if (r) { map.closePopup(); openProfileRef.current(r); }
     }, true);
+
+    // Long-press to drop a pin (desktop mouse + touch)
+    const container = mapDiv.current;
+    let lpTimer = null;
+    let lpLatLng = null;
+    let lpMoved = false;
+
+    map.on("mousedown", (e) => {
+      if (e.originalEvent.button !== 0) return;
+      lpMoved = false;
+      lpLatLng = e.latlng;
+      lpTimer = setTimeout(() => {
+        if (!lpMoved && lpLatLng) onPinDropRef.current?.({ lat: lpLatLng.lat, lng: lpLatLng.lng });
+      }, 600);
+    });
+    map.on("mousemove", () => { lpMoved = true; clearTimeout(lpTimer); lpTimer = null; });
+    map.on("mouseup",   () => { clearTimeout(lpTimer); lpTimer = null; });
+    map.on("dragstart", () => { clearTimeout(lpTimer); lpTimer = null; });
+
+    const onTouchStart = (e) => {
+      lpMoved = false;
+      const t = e.touches[0];
+      const rect = container.getBoundingClientRect();
+      lpLatLng = map.containerPointToLatLng(L.point(t.clientX - rect.left, t.clientY - rect.top));
+      lpTimer = setTimeout(() => {
+        if (!lpMoved && lpLatLng) onPinDropRef.current?.({ lat: lpLatLng.lat, lng: lpLatLng.lng });
+      }, 600);
+    };
+    const onTouchMove = () => { lpMoved = true; clearTimeout(lpTimer); lpTimer = null; };
+    const onTouchEnd  = () => { clearTimeout(lpTimer); lpTimer = null; };
+
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchmove",  onTouchMove,  { passive: true });
+    container.addEventListener("touchend",   onTouchEnd,   { passive: true });
 
     // reverse-geocode center + fetch weather on move
     const fetchCity = () => {
@@ -238,6 +283,9 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     }
 
     return () => {
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove",  onTouchMove);
+      container.removeEventListener("touchend",   onTouchEnd);
       map.remove();
       mapInstance.current = null;
     };
@@ -327,12 +375,45 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     }
   }, [restaurants, hiddenFilters]);
 
+  // render note markers
+  useEffectV(() => {
+    const map = mapInstance.current;
+    if (!map) return;
+    noteMarkersRef.current.forEach((m) => map.removeLayer(m));
+    noteMarkersRef.current = [];
+    (notes || []).forEach((note) => {
+      const icon = L.divIcon({
+        className: "",
+        html: `<div class="sd-marker note-pin"><div class="pulse"></div><div class="dot"></div></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -14],
+      });
+      const popHtml = `
+        <div class="pin-pop">
+          <div class="pop-head-row">
+            <div class="pop-cuisine">${escapeHtml(note.tag || "NOTE")}</div>
+          </div>
+          <div class="pop-name">${escapeHtml(note.name)}</div>
+          ${note.address ? `<div class="pop-addr">${escapeHtml(note.address)}</div>` : ""}
+          <div class="pop-actions">
+            <button class="pop-select" data-note-id="${note.id}">Open note →</button>
+          </div>
+        </div>`;
+      const m = L.marker([note.lat, note.lng], { icon }).addTo(map);
+      m.bindPopup(popHtml, { maxWidth: 300 });
+      m.on("mouseover", () => m.openPopup());
+      noteMarkersRef.current.push(m);
+    });
+  }, [notes]);
+
   return (
     <div className="map-view" data-screen-label="02 Map">
       <div className="map-header">
         <div className="map-header-left" />
         <div className="title">The Map · <span className="it">{cityName}</span></div>
         <div className="map-header-right">
+          <ManageMenu items={openManage("note")} label="Notes" />
           <ManageMenu items={openManage("restaurant")} />
         </div>
       </div>
@@ -864,6 +945,52 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
   );
 }
 
-Object.assign(window, { AboutView, MapView, RecipesView, RestaurantProfile });
+function NoteProfile({ note, onClose, onEdit, onDelete }) {
+  useEffectV(() => {
+    const onEsc = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  }, [onClose]);
+
+  return (
+    <div className="profile" role="dialog">
+      <button className="profile-close" onClick={onClose}>← Close</button>
+
+      <div className="profile-head">
+        <div className="profile-eyebrow">Note · {note.tag || "Note"}</div>
+        <h1>{note.name}</h1>
+        {note.address && <div className="tagline">{note.address}</div>}
+      </div>
+
+      <div className="profile-meta" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+        <div className="cell">
+          <div className="k">Tag</div>
+          <div className="v">{note.tag || "—"}</div>
+        </div>
+        <div className="cell">
+          <div className="k">Coordinates</div>
+          <div className="v" style={{ fontFamily: "var(--mono)", fontSize: 13 }}>
+            {note.lat.toFixed(4)}, {note.lng.toFixed(4)}
+          </div>
+        </div>
+        <div className="cell">
+          <div className="k">Filed</div>
+          <div className="v" style={{ fontFamily: "var(--mono)", fontSize: 14 }}>{note.createdAt}</div>
+        </div>
+      </div>
+
+      <ProfileMiniMap lat={note.lat} lng={note.lng} />
+
+      <div className="profile-body" dangerouslySetInnerHTML={{ __html: note.description || "<p><em>No notes yet.</em></p>" }} />
+
+      <div className="profile-note-actions">
+        <button className="btn ghost" onClick={() => onEdit(note)}>Edit note</button>
+        <button className="btn danger" onClick={onDelete}>Delete</button>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile });
 
 })();
