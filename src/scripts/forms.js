@@ -293,6 +293,38 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
    EDIT PICKER — dropdown / search to choose what to edit
    ============================================================ */
 
+function RestaurantListModal({ restaurants, onClose, onOpenProfile, onEdit }) {
+  const sorted = useMemoF(() =>
+    [...restaurants].sort((a, b) => a.name.localeCompare(b.name)),
+    [restaurants]
+  );
+
+  return (
+    <Modal eyebrow="Restaurants" title="All" italicTitle="entries" onClose={onClose}>
+      <div className="edit-list">
+        {sorted.length === 0 && (
+          <div style={{ padding: "32px 18px", textAlign: "center" }} className="muted">
+            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18 }}>No restaurants yet.</div>
+          </div>
+        )}
+        {sorted.map((r) => (
+          <div key={r.id} className="restaurant-list-row">
+            <button className="restaurant-list-row-main" onClick={() => onOpenProfile(r)}>
+              <div>
+                <div className="er-name">{r.name}</div>
+                <div className="er-meta">
+                  {r.cuisine}{r.address ? ` · ${r.address.split(",")[0]}` : ""}
+                </div>
+              </div>
+            </button>
+            <button className="restaurant-list-edit-btn" onClick={() => onEdit(r)}>Edit</button>
+          </div>
+        ))}
+      </div>
+    </Modal>
+  );
+}
+
 function EditPicker({ entries, kind, onPick, onCancel }) {
   const [q, setQ] = useStateF("");
   const filtered = useMemoF(() => {
@@ -834,6 +866,6 @@ function LoginModal({ onLogin, onCancel }) {
   );
 }
 
-Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
+Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
 
 })();
