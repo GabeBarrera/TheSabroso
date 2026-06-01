@@ -148,6 +148,11 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const [weather, setWeather] = useStateV(null);
   const [listOpen, setListOpen] = useStateV(false);
   const toast = useToast();
+  // Always-current refs so the delegated popup handler doesn't go stale
+  const restaurantsRef = useRefV(restaurants);
+  const openProfileRef = useRefV(openProfile);
+  useEffectV(() => { restaurantsRef.current = restaurants; }, [restaurants]);
+  useEffectV(() => { openProfileRef.current = openProfile; }, [openProfile]);
 
   // build map once
   useEffectV(() => {
@@ -168,6 +173,18 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     }).addTo(map);
 
     mapInstance.current = map;
+
+    // Delegated handler for "Open profile" button inside popups.
+    // Runs in capture phase so it fires before Leaflet's closePopupOnClick,
+    // which otherwise swallows the click when the popup was opened via hover.
+    map.getPanes().popupPane.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pop-select');
+      if (!btn) return;
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      const r = restaurantsRef.current.find((x) => x.id === id);
+      if (r) { map.closePopup(); openProfileRef.current(r); }
+    }, true);
 
     // reverse-geocode center + fetch weather on move
     const fetchCity = () => {
@@ -289,13 +306,6 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
       m.on("popupopen", () => {
         const slot = document.getElementById(`stars-${r.id}`);
         if (slot) slot.innerHTML = starsHtml(r.rating || 0);
-        const btn = document.querySelector(`.pop-select[data-id="${r.id}"]`);
-        if (btn) {
-          btn.onclick = () => {
-            map.closePopup();
-            openProfile(r);
-          };
-        }
       });
 
       // hover to open popup
