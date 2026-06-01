@@ -11,7 +11,8 @@
     ],
     "lat": 32.68531518270564,
     "lng": -117.17890793621442,
-    "description": "<p>Buona Forchetta is a pillar of the community in every San Diego neighborhood that it is in, but this location will always have a pizza my heart. Whether you are here for their authentic Neapolitan pizza's, home-made pasta, or any of the Italian classics that they offer, you cannot go wrong.&nbsp;</p><h3>Favorites</h3><ul><li>Margherita — the benchmark</li><li>Sottoterra — a savory and tangy salad featuring a fresh organic greens base topped with a pre-mixed blend of sautéed carrots, fennel, parsnips, and onions, all finished with creamy goat cheese and a zesty homemade Dijon mustard vinaigrette.</li><li>Tiramisu — absolute perfection.&nbsp;</li></ul><p>And after you've carb loaded and are starting to feel the post-comida coma, Downtown Coronado is a lovely — and romantic ;) — spot for a long walk with the beach not too far away.&nbsp;&nbsp;</p>",
+    "description": "<p>Buona Forchetta is a pillar of the community in every San Diego neighborhood that it is in, but this location will always have a pizza my heart. Whether you are here for their authentic Neapolitan pizza's, home-made pasta, or any of the Italian classics that they offer, you cannot go wrong.&nbsp;</p><h3>My Order</h3><ul><li>MARGHERITA — the benchmark pizza</li><li>SOTTOTERRA — a savory and tangy salad featuring a fresh organic greens base topped with a pre-mixed blend of sautéed carrots, fennel, parsnips, and onions, all finished with creamy goat cheese and a zesty homemade Dijon mustard vinaigrette.</li><li>TIRAMISU — absolute perfection.&nbsp;</li><li>And literally any of the pasta/sauce/toppings</li></ul><p>And after you've carb loaded and are starting to feel the post-comida coma, Downtown Coronado is a lovely — and romantic ;) — spot for a long walk with the beach not too far away.&nbsp;&nbsp;</p>",
+    "contacts": [],
     "website": "https://buonaforchettasd.com/location/coronado/",
     "reservationLink": "https://www.opentable.com/r/garage-buona-forchetta-coronado",
     "createdAt": "2026-01-14"
@@ -28,7 +29,7 @@
     ],
     "lat": 32.72449282219502,
     "lng": -117.16924736256803,
-    "description": "<p>If you're into ramen and the cyberpunk aesthetic as much as I am, this is the spot for you. Underbelly is a downtown ramen counter with a tonkotsu broth that runs 18 hours. The chashu comes from a low braise that's been going since Tuesday. The soft egg is seasoned overnight. Cramped, loud, worth every inconvenience. This is yet another Consortium Holdings offering that does not disappoint.&nbsp;</p><h3>The order</h3><ul><li>Tonkotsu — rich, porky, the correct depth</li><li>Extra chashu — add it, don't think about it</li><li>Gyoza, pan-fried, order them when you sit down</li></ul><p><em>No substitutions on the broth.</em> This is non-negotiable and the right call.</p>",
+    "description": "<p>If you're into ramen and the cyberpunk aesthetic as much as I am, this is the spot for you. This corner downtown ramen counter with a tonkotsu broth that runs 12 hours is a lunchtime and late night staple. The chashu comes from a low braise and the soft egg is seasoned overnight. Cramped, loud, worth every inconvenience to sit under the glowing neon masterpiece above you. This is yet another Consortium Holdings offering that does not disappoint.&nbsp;</p><h3>My Order</h3><ul><li>BELLY OF THE BEAST&nbsp;— rich tonkotsu broth, soft boiled egg, oxtail dumplings, hoisin glazed short ribs... a meat lovers delight</li><li>SPICY JFC — add it, don't think about it.&nbsp;Red pepper sauce, cabbage, lemon, and a side of mayo.</li><li>SHO CHIKU BAI — Nigori Sake. 375ml. 15% unfiltered; the perfect ramen pairing.</li></ul>",
     "contacts": [],
     "createdAt": "2026-01-22"
   },
@@ -38,12 +39,13 @@
     "address": "777 G St, San Diego, CA 92101",
     "cuisine": "Cocktail Bar",
     "rating": 4.8,
-    "lat": 32.7124267,
-    "lng": -117.1575869,
     "tags": [
       "bar"
     ],
-    "description": "<p>East Village speakeasy accessed through a bookcase of bourbon bottles inside Neighborhood restaurant. The entrance is the experience, but it earns what comes after: 30 seats, antlered wallpaper, gold-leaf ceiling, and a cocktail program that operates at the top of its class. Every drink is built with the kind of attention that justifies the reservation requirement.</p><h3>The order</h3><ul><li>Whatever the bartender recommends — tell them a spirit and a direction, trust the rest</li><li>Anything from the rotating seasonal list — the program changes and it's always worth following</li><li>The Corpse Reviver if it's on — benchmark execution</li></ul><p><strong>Reservations required.</strong> The room holds roughly 30 people and books out fast. Walk-ins are turned away. Plan accordingly — the planning is worth it.</p>",
+    "lat": 32.7124267,
+    "lng": -117.1575869,
+    "description": "<p>East Village speakeasy accessed through a secret entrance inside the Neighborhood restaurant. The entrance is the experience, but it earns what comes after: 30 seats, haunted-upscale mood lighting, portraits mounted on the ceiling, a wall lined up with enough skulls to put French catacombs to shame, and a cocktail program that operates at the top of its class. Every drink is built with the evening's vibes and the kind of attention and mixological professionalism that justifies the reservation requirement.</p><h3>My Order</h3><ul><li>Whatever the bartender recommends — tell them a spirit and a direction, and trust the process</li><li>Anything from the rotating seasonal list — the program changes and it's always worth following</li></ul><p><strong>Reservations required.</strong> The room holds roughly 30 people and books out fast. Walk-ins are possible, but increasingly unlikely the closer you get to the weekend. Plan accordingly — the planning is worth it.</p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -137,12 +139,14 @@
     "address": "2210 Kettner Blvd, San Diego, CA 92101",
     "cuisine": "American",
     "rating": 4.6,
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "lat": 32.72746797271498,
     "lng": -117.1709913069006,
-    "tags": [
-      "restaurant"
-    ],
     "description": "<p>Little Italy flagship with a wood-fired program that informs the food rather than just appearing in the menu copy. The charred broccolini is a side dish that outclasses the mains on half the menus in this city. The space is loud and handsome.</p><h3>The order</h3><ul><li>Wood-roasted half chicken — crisp, juicy, no notes</li><li>Charred broccolini, lemon, chili, garlic</li><li>Burrata, stone fruit, aged balsamic</li></ul><p>Start with whatever the bartender recommends. The cocktail list rewards the conversation.</p>",
+    "contacts": [],
     "createdAt": "2026-03-22"
   },
   {
@@ -322,14 +326,15 @@
     "name": "Dockside",
     "address": "Middletown, San Diego, CA",
     "cuisine": "American",
-    "rating": 4.3,
-    "lat": 32.7194586,
-    "lng": -117.1735913,
+    "rating": 4.2,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Bar and grill near the water with a menu that doesn't require much deliberation — burgers, fish, something cold on draft. The patio works on a good evening. The food is better than it needs to be for a bar this casual, which is the only bar worth going to.</p><h3>The order</h3><ul><li>Fish tacos — better than expected, order them when available</li><li>Burger — solid, nothing more needs to be said</li><li>Whatever is on draft — rotating, usually local</li></ul><p>Patio seating is the move. Arrive before sunset if you want a spot.</p>",
+    "lat": 32.7194586,
+    "lng": -117.1735913,
+    "description": "<p>Formerly the old Ketch Grill and Taps of the Portside Pier, this public viewing access bar and eatery is my go to for chill vibes, good company, and the perfect San Diego Summer sunset spot.</p><h3>The order</h3><ul><li>SPICY CHICKEN SANDWICH&nbsp;</li><li>Burger — solid, nothing more needs to be said</li><li>Whatever is on draft — rotating, usually local</li></ul><p>Patio seating is the move. Arrive before sunset if you want a spot.</p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -395,7 +400,7 @@
     "cuisine": "Cocktail Bar",
     "rating": 4.6,
     "lat": 32.74905,
-    "lng": -117.13130,
+    "lng": -117.1313,
     "tags": [
       "bar"
     ],
