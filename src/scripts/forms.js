@@ -354,6 +354,16 @@ function ImportDialog({ existing, kind, onClose, onCommit }) {
       const data = JSON.parse(text);
       const arr = Array.isArray(data) ? data : [data];
       if (arr.length === 0) { toast("File contained no entries", "warn"); return; }
+      const invalid = arr.filter((e) => {
+        if (!e || typeof e !== "object" || Array.isArray(e)) return true;
+        if (!e.name || typeof e.name !== "string" || !e.name.trim()) return true;
+        if (kind === "restaurant" && (typeof e.lat !== "number" || typeof e.lng !== "number")) return true;
+        return false;
+      });
+      if (invalid.length > 0) {
+        toast(`Wrong format — ${invalid.length} entr${invalid.length === 1 ? "y" : "ies"} missing required fields (name${kind === "restaurant" ? ", lat, lng" : ""})`, "warn");
+        return;
+      }
       setIncoming(arr);
       // initialize decisions: default to "overwrite" for dupes
       const init = {};
@@ -412,12 +422,9 @@ function ImportDialog({ existing, kind, onClose, onCommit }) {
       onClose={onClose}
       footer={
         stage === "pick" ? (
-          <>
-            <div className="muted" style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase" }}>
-              Accepts .json — array of entries or a single entry
-            </div>
-            <button className="btn primary" onClick={() => fileRef.current?.click()}>Choose file</button>
-          </>
+          <div className="muted" style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase" }}>
+            Accepts .json — array of entries or a single entry
+          </div>
         ) : (
           <>
             <div className="muted" style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase" }}>

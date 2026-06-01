@@ -2486,8 +2486,10 @@ a { color: inherit; }
   .map-city-tag {
     display: block;
     position: absolute;
-    top: 103px;
-    left: 12px;
+    bottom: 54px;
+    left: 0;
+    right: 0;
+    text-align: center;
     font-family: var(--serif);
     font-style: italic;
     font-size: 13px;
@@ -2495,8 +2497,6 @@ a { color: inherit; }
     z-index: 29;
     pointer-events: none;
     line-height: 1;
-    background: color-mix(in srgb, var(--paper) 80%, transparent);
-    padding: 3px 7px;
   }
 
   .dock-fab {
