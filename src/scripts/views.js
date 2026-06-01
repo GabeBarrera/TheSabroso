@@ -320,7 +320,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     <div className="map-view" data-screen-label="02 Map">
       <div className="map-header">
         <div className="map-header-left" />
-        <div className="title">The Map · <span className="it">{cityName}</span></div>
+        <div className="title">The Map<span className="title-city"> · <span className="it">{cityName}</span></span></div>
         <div className="map-header-right">
           <ManageMenu items={openManage("restaurant")} />
         </div>
@@ -356,6 +356,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
       </div>
 
       <div ref={mapDiv} className="map-canvas" />
+      <div className="map-city-tag">{cityName}</div>
 
       {widgetsVisible && (
         <div className="map-stat">
