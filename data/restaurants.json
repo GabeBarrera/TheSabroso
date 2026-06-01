@@ -34,18 +34,17 @@
   },
   {
     "id": "r3",
-    "name": "Neighborhood",
+    "name": "Noble Experiment",
     "address": "777 G St, San Diego, CA 92101",
-    "cuisine": "American",
-    "rating": 4.3,
-    "lat": 32.712443558567344,
-    "lng": -117.1575772108714,
+    "cuisine": "Cocktail Bar",
+    "rating": 4.8,
+    "lat": 32.7124267,
+    "lng": -117.1575869,
     "tags": [
-      "restaurant",
       "bar"
     ],
-    "description": "<p>East Village burger bar with 24 rotating locals on tap and a double smash that benchmarks the category. Two thin patties, American cheese, pickles, onion, house sauce on a toasted potato roll. The fries are shoestring and salted correctly, which is rarer than it sounds.</p><h3>The order</h3><ul><li>Double smash — no modifications needed</li><li>Shoestring fries</li><li>Whatever IPA the bartender just tapped</li></ul>",
-    "createdAt": "2026-02-01"
+    "description": "<p>East Village speakeasy accessed through a bookcase of bourbon bottles inside Neighborhood restaurant. The entrance is the experience, but it earns what comes after: 30 seats, antlered wallpaper, gold-leaf ceiling, and a cocktail program that operates at the top of its class. Every drink is built with the kind of attention that justifies the reservation requirement.</p><h3>The order</h3><ul><li>Whatever the bartender recommends — tell them a spirit and a direction, trust the rest</li><li>Anything from the rotating seasonal list — the program changes and it's always worth following</li><li>The Corpse Reviver if it's on — benchmark execution</li></ul><p><strong>Reservations required.</strong> The room holds roughly 30 people and books out fast. Walk-ins are turned away. Plan accordingly — the planning is worth it.</p>",
+    "createdAt": "2026-06-01"
   },
   {
     "id": "r4",
@@ -381,8 +380,8 @@
     "address": "4646 Convoy St, San Diego, CA 92111",
     "cuisine": "Cocktail Bar",
     "rating": 4.6,
-    "lat": 32.82988,
-    "lng": -117.15205,
+    "lat": 32.8248571,
+    "lng": -117.1559327,
     "tags": [
       "bar"
     ],
@@ -429,6 +428,190 @@
       "bar"
     ],
     "description": "<p>Pacific Beach tiki bar hidden behind Good Time Poke — the burger joint at the front is the door. Through it: bamboo, thatch, tropical lighting, and one of the better rum programs in San Diego. The drinks are serious inside the tiki tradition: house-made orgeat, fresh citrus, layered rum builds. The Zombie is not a novelty here.</p><h3>The order</h3><ul><li>Zombie — the classic, executed correctly, and the two-drink limit is the policy and the correct one</li><li>Mai Tai — the benchmark for any tiki bar, and this version earns it</li><li>Whatever the seasonal special is — usually built around a house infusion</li></ul><p>Book ahead for weekend nights. The room is intimate, the line is real, and the walk-in wait can push past an hour.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r31",
+    "name": "Books & Records",
+    "address": "Middletown, San Diego, CA",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.5,
+    "lat": 32.7284222,
+    "lng": -117.1614469,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Middletown bar that earns its aesthetic — shelves of books, record bins, low lighting, and a cocktail program that backs up the room. Not a theme bar. The drinks are built with care and the natural wine selection has been given actual thought. The kind of room that runs late without announcing it.</p><h3>The order</h3><ul><li>Bartender's choice — give a spirit and a direction, step back</li><li>Natural wine by the glass — rotating, taken seriously</li><li>Whatever is seasonal on the cocktail list — rewards returning</li></ul><p>The kind of bar you end up at because a friend suggested it and stay at because you don't want to leave.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r32",
+    "name": "Sisters Pizza",
+    "address": "Hillcrest, San Diego, CA",
+    "cuisine": "Pizza",
+    "rating": 4.4,
+    "lat": 32.7435411,
+    "lng": -117.161286,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>Hillcrest pizza spot doing Detroit-style in a small room that fills fast. The Red Top is the reason to come: square pan, crispy lacey cheese edges, sauce over cheese the way it's supposed to go. The kind of pizza that makes you reconsider what you thought you wanted from the category.</p><h3>The order</h3><ul><li>Red Top, Detroit-style — the whole point of being here</li><li>Whatever the seasonal slice special is — usually worth it</li><li>Order ahead if you can — the room is small and patience has limits</li></ul><p>Arrive early or call ahead. Small operation, short wait tolerance.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r33",
+    "name": "Bali Hai Restaurant",
+    "address": "2230 Shelter Island Dr, San Diego, CA 92106",
+    "cuisine": "Polynesian",
+    "rating": 4.3,
+    "lat": 32.7194332,
+    "lng": -117.220418,
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
+    "description": "<p>Shelter Island Polynesian institution since 1955 with a bay view that has not diminished. The room is dated in the ways that have become correct — carved tiki, bamboo, a bar that has been pouring since before you were born. The cocktail is the classic Bali Hai; the sunset from the deck does the rest of the work. This is a San Diego original in every sense.</p><h3>The order</h3><ul><li>Bali Hai cocktail — the house rum punch, the only right call on a first visit</li><li>Macadamia nut-crusted mahi — the kitchen's reliable anchor</li><li>Sit on the deck — the view is the meal</li></ul><p>Go at sunset. Arrive 20 minutes early to get the right seat. Everything else is secondary.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r34",
+    "name": "Aero Club Bar",
+    "address": "3365 India St, San Diego, CA 92103",
+    "cuisine": "Dive Bar",
+    "rating": 4.2,
+    "lat": 32.7381483,
+    "lng": -117.176468,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>Mission Hills dive bar with a whiskey collection that runs into the hundreds — aviation memorabilia on every wall, cash preferred, ice in the glass. The bar program is not precious about it: pour what you're handed, sit down, come back tomorrow. One of the last rooms in San Diego that operates the way a bar should and has no interest in changing.</p><h3>The order</h3><ul><li>Ask what's interesting in the whiskey well — the answer is always there</li><li>Anything peated if you haven't explored that shelf yet — this is the room for it</li><li>Beer back — the correct accompaniment, no argument</li></ul><p>Unpretentious in the actual sense of the word. Goes dark early on weeknights. That is a feature.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r35",
+    "name": "Top of the Hyatt",
+    "address": "1 Market Pl, San Diego, CA 92101",
+    "cuisine": "Cocktail Bar",
+    "rating": 4.4,
+    "lat": 32.709746,
+    "lng": -117.167834,
+    "tags": [
+      "bar"
+    ],
+    "description": "<p>40th floor of the Manchester Grand Hyatt with a panoramic view of the bay, Coronado, and the downtown skyline. The drinks are fine. The view is the product and it earns the price without argument. Go at sunset, arrive early enough to claim a window seat, order something cold, and let the city do what it does at that altitude.</p><h3>The order</h3><ul><li>Whatever is coldest and simplest — the setting is doing most of the work</li><li>Champagne if the occasion calls for it — the backdrop earns it</li><li>Get there 30 minutes before sunset — the window seats go fast and the view changes quickly</li></ul><p>Book a table if you're going on a weekend. The walk-in line at golden hour is real.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r36",
+    "name": "Animae",
+    "address": "969 Pacific Hwy, San Diego, CA 92101",
+    "cuisine": "Asian-Latin",
+    "rating": 4.7,
+    "lat": 32.715116,
+    "lng": -117.170522,
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
+    "description": "<p>Little Italy pan-Asian restaurant from a kitchen that takes the brief seriously — wagyu, sashimi, and Japanese-Latin crossovers executed at a level most restaurants in this city can't touch. The design is the other story: neon, gold, a bar that could stand alone. Michelin-adjacent and not surprised by it. This is where technique and concept actually meet.</p><h3>The order</h3><ul><li>A5 wagyu — if it's available and the occasion justifies it, there's no argument</li><li>Whole crispy fish — arrives dramatically, tastes correctly</li><li>The cocktail list at the bar — built with the same seriousness as the kitchen</li></ul><p>Make a reservation. The walk-in game here is not worth playing on weekends. Dress the occasion.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r37",
+    "name": "Zarlitos",
+    "address": "National City, CA",
+    "cuisine": "Mexican",
+    "rating": 4.3,
+    "lat": 32.6776306,
+    "lng": -117.101525,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>South Bay family restaurant running Mexican comfort food the right way — no pretense, no ambition beyond feeding people well. The carne asada plate is the reason to know this place: properly grilled, correct char, served with rice and beans done without shortcuts. Large portions, correct prices, the kind of neighborhood spot that doesn't need a review.</p><h3>The order</h3><ul><li>Carne asada plate — the whole reason you're here</li><li>Chile relleno if it's on — reliably done</li><li>Horchata — the house version, not bottled</li></ul><p>Bring cash, bring an appetite, bring someone who can finish a plate. No one leaves light.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r38",
+    "name": "Mr. Birria",
+    "address": "Santee, CA",
+    "cuisine": "Mexican",
+    "rating": 4.5,
+    "lat": 32.8396194,
+    "lng": -116.9962652,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>Santee birria operation that does one thing and does it without apology. The consommé is deep — long-braised, properly fatty, the kind that leaves a mark. The quesabirria is the move: crispy tortilla, dipped correctly, assembled with the right ratio of cheese to meat. Worth the drive east without question.</p><h3>The order</h3><ul><li>Quesabirria — dipped, not optional</li><li>Consommé on the side — drink it, that is the point</li><li>Birria ramen if it's available — the crossover works here</li></ul><p>Weekend lines are real. Arrive early or order ahead. The wait is never long enough to justify skipping it.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r39",
+    "name": "Mary's Donuts & Coffee",
+    "address": "Santee, CA",
+    "cuisine": "Bakery",
+    "rating": 4.2,
+    "lat": 32.8401804,
+    "lng": -116.9954235,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>Santee donut counter in the tradition of every great donut shop — open early, fluorescent lights, glazed on the rack by 5 AM. The cake donut is the benchmark. The apple fritter is the occasion. The coffee is there and does its job. Nothing sophisticated happens here and that is precisely the point.</p><h3>The order</h3><ul><li>Glazed — the reference point, eat one immediately</li><li>Apple fritter — large, correct, no notes</li><li>Cake donut — the underrated pick, always right</li></ul><p>Opens before dawn. Go before work or accept you're eating whatever's left by 9 AM.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r40",
+    "name": "Mario's De La Mesa",
+    "address": "La Mesa, CA",
+    "cuisine": "Mexican",
+    "rating": 4.4,
+    "lat": 32.7666164,
+    "lng": -117.0157279,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>La Mesa Mexican institution with the kind of menu that hasn't needed to change in decades. The enchiladas are the move — sauce that's been going since Tuesday, proper melt, served with rice and beans done correctly. A neighborhood restaurant operating at neighborhood standards, which in this case means genuinely good.</p><h3>The order</h3><ul><li>Enchiladas — the sauce is the reason, red or green depending on your conviction</li><li>Menudo on weekends — the version that earns the drive</li><li>Agua fresca — skip the soda</li></ul><p>Cash is faster. The lunch crowd is real. Go early or accept the wait, which is worth it.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r41",
+    "name": "Tita's Kitchenette",
+    "address": "Chula Vista, CA",
+    "cuisine": "Filipino",
+    "rating": 4.5,
+    "lat": 32.6800731,
+    "lng": -117.078358,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>Chula Vista Filipino counter cooking that earns its following on every visit. The sinigang is the order: sour, deep, built with the right pork-to-broth ratio and tamarind that actually shows up. The longanisa breakfast plate runs all day and is always correct. The kind of restaurant you tell people about in the same breath as telling them to make the drive.</p><h3>The order</h3><ul><li>Sinigang — the pork version, the reason the restaurant exists</li><li>Longanisa and eggs — available all day, always the right call</li><li>Pancit — order it as a side, finish it as a main</li></ul><p>Small operation. Goes fast on weekends. Arrive with patience and leave with leftovers.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r42",
+    "name": "Royal Mandarin",
+    "address": "Chula Vista, CA",
+    "cuisine": "Chinese",
+    "rating": 4.3,
+    "lat": 32.6760033,
+    "lng": -117.0951844,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>Chula Vista Chinese restaurant covering more ground than the strip mall entrance suggests. The Peking duck comes out right — crispy skin, proper pancakes, hoisin handled correctly. The wonton soup is the benchmark for the category in this area. Order more than you think you need, share everything, and don't rush the tea.</p><h3>The order</h3><ul><li>Peking duck — call ahead to reserve one, worth the planning</li><li>Wonton soup — the benchmark, arrives correctly</li><li>Mapo tofu if you want heat — they don't pull the Sichuan pepper</li></ul><p>Dim sum on weekends. Arrive at opening or expect to wait for a table that seats the whole party.</p>",
+    "createdAt": "2026-06-01"
+  },
+  {
+    "id": "r43",
+    "name": "Frost Me Cafe & Bakery",
+    "address": "Little Italy, San Diego, CA",
+    "cuisine": "Bakery",
+    "rating": 4.5,
+    "lat": 32.722832,
+    "lng": -117.1677805,
+    "tags": [
+      "restaurant"
+    ],
+    "description": "<p>Little Italy bakery operating in the neighborhood that needs one. The cupcakes are the anchor — well-frosted, correct cake-to-frosting ratio, rotating flavors that reward a second visit. The coffee is capable. The pastry case turns over fast on weekends, which is the signal about when to arrive and how decisive to be once you're in line.</p><h3>The order</h3><ul><li>Cupcake of the day — whatever is most unexpected is usually the right call</li><li>Layer cake by the slice if available — the frosting-to-cake ratio is always correct</li><li>Coffee — capable, pairs without complaint</li></ul><p>Weekend mornings move fast. Arrive with a plan or accept what's left, which is still worth it.</p>",
     "createdAt": "2026-06-01"
   }
 ]

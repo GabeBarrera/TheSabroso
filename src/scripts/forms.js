@@ -325,6 +325,38 @@ function RestaurantListModal({ restaurants, onClose, onOpenProfile, onEdit }) {
   );
 }
 
+function NoteListModal({ notes, onClose, onOpenProfile, onEdit }) {
+  const sorted = useMemoF(() =>
+    [...notes].sort((a, b) => a.name.localeCompare(b.name)),
+    [notes]
+  );
+
+  return (
+    <Modal eyebrow="Notes" title="All" italicTitle="notes" onClose={onClose}>
+      <div className="edit-list">
+        {sorted.length === 0 && (
+          <div style={{ padding: "32px 18px", textAlign: "center" }} className="muted">
+            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18 }}>No notes yet.</div>
+          </div>
+        )}
+        {sorted.map((n) => (
+          <div key={n.id} className="restaurant-list-row">
+            <button className="restaurant-list-row-main" onClick={() => onOpenProfile(n)}>
+              <div>
+                <div className="er-name">{n.name}</div>
+                <div className="er-meta">
+                  {n.tag || "Note"}{n.address ? ` · ${n.address.split(",")[0]}` : ""}
+                </div>
+              </div>
+            </button>
+            <button className="restaurant-list-edit-btn" onClick={() => onEdit(n)}>Edit</button>
+          </div>
+        ))}
+      </div>
+    </Modal>
+  );
+}
+
 function EditPicker({ entries, kind, onPick, onCancel }) {
   const [q, setQ] = useStateF("");
   const filtered = useMemoF(() => {
@@ -866,6 +898,6 @@ function LoginModal({ onLogin, onCancel }) {
   );
 }
 
-Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
+Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
 
 })();

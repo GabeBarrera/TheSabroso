@@ -1,6 +1,6 @@
 (function () {
 /* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile,
-          RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, ImportDialog, LoginModal,
+          RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal,
           ContactsImportDialog, BothImportDialog,
           ToastProvider, useToast, SDStore */
 
@@ -291,7 +291,7 @@ function App() {
     const list = target === "restaurant" ? restaurants : target === "recipe" ? recipes : notes;
     const items = [
       { label: target === "note" ? "New note" : "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
-      { label: target === "restaurant" ? "List entries" : "Edit existing", hint: "modify", onClick: () => setModal(target === "restaurant" ? { kind: "list-entries" } : { kind: "pick", target }) },
+      { label: target === "restaurant" ? "List entries" : target === "note" ? "List notes" : "Edit existing", hint: "modify", onClick: () => setModal(target === "restaurant" ? { kind: "list-entries" } : target === "note" ? { kind: "list-notes" } : { kind: "pick", target }) },
       { label: "Import", hint: "merge", onClick: () => setModal({ kind: "import", target }) },
       { label: "Backup", hint: "export", onClick: () =>
         target === "restaurant" ? setModal({ kind: "backup" }) : doBackup(target, list)
@@ -714,6 +714,14 @@ function AppInner(props) {
           onClose={closeModal}
           onOpenProfile={(r) => setProfile(r)}
           onEdit={(r) => setModal({ kind: "edit", target: "restaurant", initial: r })}
+        />
+      )}
+      {modal?.kind === "list-notes" && (
+        <NoteListModal
+          notes={notes}
+          onClose={closeModal}
+          onOpenProfile={(n) => { closeModal(); setNoteProfile(n); }}
+          onEdit={(n) => setModal({ kind: "edit", target: "note", initial: n })}
         />
       )}
       {modal?.kind === "new" && modal.target === "note" && (
