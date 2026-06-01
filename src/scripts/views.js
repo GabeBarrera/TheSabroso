@@ -311,6 +311,35 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
 
     const markerById = {};
 
+    // Jitter co-located markers so overlapping pins are visually separate.
+    // Groups by coordinate rounded to 4 decimal places (~11m), then spreads
+    // each group in a small circle. Original r.lat/r.lng are preserved for
+    // popup content (directions link, profile minimap).
+    const JITTER_R = 0.00022;
+    const coordGroups = {};
+    restaurants.forEach((r) => {
+      if (isFilterHidden(r, hiddenFilters)) return;
+      const key = `${r.lat.toFixed(4)},${r.lng.toFixed(4)}`;
+      if (!coordGroups[key]) coordGroups[key] = [];
+      coordGroups[key].push(r.id);
+    });
+    const jitterPos = {};
+    Object.values(coordGroups).forEach((ids) => {
+      if (ids.length === 1) {
+        const r = restaurants.find((x) => x.id === ids[0]);
+        jitterPos[ids[0]] = { lat: r.lat, lng: r.lng };
+      } else {
+        ids.forEach((id, i) => {
+          const r = restaurants.find((x) => x.id === id);
+          const angle = (2 * Math.PI * i) / ids.length;
+          jitterPos[id] = {
+            lat: r.lat + JITTER_R * Math.sin(angle),
+            lng: r.lng + JITTER_R * Math.cos(angle),
+          };
+        });
+      }
+    });
+
     restaurants.forEach((r) => {
       if (isFilterHidden(r, hiddenFilters)) return;
 
@@ -323,7 +352,8 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       });
-      const m = L.marker([r.lat, r.lng], { icon }).addTo(map);
+      const pos = jitterPos[r.id] || { lat: r.lat, lng: r.lng };
+      const m = L.marker([pos.lat, pos.lng], { icon }).addTo(map);
 
       const tagBadges = [
         rTags.includes("restaurant") ? '<span class="pop-tag rt">R</span>' : "",
