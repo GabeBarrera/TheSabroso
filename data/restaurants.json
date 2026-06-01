@@ -5,10 +5,16 @@
     "address": "3001 Beech St, San Diego, CA 92102",
     "cuisine": "Italian",
     "rating": 4.7,
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "lat": 32.68531518270564,
     "lng": -117.17890793621442,
-    "tags": ["restaurant", "bar"],
-    "description": "<p>South Park's Neapolitan flagship, inside a converted garage with a Valoriani oven that runs at 900°F. The dough ferments 48 hours. The Margherita is the reference point for every other pizza in this city — San Marzano tomatoes, fior di latte, one basil leaf, no arguments.</p><h3>The order</h3><ul><li>Margherita — the benchmark</li><li>Bufalina — buffalo mozzarella, cherry tomato, barely touched</li><li>Burrata with prosciutto crudo, to start</li></ul><p>No half-baked substitutions. The dough is the whole product.</p>",
+    "description": "<p>Buona Forchetta is a pillar of the community in every San Diego neighborhood that it is in, but this location will always have a pizza my heart. Whether you are here for their authentic Neapolitan pizza's, home-made pasta, or any of the Italian classics that they offer, you cannot go wrong.&nbsp;</p><h3>Favorites</h3><ul><li>Margherita — the benchmark</li><li>Sottoterra — a savory and tangy salad featuring a fresh organic greens base topped with a pre-mixed blend of sautéed carrots, fennel, parsnips, and onions, all finished with creamy goat cheese and a zesty homemade Dijon mustard vinaigrette.</li><li>Tiramisu — absolute perfection.&nbsp;</li></ul><p>And after you've carb loaded and are starting to feel the post-comida coma, Downtown Coronado is a lovely — and romantic ;) — spot for a long walk with the beach not too far away.&nbsp;&nbsp;</p>",
+    "contacts": [],
+    "website": "https://buonaforchettasd.com/location/coronado/",
+    "reservationLink": "https://www.opentable.com/r/garage-buona-forchetta-coronado",
     "createdAt": "2026-01-14"
   },
   {
@@ -19,7 +25,10 @@
     "rating": 4.4,
     "lat": 32.72449282219502,
     "lng": -117.16924736256803,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Downtown ramen counter with a tonkotsu broth that runs 18 hours. The chashu comes from a low braise that's been going since Tuesday. The soft egg is seasoned overnight. Cramped, loud, worth every inconvenience.</p><h3>The order</h3><ul><li>Tonkotsu — rich, porky, the correct depth</li><li>Extra chashu — add it, don't think about it</li><li>Gyoza, pan-fried, order them when you sit down</li></ul><p><em>No substitutions on the broth.</em> This is non-negotiable and the right call.</p>",
     "createdAt": "2026-01-22"
   },
@@ -31,7 +40,10 @@
     "rating": 4.3,
     "lat": 32.712443558567344,
     "lng": -117.1575772108714,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>East Village burger bar with 24 rotating locals on tap and a double smash that benchmarks the category. Two thin patties, American cheese, pickles, onion, house sauce on a toasted potato roll. The fries are shoestring and salted correctly, which is rarer than it sounds.</p><h3>The order</h3><ul><li>Double smash — no modifications needed</li><li>Shoestring fries</li><li>Whatever IPA the bartender just tapped</li></ul>",
     "createdAt": "2026-02-01"
   },
@@ -41,9 +53,12 @@
     "address": "675 W Beech St, San Diego, CA 92101",
     "cuisine": "Cocktail Bar",
     "rating": 4.5,
-    "lat": 32.72076107899171, 
+    "lat": 32.72076107899171,
     "lng": -117.16895790959158,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Little Italy corner bar where the cocktail program earns its reputation and the food is better than a bar this focused on drinks has any obligation to produce. The bartenders know the classics and build on them without showing off.</p><h3>The order</h3><ul><li>Whatever the bartender recommends — trust it</li><li>Fried chicken sandwich — responsible for missed last calls</li><li>Pimento cheese dip, warm pretzel</li></ul><p><strong>Get there before 9 PM or stand.</strong></p>",
     "createdAt": "2026-02-08"
   },
@@ -53,9 +68,11 @@
     "address": "1790 W Washington St, San Diego, CA 92103",
     "cuisine": "Japanese",
     "rating": 4.6,
-    "lat": 32.74371196053444, 
+    "lat": 32.74371196053444,
     "lng": -117.1814018641444,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Mission Hills Japanese counter — looks modest from outside, delivers something close to perfect inside. The gyoza are made to order with the skin crimped by hand. The katsu curry is the benchmark: tonkatsu pounded thin, crumbed fine, fried hard, set over rice that's been seasoned with care.</p><h3>The order</h3><ul><li>Gyoza — pan-fried, order two rounds</li><li>Katsu curry — the whole reason you're here</li><li>Cold Sapporo. Obvious but correct.</li></ul>",
     "createdAt": "2026-02-15"
   },
@@ -65,9 +82,11 @@
     "address": "1810 W Washington St, San Diego, CA 92103",
     "cuisine": "Mexican",
     "rating": 4.2,
-    "lat": 32.74337025007782, 
+    "lat": 32.74337025007782,
     "lng": -117.18161698326088,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>The wrestler murals are part of the deal. So is the wax-paper basket, the counter seating, and the salsa bar you'll visit three times. The adobada taco is why people drive in from other counties. The green salsa is the one you want.</p><h3>The order</h3><ul><li>Adobada taco — the reason you came</li><li>California burrito if you arrived hungry</li><li>Green salsa, applied liberally</li></ul><p><em>Cash moves faster.</em></p>",
     "createdAt": "2026-02-22"
   },
@@ -76,10 +95,12 @@
     "name": "Rubicon",
     "address": "3823 30th St, San Diego, CA 92104",
     "cuisine": "American",
-    "rating": 4.0,
-    "lat": 32.74277422441969, 
+    "rating": 4,
+    "lat": 32.74277422441969,
     "lng": -117.18063189092838,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>North Park neighborhood pub that actually cooks. The kind of place you walk into expecting a decent burger and leave having eaten one of the better meals of the month. Draft list rotates weekly — usually twelve locals, always something worth ordering.</p><h3>The order</h3><ul><li>Smash burger — straightforward, well-executed</li><li>Fries, duck fat on good days</li><li>Whatever stout is on draft</li></ul><p>Loud on weekends. Manageable on a Tuesday. Go on a Tuesday.</p>",
     "createdAt": "2026-03-01"
   },
@@ -89,9 +110,11 @@
     "address": "631 Broadway, San Diego, CA 92101",
     "cuisine": "Mexican",
     "rating": 4.8,
-    "lat": 32.62923876427487, 
+    "lat": 32.62923876427487,
     "lng": -117.08903407120671,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Tijuana-style taqueria on Broadway. The adobada spit runs from open to close. The mulita is the move — two tortillas, meat, cheese, griddled until the whole thing fuses into one perfect object. Everything arrives in foil and is eaten standing at the counter. That is the method.</p><h3>The order</h3><ul><li>Mulita, adobada — non-negotiable</li><li>Cabeza if you're committed</li><li>Horchata, not the bottled kind</li></ul><p><strong>The spit is the whole restaurant.</strong></p>",
     "createdAt": "2026-03-10"
   },
@@ -103,7 +126,9 @@
     "rating": 4.3,
     "lat": 32.7554976219723,
     "lng": -117.13963819826232,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>One of the few Russian kitchens in San Diego worth making a habit of. The borscht is the deep, almost black kind — beet-forward, finished with a spoonful of smetana and a good amount of dill. The pelmeni are made in-house and arrive in broth that has been going for a while.</p><h3>The order</h3><ul><li>Borscht — the version that takes two days to make</li><li>Pelmeni, beef and pork, in broth</li><li>Blini with smoked salmon and smetana</li></ul><p>Order the house compote. Don't argue about it.</p>",
     "createdAt": "2026-03-15"
   },
@@ -115,7 +140,9 @@
     "rating": 4.6,
     "lat": 32.72746797271498,
     "lng": -117.1709913069006,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Little Italy flagship with a wood-fired program that informs the food rather than just appearing in the menu copy. The charred broccolini is a side dish that outclasses the mains on half the menus in this city. The space is loud and handsome.</p><h3>The order</h3><ul><li>Wood-roasted half chicken — crisp, juicy, no notes</li><li>Charred broccolini, lemon, chili, garlic</li><li>Burrata, stone fruit, aged balsamic</li></ul><p>Start with whatever the bartender recommends. The cocktail list rewards the conversation.</p>",
     "createdAt": "2026-03-22"
   },
@@ -127,7 +154,9 @@
     "rating": 4.5,
     "lat": 32.74058121003366,
     "lng": -116.942269436211,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Rancho San Diego strip-mall exterior, Beirut grandmother's kitchen interior. The hummus is made daily from dried chickpeas — you will notice the difference immediately. The mixed grill is the order. The pita arrives from the oven still inflated and lands on the table immediately.</p><h3>The order</h3><ul><li>Hummus with pine nuts and warm pita — start here</li><li>Mixed grill platter — shawarma, kafta, shish tawook</li><li>Fattoush — dressed right before it leaves the kitchen</li></ul><p><em>Worth the drive out. Arrive early.</em></p>",
     "createdAt": "2026-03-29"
   },
@@ -138,8 +167,10 @@
     "cuisine": "Ice Cream",
     "rating": 4.6,
     "lat": 32.7227729,
-    "lng": -117.1684520,
-    "tags": ["restaurant"],
+    "lng": -117.168452,
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Little Italy scoop shop doing small-batch ice cream the way it should be done — unusual flavors, local sourcing, made in-house daily. The seasonal menu rotates hard enough that returning monthly produces a different list. The honey lavender is the reference point newcomers should start with before venturing further.</p><h3>The order</h3><ul><li>Honey lavender — the benchmark, don't skip it on your first visit</li><li>Sea salt with caramel ribbons — the one that gets people to drive across town</li><li>One seasonal scoop — whatever is most unexpected wins</li></ul><p>Go at an odd hour. The weekend line wraps the block and the waffle cone doesn't benefit from standing in the sun.</p>",
     "createdAt": "2026-04-05"
   },
@@ -151,7 +182,9 @@
     "rating": 4.8,
     "lat": 32.8292062,
     "lng": -117.1531488,
-    "tags": ["bar"],
+    "tags": [
+      "bar"
+    ],
     "description": "<p>Hidden behind an unmarked door in the Convoy District, inside what appears to be a traditional apothecary. Velvet booths, glowing bottles, Eastern talisman on every surface. The cocktail menu reads like a pharmacopoeia — 52 remedies organized by ailment. This is not a gimmick. The drinks are precise and serious.</p><h3>The order</h3><ul><li>Ask the bartender what you're suffering from. Answer honestly.</li><li>The Jeju — mandarin-forward, clarified, slightly medicinal in the best way</li><li>Whatever is made with the house-infused spirits — they run deep</li></ul><p><strong>Reservations required.</strong> Walk-ins are turned away. This is the correct policy for a room this considered.</p>",
     "createdAt": "2026-04-12"
   },
@@ -161,9 +194,11 @@
     "address": "4301 La Jolla Village Dr #2030, San Diego, CA 92122",
     "cuisine": "Cocktail Bar",
     "rating": 4.9,
-    "lat": 32.8725160,
-    "lng": -117.2138900,
-    "tags": ["bar"],
+    "lat": 32.872516,
+    "lng": -117.21389,
+    "tags": [
+      "bar"
+    ],
     "description": "<p>Inside Westfield UTC, behind a flower shop, through a bookcase that opens when you pull the right book. This is not an affectation — the bar behind it earns every theatrical device. The cocktail program is one of the tightest in San Diego: short list, deep sourcing, technique that never announces itself. The glassware is exceptional. The ice is considered.</p><h3>The order</h3><ul><li>The bartender's choice — state your spirit and a flavor direction, defer completely</li><li>Anything featuring house-aged spirits from the back bar</li><li>The snacks are an afterthought. This is a drinks room.</li></ul><p>Book ahead. The room is small, intentionally. Arrive on time — the experience is sequenced.</p>",
     "createdAt": "2026-04-19"
   },
@@ -173,9 +208,12 @@
     "address": "1909 India St, San Diego, CA 92101",
     "cuisine": "Steakhouse",
     "rating": 4.7,
-    "lat": 32.7246250,
+    "lat": 32.724625,
     "lng": -117.1685518,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Little Italy steakhouse operating at a level this city doesn't have many examples of. Art deco interior, two-story room, rooftop bar with a view that holds up. The dry-aged beef program is taken seriously — the cuts are sourced, aged on-site, and handled by a kitchen that knows what it's doing. Michelin Guide listed. This is not a surprise.</p><h3>The order</h3><ul><li>45-day dry-aged ribeye — the reason the restaurant exists</li><li>Lobster thermidor — excessive in the best sense</li><li>Wedge salad, iceberg, blue cheese, lardons — not ironic, just correct</li></ul><p>The rooftop bar is worth arriving early for. The cocktail list upstairs is shorter and better than most standalone bars in the neighborhood.</p>",
     "createdAt": "2026-04-26"
   },
@@ -187,7 +225,10 @@
     "rating": 4.4,
     "lat": 32.7131073,
     "lng": -117.1593341,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Gaslamp Quarter Russian restaurant and lounge that covers more ground than the address suggests — full kitchen, serious bar program, hookah lounge in the back. The pelmeni and the borscht are both done correctly, which is the minimum requirement and also not guaranteed anywhere else in this zip code. The vibe runs late and gets louder as the night progresses.</p><h3>The order</h3><ul><li>Borscht — the beet kind, the proper kind, arrive with smetana</li><li>Pelmeni, beef and pork mix, in broth</li><li>Blini flight with caviar if the occasion justifies it</li></ul><p>The bar list leans vodka and Eastern European spirits. This is the correct orientation. Order accordingly.</p>",
     "createdAt": "2026-05-03"
   },
@@ -199,7 +240,9 @@
     "rating": 4.7,
     "lat": 32.7432214,
     "lng": -117.1810028,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Mission Hills gelato operation in a narrow spot on India Street. Made with Italian bases, rotates with the season — but the pistachio is always there and always correct. The stracciatella is the other constant. Both are better than anything made with a stabilizer in the mix.</p><h3>The order</h3><ul><li>Pistachio — the benchmark, non-negotiable on a first visit</li><li>Stracciatella — the second scoop, every time</li><li>Whatever the seasonal flavor is — usually worth it</li></ul><p>Small shop, long line on weekends. Go on a weekday afternoon.</p>",
     "createdAt": "2026-05-29"
   },
@@ -211,7 +254,9 @@
     "rating": 4.3,
     "lat": 32.8196839,
     "lng": -117.1501556,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>Mira Mesa ramen counter that takes the soup seriously. The tonkotsu has the right depth and the right grease level — not oppressive, just present. The chashu is braised properly and arrives in thick slices. The noodles are firm. The soft egg is seasoned. Nothing surprising, everything correct.</p><h3>The order</h3><ul><li>Tonkotsu — the whole point of coming here</li><li>Extra chashu — add it without deliberating</li><li>Soft egg — properly seasoned, always</li></ul><p>Lunch counter hours. Go before the line builds.</p>",
     "createdAt": "2026-05-29"
   },
@@ -223,7 +268,9 @@
     "rating": 4.2,
     "lat": 32.8203611,
     "lng": -117.1486528,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>One of several Tajima locations, this one anchoring the Mira Mesa corridor. The broth runs long and comes out opaque and properly rich. The kakuni bowl is the move — pork belly slow-braised until it barely holds together, set over a tonkotsu base that justifies the drive north.</p><h3>The order</h3><ul><li>Kakuni ramen — pork belly, the reason to be here</li><li>Tonkotsu if you want the classic baseline</li><li>Gyoza to start, pan-fried, no arguments</li></ul><p>Reliable anchor for the area. Consistent across visits.</p>",
     "createdAt": "2026-05-29"
   },
@@ -232,10 +279,13 @@
     "name": "The Friendly Tavern",
     "address": "Normal Heights, San Diego, CA",
     "cuisine": "American",
-    "rating": 4.0,
+    "rating": 4,
     "lat": 32.748657,
     "lng": -117.135492,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Normal Heights neighborhood bar that also happens to make a good burger. No pretense, no craft cocktail program — just a well-poured beer and a patty that earns its price. The regulars have been sitting at the same barstools since before you moved to the neighborhood. That is a good sign.</p><h3>The order</h3><ul><li>Burger — straightforward, priced right, no complaints</li><li>Whatever is cheapest on draft</li><li>Fries, nothing fancy, salted correctly</li></ul><p>A neighborhood bar that functions as one. Increasingly rare.</p>",
     "createdAt": "2026-05-29"
   },
@@ -247,7 +297,9 @@
     "rating": 4.1,
     "lat": 32.6970431,
     "lng": -117.018145,
-    "tags": ["restaurant"],
+    "tags": [
+      "restaurant"
+    ],
     "description": "<p>South San Diego donut counter that opens early and closes when they run out. The glazed is the benchmark — fried fresh, thin crisp exterior, doughy interior. The apple fritter is the oversized one that justifies the drive. Cash operation, fluorescent lights, exactly what a donut shop should be.</p><h3>The order</h3><ul><li>Glazed — the reference point, order at least two</li><li>Apple fritter — large, unapologetic, correct</li><li>Old fashioned if they have it — underrated</li></ul><p>Opens before 6 AM. Go before work or don't go at all.</p>",
     "createdAt": "2026-05-29"
   },
@@ -259,7 +311,10 @@
     "rating": 4.5,
     "lat": 32.73645,
     "lng": -117.174989,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Middletown cocktail bar with a retro-modern interior that earns the aesthetic without making it the whole personality. The bar program is the reason to be here — well-sourced spirits, technique that doesn't announce itself, and a list that rewards reading past the first page. The kitchen turns out small plates that are better than an afterthought.</p><h3>The order</h3><ul><li>Bartender's choice — give them a spirit and a direction, trust the rest</li><li>Whatever the rotating seasonal cocktail is — usually the best thing on the menu</li><li>Small plates to share — the cheese board if it's available</li></ul><p>Low lighting, good sound level, the kind of bar you stay at longer than planned. Go midweek if you want a seat without a wait.</p>",
     "createdAt": "2026-05-29"
   },
@@ -271,7 +326,10 @@
     "rating": 4.3,
     "lat": 32.7194586,
     "lng": -117.1735913,
-    "tags": ["restaurant", "bar"],
+    "tags": [
+      "restaurant",
+      "bar"
+    ],
     "description": "<p>Bar and grill near the water with a menu that doesn't require much deliberation — burgers, fish, something cold on draft. The patio works on a good evening. The food is better than it needs to be for a bar this casual, which is the only bar worth going to.</p><h3>The order</h3><ul><li>Fish tacos — better than expected, order them when available</li><li>Burger — solid, nothing more needs to be said</li><li>Whatever is on draft — rotating, usually local</li></ul><p>Patio seating is the move. Arrive before sunset if you want a spot.</p>",
     "createdAt": "2026-05-29"
   }
