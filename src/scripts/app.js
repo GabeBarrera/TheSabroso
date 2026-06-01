@@ -1,6 +1,7 @@
 (function () {
 /* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile,
           RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal,
+          ContactsImportDialog, BothImportDialog,
           ToastProvider, useToast, SDStore */
 
 const { useState, useEffect, useRef, useCallback } = React;
@@ -288,8 +289,12 @@ function App() {
     return [
       { label: "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
       { label: "Edit existing", hint: "modify", onClick: () => setModal({ kind: "pick", target }) },
-      { label: "Import .json", hint: "merge", onClick: () => setModal({ kind: "import", target }) },
-      { label: "Backup all", hint: "export", onClick: () => doBackup(target, list) },
+      { label: "Import", hint: "merge", onClick: () => setModal(
+        target === "restaurant" ? { kind: "import-pick" } : { kind: "import", target }
+      ) },
+      { label: "Backup", hint: "export", onClick: () =>
+        target === "restaurant" ? setModal({ kind: "backup" }) : doBackup(target, list)
+      },
       { label: "Resync data", hint: "reset", onClick: () => setModal({ kind: "resync" }) },
     ];
   }, [restaurants, recipes]);
@@ -466,6 +471,7 @@ function AppInner(props) {
   const deleteRestaurant = (id) => {
     const entry = restaurants.find((r) => r.id === id);
     setRestaurants((list) => list.filter((r) => r.id !== id));
+    SDStore.setRestaurantContacts(id, []);
     toast(`Deleted · ${entry?.name || "entry"}`, "ok");
     closeModal();
   };
@@ -686,13 +692,102 @@ function AppInner(props) {
           <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 14 }}>
             This will <strong>delete all locally saved data</strong> — every restaurant entry and recipe, including anything you've added or edited since the last sync.
           </p>
+          {isAdmin && (
+            <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 14 }}>
+              All locally saved contacts will also be <strong>permanently deleted</strong>.
+            </p>
+          )}
           <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 20 }}>
             The app will reload and reseed from the original source files. This cannot be undone.
           </p>
           <p style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase", color: "var(--muted)" }}>
-            Back up your data first via Manage → Backup all
+            Back up your data first via Manage → Backup
           </p>
         </Modal>
+      )}
+
+      {modal?.kind === "backup" && (
+        <Modal eyebrow="Backup" title="Export a" italicTitle="backup file"
+          onClose={closeModal}
+          footer={<button className="btn ghost" onClick={closeModal}>Cancel</button>}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
+            <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 6 }}>
+              Choose what to export to your downloads folder.
+            </p>
+            <button className="btn primary"
+              onClick={() => { SDStore.download("restaurants.json", JSON.stringify(restaurants, null, 2)); closeModal(); }}>
+              restaurants.json
+            </button>
+            {isAdmin && (
+              <>
+                <button className="btn primary"
+                  onClick={() => { SDStore.download("contacts.json", JSON.stringify(SDStore.loadContacts(), null, 2)); closeModal(); }}>
+                  contacts.json
+                </button>
+                <button className="btn primary"
+                  onClick={() => {
+                    SDStore.download("restaurants.json", JSON.stringify(restaurants, null, 2));
+                    SDStore.download("contacts.json", JSON.stringify(SDStore.loadContacts(), null, 2));
+                    closeModal();
+                  }}>
+                  Both files
+                </button>
+              </>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {modal?.kind === "import-pick" && (
+        <Modal eyebrow="Import" title="Choose what to" italicTitle="import"
+          onClose={closeModal}
+          footer={<button className="btn ghost" onClick={closeModal}>Cancel</button>}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
+            <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 6 }}>
+              Select a backup file to import.
+            </p>
+            <button className="btn primary"
+              onClick={() => setModal({ kind: "import", target: "restaurant" })}>
+              restaurants.json
+            </button>
+            {isAdmin && (
+              <>
+                <button className="btn primary"
+                  onClick={() => setModal({ kind: "import-contacts" })}>
+                  contacts.json
+                </button>
+                <button className="btn primary"
+                  onClick={() => setModal({ kind: "import-both" })}>
+                  Both files
+                </button>
+              </>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {modal?.kind === "import-contacts" && (
+        <ContactsImportDialog
+          onClose={closeModal}
+          onCommit={(contactsMap) => {
+            SDStore.saveContacts({ ...SDStore.loadContacts(), ...contactsMap });
+            closeModal();
+          }}
+        />
+      )}
+
+      {modal?.kind === "import-both" && (
+        <BothImportDialog
+          existing={restaurants}
+          onClose={closeModal}
+          onCommit={({ restaurants: newRest, contacts: newCont }) => {
+            if (newRest) setRestaurants(newRest);
+            if (newCont) SDStore.saveContacts({ ...SDStore.loadContacts(), ...newCont });
+            closeModal();
+          }}
+        />
       )}
       {modal?.kind === "login" && (
         <LoginModal

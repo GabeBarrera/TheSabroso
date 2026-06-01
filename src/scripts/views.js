@@ -790,7 +790,7 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
     return () => document.removeEventListener("keydown", onEsc);
   }, [onClose]);
 
-  const contacts = restaurant.contacts || [];
+  const contacts = SDStore.getRestaurantContacts(restaurant.id);
 
   return (
     <div className="profile" role="dialog">

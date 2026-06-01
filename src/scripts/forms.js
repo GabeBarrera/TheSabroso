@@ -24,7 +24,7 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
   const [lat, setLat] = useStateF(initial?.lat ?? 32.7157);
   const [lng, setLng] = useStateF(initial?.lng ?? -117.1611);
   const [tags, setTags] = useStateF(initial?.tags || ["restaurant"]);
-  const [contacts, setContacts] = useStateF(initial?.contacts || []);
+  const [contacts, setContacts] = useStateF(() => initial?.id ? SDStore.getRestaurantContacts(initial.id) : []);
   const [website, setWebsite] = useStateF(initial?.website || "");
   const [reservationLink, setReservationLink] = useStateF(initial?.reservationLink || "");
 
@@ -43,8 +43,10 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
     if (!name.trim()) { toast("Name is required", "warn"); return; }
     if (!address.trim()) { toast("Address is required", "warn"); return; }
     if (!finalCuisine) { toast("Choose a cuisine", "warn"); return; }
+    const id = initial?.id || SDStore.newId("r");
+    SDStore.setRestaurantContacts(id, contacts.filter(c => c.title.trim() || c.name.trim()));
     const entry = {
-      id: initial?.id || SDStore.newId("r"),
+      id,
       name: name.trim(),
       address: address.trim(),
       cuisine: finalCuisine,
@@ -53,7 +55,6 @@ function RestaurantForm({ initial, onSave, onCancel, onDelete, mode = "new", isA
       lat: Number(lat),
       lng: Number(lng),
       description,
-      contacts: contacts.filter(c => c.title.trim() || c.name.trim()),
       website: website.trim() || undefined,
       reservationLink: reservationLink.trim() || undefined,
       createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
@@ -529,6 +530,165 @@ function ImportDialog({ existing, kind, onClose, onCommit }) {
 }
 
 /* ============================================================
+   CONTACTS IMPORT DIALOG
+   ============================================================ */
+
+function ContactsImportDialog({ onClose, onCommit }) {
+  const toast = useToast();
+  const fileRef = useRefF(null);
+
+  const handleFile = async (f) => {
+    if (!f) return;
+    try {
+      const text = await f.text();
+      const data = JSON.parse(text);
+      if (typeof data !== "object" || Array.isArray(data)) {
+        toast("Invalid contacts file — expected a JSON object keyed by restaurant ID", "warn");
+        return;
+      }
+      toast("Contacts imported", "ok");
+      onCommit(data);
+    } catch {
+      toast("Invalid JSON file", "warn");
+    }
+  };
+
+  return (
+    <Modal
+      eyebrow="Import contacts"
+      title="Choose a"
+      italicTitle="contacts file"
+      onClose={onClose}
+      footer={
+        <>
+          <div className="muted" style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase" }}>
+            Accepts contacts.json — keyed by restaurant ID
+          </div>
+          <button className="btn primary" onClick={() => fileRef.current?.click()}>Choose file</button>
+        </>
+      }
+    >
+      <div style={{ padding: "12px 0" }}>
+        <div style={{ fontFamily: "var(--serif)", fontSize: 17, color: "var(--muted)", maxWidth: 540, marginBottom: 18 }}>
+          Select a contacts.json backup file. Each restaurant's contacts will be overwritten with the imported data.
+        </div>
+        <button className="btn primary" onClick={() => fileRef.current?.click()}>Choose .json file</button>
+        <input ref={fileRef} type="file" accept="application/json,.json" className="hidden-file"
+          onChange={(e) => handleFile(e.target.files?.[0])} />
+      </div>
+    </Modal>
+  );
+}
+
+/* ============================================================
+   BOTH IMPORT DIALOG
+   ============================================================ */
+
+function BothImportDialog({ existing, onClose, onCommit }) {
+  const toast = useToast();
+  const restFileRef = useRefF(null);
+  const contFileRef = useRefF(null);
+  const [restData, setRestData] = useStateF(null);
+  const [contData, setContData] = useStateF(null);
+  const [restName, setRestName] = useStateF("");
+  const [contName, setContName] = useStateF("");
+
+  const handleRestFile = async (f) => {
+    if (!f) return;
+    try {
+      const text = await f.text();
+      const data = JSON.parse(text);
+      const arr = Array.isArray(data) ? data : [data];
+      setRestData(arr);
+      setRestName(f.name);
+    } catch { toast("Invalid JSON file for restaurants", "warn"); }
+  };
+
+  const handleContFile = async (f) => {
+    if (!f) return;
+    try {
+      const text = await f.text();
+      const data = JSON.parse(text);
+      if (typeof data !== "object" || Array.isArray(data)) {
+        toast("Invalid contacts JSON — expected an object keyed by restaurant ID", "warn");
+        return;
+      }
+      setContData(data);
+      setContName(f.name);
+    } catch { toast("Invalid JSON file for contacts", "warn"); }
+  };
+
+  const commit = () => {
+    if (!restData && !contData) { toast("No files selected", "warn"); return; }
+    let newRestaurants = null;
+    if (restData) {
+      const out = [...existing];
+      const byId = new Map(out.map((x) => [x.id, x]));
+      restData.forEach((entry) => {
+        if (byId.has(entry.id)) {
+          const idx = out.findIndex((x) => x.id === entry.id);
+          out[idx] = { ...out[idx], ...entry };
+        } else {
+          const e = { ...entry, id: entry.id || SDStore.newId("r") };
+          out.push(e);
+        }
+      });
+      newRestaurants = out;
+    }
+    const parts = [];
+    if (restData) parts.push(`${restData.length} restaurant${restData.length !== 1 ? "s" : ""}`);
+    if (contData) parts.push("contacts");
+    toast(`Imported ${parts.join(" & ")}`, "ok");
+    onCommit({ restaurants: newRestaurants, contacts: contData });
+  };
+
+  return (
+    <Modal
+      eyebrow="Import both"
+      title="Choose"
+      italicTitle="your files"
+      onClose={onClose}
+      footer={
+        <>
+          <div className="muted" style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase" }}>
+            Each file is optional — import one or both
+          </div>
+          <div className="row">
+            <button className="btn ghost" onClick={onClose}>Cancel</button>
+            <button className="btn accent" onClick={commit} disabled={!restData && !contData}>Commit import</button>
+          </div>
+        </>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "12px 0" }}>
+        <div>
+          <div className="field-label">Restaurants file</div>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, color: "var(--muted)", margin: "6px 0 10px" }}>
+            {restName ? `${restName} · ${restData?.length} entries` : "No file selected"}
+          </div>
+          <button className="btn ghost" onClick={() => restFileRef.current?.click()}>
+            {restName ? "Change file" : "Choose restaurants.json"}
+          </button>
+          <input ref={restFileRef} type="file" accept="application/json,.json" className="hidden-file"
+            onChange={(e) => handleRestFile(e.target.files?.[0])} />
+        </div>
+        <div>
+          <div className="field-label">Contacts file</div>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 15, color: "var(--muted)", margin: "6px 0 10px" }}>
+            {contName ? contName : "No file selected"}
+          </div>
+          <button className="btn ghost" onClick={() => contFileRef.current?.click()}>
+            {contName ? "Change file" : "Choose contacts.json"}
+          </button>
+          <input ref={contFileRef} type="file" accept="application/json,.json" className="hidden-file"
+            onChange={(e) => handleContFile(e.target.files?.[0])} />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+/* ============================================================
    LOGIN MODAL
    ============================================================ */
 
@@ -584,6 +744,6 @@ function LoginModal({ onLogin, onCancel }) {
   );
 }
 
-Object.assign(window, { RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal });
+Object.assign(window, { RestaurantForm, RecipeForm, EditPicker, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
 
 })();

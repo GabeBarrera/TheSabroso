@@ -4,6 +4,7 @@
 
 const RESTAURANTS_KEY   = "sabroso_restaurants";
 const RECIPES_KEY       = "sabroso_recipes";
+const CONTACTS_KEY      = "sabroso_contacts";
 const ADMIN_PW_KEY      = "sabroso_admin_pw";
 const ADMIN_SESSION_KEY = "sabroso_admin_session";
 const FAVORITES_KEY     = "sabroso_recipe_favs";
@@ -25,6 +26,29 @@ window.SDStore = {
 
   saveRestaurants(list) { localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(list)); },
   saveRecipes(list)     { localStorage.setItem(RECIPES_KEY,     JSON.stringify(list)); },
+
+  loadContacts() {
+    try {
+      const raw = localStorage.getItem(CONTACTS_KEY);
+      return raw !== null ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  },
+
+  saveContacts(map) { localStorage.setItem(CONTACTS_KEY, JSON.stringify(map)); },
+
+  getRestaurantContacts(restaurantId) {
+    return this.loadContacts()[restaurantId] || [];
+  },
+
+  setRestaurantContacts(restaurantId, contacts) {
+    const map = this.loadContacts();
+    if (!contacts || contacts.length === 0) {
+      delete map[restaurantId];
+    } else {
+      map[restaurantId] = contacts;
+    }
+    this.saveContacts(map);
+  },
 
   newId(prefix = "x") {
     return prefix + "_" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
@@ -76,6 +100,7 @@ window.SDStore = {
   clearData() {
     localStorage.removeItem(RESTAURANTS_KEY);
     localStorage.removeItem(RECIPES_KEY);
+    localStorage.removeItem(CONTACTS_KEY);
   },
 
   loadFavorites() {
