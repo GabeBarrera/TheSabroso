@@ -458,7 +458,22 @@ function AppInner(props) {
 
   // PIN DROP → open picker modal
   const handlePinDrop = useCallback(({ lat, lng }) => {
-    setModal({ kind: "pin-pick", lat, lng });
+    setModal({ kind: "pin-pick", lat, lng, address: "" });
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+      headers: { "Accept-Language": "en" },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const a = data.address || {};
+        const street   = [a.house_number, a.road].filter(Boolean).join(" ");
+        const locality = a.city || a.town || a.suburb || a.village || a.hamlet || "";
+        const region   = a.state || "";
+        const zip      = a.postcode || "";
+        const cityLine = [locality, [region, zip].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+        const address  = [street, cityLine].filter(Boolean).join(", ");
+        setModal((m) => m?.kind === "pin-pick" ? { ...m, address } : m);
+      })
+      .catch(() => {});
   }, []);
 
   // NOTE handlers
@@ -675,7 +690,8 @@ function AppInner(props) {
 
       {/* MODALS */}
       {modal?.kind === "new" && modal.target === "restaurant" && (
-        <RestaurantForm onSave={saveRestaurant} onCancel={closeModal} mode="new" isAdmin={isAdmin} />
+        <RestaurantForm onSave={saveRestaurant} onCancel={closeModal} mode="new" isAdmin={isAdmin}
+          defaultLat={modal.lat} defaultLng={modal.lng} defaultAddress={modal.address} />
       )}
       {modal?.kind === "new" && modal.target === "recipe" && (
         <RecipeForm onSave={saveRecipe} onCancel={closeModal} mode="new" />
@@ -698,6 +714,7 @@ function AppInner(props) {
         <NoteForm
           defaultLat={modal.lat}
           defaultLng={modal.lng}
+          defaultAddress={modal.address}
           onSave={saveNote}
           onCancel={closeModal}
           mode="new"
@@ -718,15 +735,18 @@ function AppInner(props) {
           footer={<button className="btn ghost" onClick={closeModal}>Cancel</button>}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
-            <p style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: ".18em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 6 }}>
+            <p style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: ".18em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 2 }}>
               {modal.lat.toFixed(4)}, {modal.lng.toFixed(4)}
             </p>
+            <p style={{ fontFamily: "var(--serif)", fontSize: 15, color: "var(--muted)", marginBottom: 6, minHeight: 22 }}>
+              {modal.address || <span style={{ opacity: 0.45 }}>Resolving address…</span>}
+            </p>
             <button className="btn primary"
-              onClick={() => setModal({ kind: "new", target: "restaurant", lat: modal.lat, lng: modal.lng })}>
+              onClick={() => setModal({ kind: "new", target: "restaurant", lat: modal.lat, lng: modal.lng, address: modal.address })}>
               Restaurant
             </button>
             <button className="btn primary"
-              onClick={() => setModal({ kind: "new", target: "note", lat: modal.lat, lng: modal.lng })}>
+              onClick={() => setModal({ kind: "new", target: "note", lat: modal.lat, lng: modal.lng, address: modal.address })}>
               Note
             </button>
           </div>

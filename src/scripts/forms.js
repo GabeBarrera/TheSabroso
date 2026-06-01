@@ -13,10 +13,10 @@ const CUISINE_OPTIONS = [
   "Spanish", "Pizza", "BBQ", "Bakery", "Café", "Cocktail Bar"
 ];
 
-function RestaurantForm({ initial, defaultLat, defaultLng, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
+function RestaurantForm({ initial, defaultLat, defaultLng, defaultAddress, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
-  const [address, setAddress] = useStateF(initial?.address || "");
+  const [address, setAddress] = useStateF(initial?.address || defaultAddress || "");
   const [cuisine, setCuisine] = useStateF(initial?.cuisine || "");
   const [customCuisine, setCustomCuisine] = useStateF("");
   const [rating, setRating] = useStateF(initial?.rating ?? 4.0);
@@ -533,10 +533,10 @@ function ImportDialog({ existing, kind, onClose, onCommit }) {
    NOTE FORM (new + edit)
    ============================================================ */
 
-function NoteForm({ initial, defaultLat, defaultLng, onSave, onCancel, onDelete, mode = "new" }) {
+function NoteForm({ initial, defaultLat, defaultLng, defaultAddress, onSave, onCancel, onDelete, mode = "new" }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
-  const [address, setAddress] = useStateF(initial?.address || "");
+  const [address, setAddress] = useStateF(initial?.address || defaultAddress || "");
   const [tag, setTag] = useStateF(initial?.tag || "");
   const [lat, setLat] = useStateF(initial?.lat ?? defaultLat ?? 32.7157);
   const [lng, setLng] = useStateF(initial?.lng ?? defaultLng ?? -117.1611);
