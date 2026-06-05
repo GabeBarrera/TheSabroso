@@ -687,12 +687,6 @@ function RecipesView({ recipes, openManage, navigate }) {
 
   return (
     <div className="recipes-view" data-screen-label="03 Recipes">
-      <div className="chrome">
-        <div className="right" style={{ marginLeft: "auto" }}>
-          <ManageMenu items={openManage("recipe")} />
-        </div>
-      </div>
-
       <div className="recipes-head">
         <div>
           <h1 className="title">The <span className="it">Recipes</span></h1>
@@ -702,6 +696,7 @@ function RecipesView({ recipes, openManage, navigate }) {
           <strong>{recipes.length}</strong>
           recipes on file
         </div>
+        <ManageMenu items={openManage("recipe")} />
       </div>
 
       <div className={`recipes-body${!sidebarOpen ? " sidebar-closed" : ""}`}>
