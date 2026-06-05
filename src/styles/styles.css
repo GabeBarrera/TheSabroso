@@ -967,13 +967,19 @@ a { color: inherit; }
   background: var(--cream);
 }
 .sidebar-toggle-btn { display: none; }
+.r-eyebrow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
 .recipe-detail .r-eyebrow {
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: .28em;
   text-transform: uppercase;
   color: var(--terracotta);
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 .recipe-detail h1 {
   font-family: var(--serif);
@@ -2028,6 +2034,33 @@ a { color: inherit; }
 }
 .profile-close:hover { background: var(--terracotta); border-color: var(--terracotta); }
 
+.profile-share {
+  position: fixed;
+  top: 24px; right: 140px;
+  z-index: 260;
+}
+
+/* ---- Copy link button ---- */
+.copy-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease, min-width 160ms ease;
+  min-width: 38px;
+}
+.copy-link-btn:hover { background: var(--terracotta); border-color: var(--terracotta); }
+.copy-link-btn.copied { background: var(--terracotta); border-color: var(--terracotta); min-width: 72px; }
+
 /* ---- Profile mini-map ---- */
 .profile-minimap {
   height: 220px;
@@ -2645,6 +2678,8 @@ a { color: inherit; }
   .profile-body { padding: 28px 20px 60px; font-size: 16px; }
   .profile-contacts { padding: 0 20px 60px; }
   .profile-close { top: 12px; right: 12px; padding: 8px 12px; font-size: 10px; }
+  .profile-share { top: 12px; right: 110px; }
+  .copy-link-btn { padding: 8px 12px; font-size: 10px; }
 
   /* ---- TOAST ---- */
 

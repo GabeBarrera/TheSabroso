@@ -152,6 +152,7 @@ function App() {
   const [voiceResult, setVoiceResult] = useState(null);
   const [cmdError, setCmdError] = useState(null);
   const [cmdErrorKey, setCmdErrorKey] = useState(0);
+  const [focusRecipeId, setFocusRecipeId] = useState(null);
   const cmdErrorTimerRef = useRef(null);
   const showCmdError = useCallback((msg) => {
     if (cmdErrorTimerRef.current) clearTimeout(cmdErrorTimerRef.current);
@@ -177,6 +178,26 @@ function App() {
       setDataReady(true);
     });
   }, []);
+
+  // deep-link via hash: #recipes/<id> or #map/<id>
+  useEffect(() => {
+    if (!dataReady) return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    const slash = hash.indexOf('/');
+    if (slash === -1) return;
+    const section = hash.slice(0, slash);
+    const id = hash.slice(slash + 1);
+    if (!id) return;
+    if (section === 'recipes') {
+      setView(VIEW_RECIPES);
+      setFocusRecipeId(id);
+    } else if (section === 'map') {
+      const r = restaurants.find((x) => x.id === id);
+      if (r) { setView(VIEW_MAP); setTimeout(() => setProfile(r), 200); }
+    }
+    history.replaceState(null, '', location.href.split('#')[0]);
+  }, [dataReady]);
 
   // persist on change — guarded so we don't write before seed fetch resolves
   useEffect(() => { if (dataReady) SDStore.saveRestaurants(restaurants); }, [restaurants, dataReady]);
@@ -336,6 +357,7 @@ function App() {
         cmdError={cmdError}
         cmdErrorKey={cmdErrorKey}
         showCmdError={showCmdError}
+        focusRecipeId={focusRecipeId}
       />
     </ToastProvider>
   );
@@ -420,6 +442,7 @@ function AppInner(props) {
     voiceResult, setVoiceResult, mapActionsRef,
     isAdmin, setIsAdmin,
     cmdError, cmdErrorKey, showCmdError,
+    focusRecipeId,
   } = props;
   const toast = useToast();
   const [kbdText, setKbdText] = useState("");
@@ -577,6 +600,7 @@ function AppInner(props) {
             recipes={recipes}
             openManage={openManage}
             navigate={setView}
+            focusRecipeId={focusRecipeId}
           />
         </div>
       </div>

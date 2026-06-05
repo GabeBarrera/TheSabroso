@@ -2,6 +2,31 @@
 /* global React, L, StarsRead, ManageMenu, useToast, SDStore */
 const { useState: useStateV, useEffect: useEffectV, useRef: useRefV, useMemo: useMemoV } = React;
 
+function CopyLinkBtn({ url, className }) {
+  const [copied, setCopied] = useStateV(false);
+  const copy = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    }).catch(() => {});
+  };
+  return (
+    <button
+      className={`copy-link-btn${copied ? " copied" : ""}${className ? " " + className : ""}`}
+      onClick={copy}
+      title="Copy link"
+    >
+      {copied ? "Copied!" : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      )}
+    </button>
+  );
+}
+
 /* ============================================================
    ABOUT VIEW — the masthead, intro, and side arrows
    ============================================================ */
@@ -550,7 +575,7 @@ function scaleHtml(html, factor) {
   });
 }
 
-function RecipesView({ recipes, openManage, navigate }) {
+function RecipesView({ recipes, openManage, navigate, focusRecipeId }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
@@ -566,6 +591,12 @@ function RecipesView({ recipes, openManage, navigate }) {
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, [sortOpen]);
+
+  useEffectV(() => {
+    if (!focusRecipeId) return;
+    const exists = recipes.some((r) => r.id === focusRecipeId);
+    if (exists) { setSelectedId(focusRecipeId); setSidebarOpen(false); }
+  }, [focusRecipeId]);
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
@@ -781,7 +812,10 @@ function RecipesView({ recipes, openManage, navigate }) {
             </div>
           ) : (
             <>
-              <div className="r-eyebrow">{selected.cuisine || "Recipe"} · Filed {selected.createdAt}</div>
+              <div className="r-eyebrow-row">
+                <div className="r-eyebrow">{selected.cuisine || "Recipe"} · Filed {selected.createdAt}</div>
+                <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
+              </div>
               <h1>{selected.name}</h1>
               <p className="r-tagline">{selected.tagline}</p>
               <div className="r-stats">
@@ -869,6 +903,7 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
   return (
     <div className="profile" role="dialog">
       <button className="profile-close" onClick={onClose}>← Close</button>
+      <CopyLinkBtn url={`${location.origin}${location.pathname}#map/${restaurant.id}`} className="profile-share" />
 
       <div className="profile-head">
         <div className="profile-eyebrow">Restaurant · {restaurant.cuisine}</div>
