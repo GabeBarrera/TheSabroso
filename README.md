@@ -75,7 +75,7 @@ Then open `http://localhost:8080`.
 
 Hover a pin to open its popup. Click "Open profile →" or "Open note →" for the full detail view.
 
-**Recipes** — searchable list with a detail panel. Select a recipe in the sidebar to read the full ingredients and method.
+**Recipes** — searchable list with a detail panel. Select a recipe in the sidebar to read the full ingredients and method. Use the clipboard button in the recipe header to add its ingredients to your grocery list, then open the list via the notepad button in the bottom dock.
 
 ---
 
@@ -97,7 +97,7 @@ Press and hold anywhere on the map (600ms) to drop a pin at that location. A pic
 **Manage** (restaurants) menu:
 - New entry, Edit existing, Import, Backup, Resync data
 
-**Recipes view** has its own **Manage** menu with the same options for recipes.
+**Recipes view** has its own **Manage** menu with the same options for recipes, plus a **Grocery List** button in the bottom dock (replaces the widget-toggle while on the recipes page).
 
 ### Backup
 
@@ -125,6 +125,18 @@ Open `data/editor.html` in a browser (served over HTTP) for a full CRUD interfac
 
 ---
 
+## Grocery list
+
+The **Grocery List** is a recipe-page-only feature accessible via the notepad icon in the bottom dock (visible only when on the Recipes view).
+
+- Each recipe's detail header has a **clipboard button** next to the copy-link button. Clicking it extracts all unordered-list (`<ul>`) items from the recipe description as ingredients and adds them to the grocery list.
+- Re-clicking the button for the same recipe **replaces** that recipe's entries (acts as a refresh).
+- The grocery list panel slides in from the right and groups items by recipe, so every ingredient is labeled with its source.
+- Individual recipe entries can be removed via their **Remove** button; the **Clear all** button wipes the entire list.
+- The list persists in `localStorage` under `sabroso_grocery`.
+
+---
+
 ## Admin mode
 
 Click the lock icon in the bottom dock to log in. Default password: **anyonecancook**.
@@ -149,6 +161,7 @@ Admin session is stored in `sessionStorage` and expires when the tab is closed.
 | `sabroso_admin_pw` | SHA-256 hash of the admin password (absent = use default) |
 | `sabroso_admin_session` | Set to `"1"` while an admin session is active |
 | `sabroso_recipe_favs` | Array of favorited recipe IDs |
+| `sabroso_grocery` | Array of grocery list items (each with `id`, `text`, `recipeId`, `recipeName`) |
 | `sabroso_theme` | `"light"` or `"dark"` |
 
 ---
