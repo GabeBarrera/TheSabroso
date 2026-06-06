@@ -539,6 +539,96 @@ function escapeHtml(s) {
 }
 
 /* ============================================================
+   GROCERY LIST — ingredient extraction + panel + add button
+   ============================================================ */
+
+function extractIngredients(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const ulItems = [...div.querySelectorAll('ul > li')].map(li => li.textContent.trim()).filter(Boolean);
+  if (ulItems.length) return ulItems;
+  return [...div.querySelectorAll('li')].map(li => li.textContent.trim()).filter(Boolean);
+}
+
+function AddToGroceryBtn({ recipe, onAdd }) {
+  const [added, setAdded] = useStateV(false);
+  const handle = (e) => {
+    e.stopPropagation();
+    const ingredients = extractIngredients(recipe.description || '');
+    if (!ingredients.length) return;
+    onAdd(recipe, ingredients);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
+  return (
+    <button
+      className={`add-grocery-btn${added ? ' added' : ''}`}
+      onClick={handle}
+      title="Add ingredients to grocery list"
+    >
+      {added ? 'Added!' : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+      )}
+    </button>
+  );
+}
+
+function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
+  const groups = [];
+  const seen = {};
+  items.forEach(item => {
+    if (!seen[item.recipeId]) {
+      seen[item.recipeId] = { recipeId: item.recipeId, recipeName: item.recipeName, items: [] };
+      groups.push(seen[item.recipeId]);
+    }
+    seen[item.recipeId].items.push(item.text);
+  });
+
+  return (
+    <div className="grocery-panel">
+      <div className="grocery-panel-head">
+        <div>
+          <div className="grocery-panel-eyebrow">Shopping</div>
+          <div className="grocery-panel-title">Grocery List</div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {items.length > 0 && (
+            <button className="grocery-clear-btn" onClick={onClearAll}>Clear all</button>
+          )}
+          <button className="grocery-panel-close" onClick={onClose}>×</button>
+        </div>
+      </div>
+      <div className="grocery-panel-body">
+        {items.length === 0 ? (
+          <div className="grocery-empty">
+            <div className="grocery-empty-line1">No ingredients yet.</div>
+            <div className="grocery-empty-line2">Add from a recipe</div>
+          </div>
+        ) : groups.map(group => (
+          <div key={group.recipeId} className="grocery-group">
+            <div className="grocery-group-head">
+              <span className="grocery-group-name">{group.recipeName}</span>
+              <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
+            </div>
+            {group.items.map((text, i) => (
+              <div key={i} className="grocery-item">
+                <span className="grocery-item-bullet">—</span>
+                <span className="grocery-item-text">{text}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
    RECIPES VIEW — search + list + detail
    ============================================================ */
 
@@ -575,7 +665,7 @@ function scaleHtml(html, factor) {
   });
 }
 
-function RecipesView({ recipes, openManage, navigate, focusRecipeId }) {
+function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
@@ -814,7 +904,12 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId }) {
             <>
               <div className="r-eyebrow-row">
                 <div className="r-eyebrow">{selected.cuisine || "Recipe"} · Filed {selected.createdAt}</div>
-                <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {onAddToGrocery && (
+                    <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />
+                  )}
+                  <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
+                </div>
               </div>
               <h1>{selected.name}</h1>
               <p className="r-tagline">{selected.tagline}</p>
@@ -1019,6 +1114,6 @@ function NoteProfile({ note, onClose, onEdit, onDelete }) {
   );
 }
 
-Object.assign(window, { AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile });
+Object.assign(window, { AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile, GroceryListPanel });
 
 })();

@@ -2,7 +2,7 @@
 /* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile,
           RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal,
           ContactsImportDialog, BothImportDialog,
-          ToastProvider, useToast, SDStore */
+          ToastProvider, useToast, SDStore, GroceryListPanel */
 
 const { useState, useEffect, useRef, useCallback } = React;
 
@@ -449,6 +449,20 @@ function AppInner(props) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [dockOpen, setDockOpen] = useState(false);
   const [widgetsVisible, setWidgetsVisible] = useState(false);
+  const [groceryList, setGroceryList] = useState(() => SDStore.loadGroceryList());
+  const [groceryOpen, setGroceryOpen] = useState(false);
+
+  useEffect(() => { SDStore.saveGroceryList(groceryList); }, [groceryList]);
+
+  const addToGrocery = useCallback((recipe, ingredients) => {
+    const newItems = ingredients.map(text => ({
+      id: SDStore.newId('gi'),
+      text,
+      recipeId: recipe.id,
+      recipeName: recipe.name,
+    }));
+    setGroceryList(prev => [...prev.filter(item => item.recipeId !== recipe.id), ...newItems]);
+  }, []);
 
   const submitKbd = () => {
     const t = kbdText.trim();
@@ -601,6 +615,7 @@ function AppInner(props) {
             openManage={openManage}
             navigate={setView}
             focusRecipeId={focusRecipeId}
+            onAddToGrocery={addToGrocery}
           />
         </div>
       </div>
@@ -613,24 +628,40 @@ function AppInner(props) {
       </div>
 
       <div className={`btn-dock${dockOpen ? " dock-open" : ""}`}>
-        <button
-          className="widget-toggle"
-          onClick={() => { setWidgetsVisible((v) => !v); setDockOpen(false); }}
-          title={widgetsVisible ? "Hide map widgets" : "Show map widgets"}
-          aria-label={widgetsVisible ? "Hide map widgets" : "Show map widgets"}
-        >
-          {widgetsVisible ? (
+        {view === VIEW_RECIPES ? (
+          <button
+            className={`grocery-toggle${groceryOpen ? " active" : ""}`}
+            onClick={() => { setGroceryOpen((v) => !v); setDockOpen(false); }}
+            title="Grocery list"
+            aria-label="Grocery list"
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+              <line x1="9" y1="16" x2="13" y2="16"/>
             </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
-            </svg>
-          )}
-        </button>
+          </button>
+        ) : (
+          <button
+            className="widget-toggle"
+            onClick={() => { setWidgetsVisible((v) => !v); setDockOpen(false); }}
+            title={widgetsVisible ? "Hide map widgets" : "Show map widgets"}
+            aria-label={widgetsVisible ? "Hide map widgets" : "Show map widgets"}
+          >
+            {widgetsVisible ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            )}
+          </button>
+        )}
 
         <button
           className="theme-toggle"
@@ -684,6 +715,16 @@ function AppInner(props) {
 
       {cmdError && (
         <div className="cmd-error" key={cmdErrorKey}>{cmdError}</div>
+      )}
+
+      {/* GROCERY LIST */}
+      {groceryOpen && (
+        <GroceryListPanel
+          items={groceryList}
+          onClose={() => setGroceryOpen(false)}
+          onRemoveRecipe={(id) => setGroceryList((prev) => prev.filter((item) => item.recipeId !== id))}
+          onClearAll={() => setGroceryList([])}
+        />
       )}
 
       {/* PROFILE OVERLAYS */}
