@@ -579,7 +579,7 @@ function AddToGroceryBtn({ recipe, onAdd }) {
 }
 
 function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddCustom, onClearAll }) {
-  const [checked, setChecked] = useStateV(new Set());
+  const [checked, setChecked] = useStateV(() => SDStore.loadGroceryChecked());
   const [customInput, setCustomInput] = useStateV('');
   const groups = [];
   const seen = {};
@@ -595,6 +595,7 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
     setChecked(prev => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
+      SDStore.saveGroceryChecked(next);
       return next;
     });
   };

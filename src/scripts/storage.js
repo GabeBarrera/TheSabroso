@@ -135,4 +135,15 @@ window.SDStore = {
   saveGroceryList(list) {
     try { localStorage.setItem(GROCERY_KEY, JSON.stringify(list)); } catch {}
   },
+
+  loadGroceryChecked() {
+    try {
+      const raw = localStorage.getItem(GROCERY_KEY + "_checked");
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch { return new Set(); }
+  },
+
+  saveGroceryChecked(set) {
+    try { localStorage.setItem(GROCERY_KEY + "_checked", JSON.stringify([...set])); } catch {}
+  },
 };
