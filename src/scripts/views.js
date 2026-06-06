@@ -578,8 +578,9 @@ function AddToGroceryBtn({ recipe, onAdd }) {
   );
 }
 
-function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
+function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddCustom, onClearAll }) {
   const [checked, setChecked] = useStateV(new Set());
+  const [customInput, setCustomInput] = useStateV('');
   const groups = [];
   const seen = {};
   items.forEach(item => {
@@ -587,7 +588,7 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
       seen[item.recipeId] = { recipeId: item.recipeId, recipeName: item.recipeName, items: [] };
       groups.push(seen[item.recipeId]);
     }
-    seen[item.recipeId].items.push(item.text);
+    seen[item.recipeId].items.push({ id: item.id, text: item.text });
   });
 
   const toggleItem = (key) => {
@@ -596,6 +597,13 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
+  };
+
+  const submitCustom = () => {
+    const t = customInput.trim();
+    if (!t) return;
+    onAddCustom(t);
+    setCustomInput('');
   };
 
   return (
@@ -616,26 +624,42 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
         {items.length === 0 ? (
           <div className="grocery-empty">
             <div className="grocery-empty-line1">No ingredients yet.</div>
-            <div className="grocery-empty-line2">Add from a recipe</div>
+            <div className="grocery-empty-line2">Add from a recipe or type below</div>
           </div>
         ) : groups.map(group => (
           <div key={group.recipeId} className="grocery-group">
             <div className="grocery-group-head">
               <span className="grocery-group-name">{group.recipeName}</span>
-              <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
+              {group.recipeId !== '__custom__' && (
+                <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
+              )}
             </div>
-            {group.items.map((text, i) => {
+            {group.items.map(({ id, text }, i) => {
               const key = `${group.recipeId}-${i}`;
               const isChecked = checked.has(key);
               return (
                 <div key={i} className={`grocery-item${isChecked ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
                   <span className="grocery-item-bullet">—</span>
                   <span className="grocery-item-text">{text}</span>
+                  {group.recipeId === '__custom__' && (
+                    <button className="grocery-item-remove" onClick={(e) => { e.stopPropagation(); onRemoveItem(id); }}>×</button>
+                  )}
                 </div>
               );
             })}
           </div>
         ))}
+      </div>
+      <div className="grocery-add-row">
+        <input
+          className="grocery-add-input"
+          type="text"
+          placeholder="Add an ingredient…"
+          value={customInput}
+          onChange={(e) => setCustomInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && submitCustom()}
+        />
+        <button className="grocery-add-btn" onClick={submitCustom}>Add</button>
       </div>
     </div>
   );

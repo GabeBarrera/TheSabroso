@@ -723,6 +723,8 @@ function AppInner(props) {
           items={groceryList}
           onClose={() => setGroceryOpen(false)}
           onRemoveRecipe={(id) => setGroceryList((prev) => prev.filter((item) => item.recipeId !== id))}
+          onRemoveItem={(id) => setGroceryList((prev) => prev.filter((item) => item.id !== id))}
+          onAddCustom={(text) => setGroceryList((prev) => [...prev, { id: SDStore.newId('gi'), text, recipeId: '__custom__', recipeName: 'Custom' }])}
           onClearAll={() => setGroceryList([])}
         />
       )}

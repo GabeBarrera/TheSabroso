@@ -1390,6 +1390,54 @@ a { color: inherit; }
   color: var(--ink-3, #aaa);
 }
 .grocery-item--checked .grocery-item-bullet { opacity: 0.4; }
+.grocery-item-remove {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--ink-3, #aaa);
+  padding: 0 2px;
+  opacity: 0;
+  transition: opacity 150ms, color 150ms;
+}
+.grocery-item:hover .grocery-item-remove { opacity: 1; }
+.grocery-item-remove:hover { color: var(--terracotta); }
+.grocery-add-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--hairline);
+  background: var(--paper);
+  flex-shrink: 0;
+}
+.grocery-add-input {
+  flex: 1;
+  font-family: var(--serif);
+  font-size: 14px;
+  padding: 7px 10px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+}
+.grocery-add-input:focus { border-color: var(--marine); }
+.grocery-add-input::placeholder { color: var(--ink-3, #aaa); }
+.grocery-add-btn {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 7px 14px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  flex-shrink: 0;
+}
+.grocery-add-btn:hover { background: var(--marine); border-color: var(--marine); color: var(--paper); }
 .grocery-item-bullet {
   font-family: var(--mono);
   font-size: 11px;
