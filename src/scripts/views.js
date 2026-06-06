@@ -579,6 +579,7 @@ function AddToGroceryBtn({ recipe, onAdd }) {
 }
 
 function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
+  const [checked, setChecked] = useStateV(new Set());
   const groups = [];
   const seen = {};
   items.forEach(item => {
@@ -588,6 +589,14 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
     }
     seen[item.recipeId].items.push(item.text);
   });
+
+  const toggleItem = (key) => {
+    setChecked(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   return (
     <div className="grocery-panel">
@@ -615,12 +624,16 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onClearAll }) {
               <span className="grocery-group-name">{group.recipeName}</span>
               <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
             </div>
-            {group.items.map((text, i) => (
-              <div key={i} className="grocery-item">
-                <span className="grocery-item-bullet">—</span>
-                <span className="grocery-item-text">{text}</span>
-              </div>
-            ))}
+            {group.items.map((text, i) => {
+              const key = `${group.recipeId}-${i}`;
+              const isChecked = checked.has(key);
+              return (
+                <div key={i} className={`grocery-item${isChecked ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
+                  <span className="grocery-item-bullet">—</span>
+                  <span className="grocery-item-text">{text}</span>
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>

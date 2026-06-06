@@ -1383,6 +1383,13 @@ a { color: inherit; }
   border-bottom: 1px solid var(--hairline);
 }
 .grocery-item:last-child { border-bottom: none; }
+.grocery-item { cursor: pointer; }
+.grocery-item:hover { background: var(--hairline); }
+.grocery-item--checked .grocery-item-text {
+  text-decoration: line-through;
+  color: var(--ink-3, #aaa);
+}
+.grocery-item--checked .grocery-item-bullet { opacity: 0.4; }
 .grocery-item-bullet {
   font-family: var(--mono);
   font-size: 11px;
