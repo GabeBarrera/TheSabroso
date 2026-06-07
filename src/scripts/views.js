@@ -871,8 +871,8 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
     setSidebarOpen(false);
   };
 
-  const SORT_BTN_LABELS = { az: "A–Z", za: "Z–A", time: "Time", serves: "Serves", cuisine: "Cuisine" };
-  const SORT_MENU_LABELS = { az: "Sort A → Z", za: "Sort Z → A", time: "By Time", serves: "By Serving Size", cuisine: "By Cuisine" };
+  const SORT_BTN_LABELS = { az: "A–Z", za: "Z–A", time: "Time", serves: "Serves", cuisine: "Cuisine", badge: "Type" };
+  const SORT_MENU_LABELS = { az: "Sort A → Z", za: "Sort Z → A", time: "By Time", serves: "By Serving Size", cuisine: "By Cuisine", badge: "By Type" };
 
   const filtered = useMemoV(() => {
     const s = q.trim().toLowerCase();
@@ -905,6 +905,19 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
       groups[c].push(r);
     });
     return Object.keys(groups).sort().map((c) => ({ cuisine: c, recipes: groups[c] }));
+  }, [sort, filtered]);
+
+  const BADGE_ORDER = ["meat", "seafood", "veg", "baked", "dessert"];
+  const badgeGroups = useMemoV(() => {
+    if (sort !== "badge") return null;
+    const groups = {};
+    filtered.forEach((r) => {
+      const b = getRecipeBadge(r) || "other";
+      if (!groups[b]) groups[b] = [];
+      groups[b].push(r);
+    });
+    const order = [...BADGE_ORDER.filter((b) => groups[b]), ...(groups.other ? ["other"] : [])];
+    return order.map((b) => ({ badge: b, label: b === "other" ? "Other" : BADGE_LABELS[b], recipes: groups[b] }));
   }, [sort, filtered]);
 
   useEffectV(() => {
@@ -984,7 +997,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
               {sortOpen && (
                 <div className="sort-menu">
                   <button className={!sort ? "active" : ""} onClick={() => { setSort(null); setSortOpen(false); }}>Default</button>
-                  {["az", "za", "time", "serves", "cuisine"].map((s) => (
+                  {["az", "za", "time", "serves", "cuisine", "badge"].map((s) => (
                     <button key={s} className={sort === s ? "active" : ""} onClick={() => { setSort(s); setSortOpen(false); }}>
                       {SORT_MENU_LABELS[s]}
                     </button>
@@ -1014,6 +1027,20 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                     <span className="cuisine-chev" />
                   </button>
                   {openCuisines.has(cuisine) && cRecipes.map(renderRecipeRow)}
+                </div>
+              ))
+            ) : !isEmpty && sort === "badge" ? (
+              badgeGroups && badgeGroups.map(({ badge, label, recipes: bRecipes }) => (
+                <div key={badge} className="cuisine-section">
+                  <button
+                    className={`cuisine-header${openCuisines.has(badge) ? " expanded" : ""}`}
+                    onClick={() => toggleCuisine(badge)}
+                  >
+                    <span className="cuisine-label">{label}</span>
+                    <span className="cuisine-count">{bRecipes.length}</span>
+                    <span className="cuisine-chev" />
+                  </button>
+                  {openCuisines.has(badge) && bRecipes.map(renderRecipeRow)}
                 </div>
               ))
             ) : (
