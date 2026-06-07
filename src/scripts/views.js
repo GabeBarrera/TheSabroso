@@ -578,9 +578,50 @@ function AddToGroceryBtn({ recipe, onAdd }) {
   );
 }
 
+function parseIngredient(text) {
+  const s = text.trim();
+  const mixed = s.match(/^(\d+)\s+(\d+)\/(\d+)\s+(.*)/);
+  if (mixed) return { qty: parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3]), key: mixed[4].toLowerCase() };
+  const frac = s.match(/^(\d+)\/(\d+)\s+(.*)/);
+  if (frac) return { qty: parseInt(frac[1]) / parseInt(frac[2]), key: frac[3].toLowerCase() };
+  const num = s.match(/^(\d+(?:\.\d+)?)\s+(.*)/);
+  if (num) return { qty: parseFloat(num[1]), key: num[2].toLowerCase() };
+  return { qty: null, key: s.toLowerCase() };
+}
+
+function formatQty(n) {
+  if (Number.isInteger(n)) return String(n);
+  const whole = Math.floor(n);
+  const rem = n - whole;
+  for (const [val, str] of [[1/4,'1/4'],[1/3,'1/3'],[1/2,'1/2'],[2/3,'2/3'],[3/4,'3/4']]) {
+    if (Math.abs(rem - val) < 0.02) return whole > 0 ? `${whole} ${str}` : str;
+  }
+  return parseFloat(n.toFixed(2)).toString();
+}
+
+function buildTotals(items) {
+  const map = new Map();
+  items.forEach(item => {
+    const { qty, key } = parseIngredient(item.text);
+    if (!map.has(key)) map.set(key, { key, firstText: item.text, totalQty: 0, hasNumeric: false, sources: new Set() });
+    const e = map.get(key);
+    e.sources.add(item.recipeName || 'Custom');
+    if (qty !== null) { e.totalQty += qty; e.hasNumeric = true; }
+  });
+  return [...map.values()]
+    .sort((a, b) => a.key.localeCompare(b.key))
+    .map(e => ({
+      key: e.key,
+      displayText: e.hasNumeric ? `${formatQty(e.totalQty)} ${e.key}` : e.firstText,
+      sources: [...e.sources],
+    }));
+}
+
 function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddCustom, onClearAll }) {
   const [checked, setChecked] = useStateV(() => SDStore.loadGroceryChecked());
   const [customInput, setCustomInput] = useStateV('');
+  const [viewMode, setViewMode] = useStateV('by-recipe');
+
   const groups = [];
   const seen = {};
   items.forEach(item => {
@@ -590,6 +631,8 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
     }
     seen[item.recipeId].items.push({ id: item.id, text: item.text });
   });
+
+  const totals = useMemoV(() => buildTotals(items), [items]);
 
   const toggleItem = (key) => {
     setChecked(prev => {
@@ -621,35 +664,71 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
           <button className="grocery-panel-close" onClick={onClose}>×</button>
         </div>
       </div>
+
+      {items.length > 0 && (
+        <div className="grocery-view-bar">
+          <button
+            className={`grocery-view-tab${viewMode === 'by-recipe' ? ' active' : ''}`}
+            onClick={() => setViewMode('by-recipe')}
+          >Per Recipe</button>
+          <button
+            className={`grocery-view-tab${viewMode === 'total' ? ' active' : ''}`}
+            onClick={() => setViewMode('total')}
+          >Totals</button>
+        </div>
+      )}
+
       <div className="grocery-panel-body">
         {items.length === 0 ? (
           <div className="grocery-empty">
             <div className="grocery-empty-line1">No ingredients yet.</div>
             <div className="grocery-empty-line2">Add from a recipe or type below</div>
           </div>
-        ) : groups.map(group => (
-          <div key={group.recipeId} className="grocery-group">
-            <div className="grocery-group-head">
-              <span className="grocery-group-name">{group.recipeName}</span>
-              {group.recipeId !== '__custom__' && (
-                <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
-              )}
-            </div>
-            {group.items.map(({ id, text }, i) => {
-              const key = `${group.recipeId}-${i}`;
-              const isChecked = checked.has(key);
-              return (
-                <div key={i} className={`grocery-item${isChecked ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
-                  <span className="grocery-item-bullet">—</span>
-                  <span className="grocery-item-text">{text}</span>
-                  {group.recipeId === '__custom__' && (
-                    <button className="grocery-item-remove" onClick={(e) => { e.stopPropagation(); onRemoveItem(id); }}>×</button>
+        ) : viewMode === 'total' ? (
+          totals.map(({ key, displayText, sources }) => {
+            const checkKey = `total-${key}`;
+            const isChecked = checked.has(checkKey);
+            return (
+              <div
+                key={key}
+                className={`grocery-item${isChecked ? ' grocery-item--checked' : ''}`}
+                onClick={() => toggleItem(checkKey)}
+              >
+                <span className="grocery-item-bullet">—</span>
+                <div className="grocery-item-body">
+                  <span className="grocery-item-text">{displayText}</span>
+                  {sources.length > 1 && (
+                    <span className="grocery-item-sources">{sources.join(', ')}</span>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        ))}
+              </div>
+            );
+          })
+        ) : (
+          groups.map(group => (
+            <div key={group.recipeId} className="grocery-group">
+              <div className="grocery-group-head">
+                <span className="grocery-group-name">{group.recipeName}</span>
+                {group.recipeId !== '__custom__' && (
+                  <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
+                )}
+              </div>
+              {group.items.map(({ id, text }, i) => {
+                const key = `${group.recipeId}-${i}`;
+                const isChecked = checked.has(key);
+                return (
+                  <div key={i} className={`grocery-item${isChecked ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
+                    <span className="grocery-item-bullet">—</span>
+                    <span className="grocery-item-text">{text}</span>
+                    {group.recipeId === '__custom__' && (
+                      <button className="grocery-item-remove" onClick={(e) => { e.stopPropagation(); onRemoveItem(id); }}>×</button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        )}
       </div>
       <div className="grocery-add-row">
         <input

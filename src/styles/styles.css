@@ -1406,6 +1406,45 @@ a { color: inherit; }
 }
 .grocery-item:hover .grocery-item-remove { opacity: 1; }
 .grocery-item-remove:hover { color: var(--terracotta); }
+/* ---- Grocery view toggle ---- */
+.grocery-view-bar {
+  display: flex;
+  border-bottom: 1px solid var(--ink);
+  flex-shrink: 0;
+}
+.grocery-view-tab {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  padding: 10px 0;
+  border: none;
+  border-right: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+.grocery-view-tab:last-child { border-right: none; }
+.grocery-view-tab.active { background: var(--ink); color: var(--paper); }
+.grocery-view-tab:not(.active):hover { background: var(--cream); color: var(--ink); }
+
+/* ---- Totals view item layout ---- */
+.grocery-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.grocery-item-sources {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  color: var(--muted-2);
+  text-transform: uppercase;
+}
+
 .grocery-add-row {
   display: flex;
   gap: 8px;
