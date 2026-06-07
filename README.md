@@ -76,7 +76,7 @@ Then open `http://localhost:8080`.
 
 Hover a pin to open its popup. Click "Open profile →" or "Open note →" for the full detail view.
 
-**Recipes** — searchable list with a detail panel. Select a recipe in the sidebar to read the full ingredients and method. Use the clipboard button in the recipe header to add its ingredients to your grocery list, then open the list via the notepad button in the bottom dock.
+**Recipes** — searchable list with a detail panel. Select a recipe to see its structured ingredient list and method. Ingredients scale ×1/×2/×3 via the buttons above the list. Click any ingredient row to cross it out while cooking. Use the clipboard button to send the recipe's ingredients to your grocery list, then open the list via the notepad icon in the bottom dock.
 
 ---
 
@@ -131,7 +131,7 @@ Open `editor.html` in a browser (served over HTTP) for a full CRUD interface ove
 The **Grocery List** is a recipe-page-only feature accessible via the notepad icon in the bottom dock (visible only when on the Recipes view).
 
 **Adding ingredients:**
-- Each recipe's detail header has a **clipboard button**. Clicking it parses the recipe's HTML description and extracts every `<li>` element inside a `<ul>` as an ingredient line.
+- Each recipe's detail header has a **clipboard button**. Clicking it adds the recipe's structured ingredient list (qty + unit + name) as grocery lines.
 - Re-clicking the button for the same recipe **replaces** that recipe's existing entries (acts as a refresh, not a duplicate append).
 - You can also type a custom ingredient into the input at the bottom of the panel and click **Add**.
 
@@ -209,10 +209,16 @@ Admin session is stored in `sessionStorage` and expires when the tab is closed.
   "time":        45,
   "serves":      4,
   "tagline":     "Skirt steak, charred lime, no shortcuts.",
-  "description": "<h3>Ingredients</h3><ul>...</ul>",
+  "ingredients": [
+    { "qty": "2", "unit": "lb",  "name": "skirt steak", "notes": "ask for outside skirt" },
+    { "qty": "2", "unit": "tbsp","name": "olive oil",   "notes": "" }
+  ],
+  "description": "<p>HTML method content...</p>",
   "createdAt":   "2025-09-20"
 }
 ```
+
+`ingredients` is a structured array separate from `description`. Each entry has `qty`, `unit`, `name`, and an optional `notes` field. The `notes` field is displayed in the recipe detail view but is not included in grocery list exports. Older recipes without an `ingredients` field are auto-migrated from `<li>` elements in the description on first load.
 
 ### Note
 

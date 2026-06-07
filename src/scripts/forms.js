@@ -243,6 +243,13 @@ function IngredientRow({ ing, idx, onChange, onRemove, showRemove }) {
         onChange={(e) => onChange(idx, { ...ing, name: e.target.value })}
         placeholder="ingredient"
       />
+      <input
+        className="field-input ing-notes-input"
+        type="text"
+        value={ing.notes || ''}
+        onChange={(e) => onChange(idx, { ...ing, notes: e.target.value })}
+        placeholder="notes (optional)"
+      />
       {showRemove && (
         <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>
       )}

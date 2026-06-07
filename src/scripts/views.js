@@ -835,10 +835,17 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
   };
 
   const [struckSteps, setStruckSteps] = useStateV(new Set());
+  const [struckIngredients, setStruckIngredients] = useStateV(new Set());
   const [scale, setScale] = useStateV(1);
   const bodyRef = useRefV(null);
 
-  useEffectV(() => { setStruckSteps(new Set()); setScale(1); }, [selectedId]);
+  const toggleStruckIngredient = (i) => setStruckIngredients(prev => {
+    const next = new Set(prev);
+    next.has(i) ? next.delete(i) : next.add(i);
+    return next;
+  });
+
+  useEffectV(() => { setStruckSteps(new Set()); setStruckIngredients(new Set()); setScale(1); }, [selectedId]);
 
   useEffectV(() => {
     if (!bodyRef.current) return;
@@ -1075,10 +1082,16 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                   <div className="r-ing-label">Ingredients</div>
                   <div className="ingredient-list">
                     {selected.ingredients.map((ing, i) => (
-                      <div key={i} className="ingredient-item">
+                      <div
+                        key={i}
+                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}`}
+                        onClick={() => toggleStruckIngredient(i)}
+                        title="Click to cross out"
+                      >
                         <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
                         <span className="ing-unit">{ing.unit}</span>
                         <span className="ing-name">{ing.name}</span>
+                        {ing.notes ? <span className="ing-notes">{ing.notes}</span> : <span className="ing-notes" />}
                       </div>
                     ))}
                   </div>

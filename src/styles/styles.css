@@ -2348,14 +2348,18 @@ a { color: inherit; }
 }
 .ingredient-item {
   display: grid;
-  grid-template-columns: 52px 68px 1fr;
+  grid-template-columns: 52px 68px 1fr 1fr;
   gap: 8px;
   padding: 5px 0;
   border-bottom: 1px solid var(--hairline);
   font-family: var(--serif);
   font-size: 16px;
   line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity .15s;
 }
+.ingredient-item:hover { opacity: .75; }
 .ingredient-item:first-child { border-top: 1px solid var(--hairline); }
 .ingredient-item .ing-qty {
   font-variant-numeric: tabular-nums;
@@ -2371,6 +2375,21 @@ a { color: inherit; }
   padding-top: 2px;
 }
 .ingredient-item .ing-name { color: var(--ink-2); }
+.ingredient-item .ing-notes {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-style: italic;
+  padding-top: 2px;
+  align-self: center;
+}
+.ingredient-item.struck .ing-qty,
+.ingredient-item.struck .ing-unit,
+.ingredient-item.struck .ing-name,
+.ingredient-item.struck .ing-notes {
+  text-decoration: line-through;
+  opacity: .45;
+}
 
 /* ---- Ingredient editor (recipe form) ---- */
 .ingredient-editor {
@@ -2387,6 +2406,7 @@ a { color: inherit; }
 .ing-unit-select { width: 110px !important; flex-shrink: 0; }
 .ing-unit-custom { width: 84px !important; flex-shrink: 0; }
 .ing-name-input { flex: 1; min-width: 0; }
+.ing-notes-input { flex: 1; min-width: 0; }
 .ing-del-btn {
   flex-shrink: 0;
   padding: 0 10px !important;
