@@ -703,7 +703,7 @@ function scaleHtml(html, factor) {
   });
 }
 
-function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery }) {
+function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery, onEditRecipe }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
@@ -780,10 +780,16 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
   const filtered = useMemoV(() => {
     const s = q.trim().toLowerCase();
     let list = s
-      ? recipes.filter((r) => {
-          const fields = [r.name, r.cuisine, r.tagline, r.description].filter(Boolean).join(" ").toLowerCase();
-          return fields.includes(s);
-        })
+      ? recipes
+          .filter((r) => {
+            const fields = [r.name, r.cuisine, r.tagline, r.description].filter(Boolean).join(" ").toLowerCase();
+            return fields.includes(s);
+          })
+          .sort((a, b) => {
+            const aName = (a.name || "").toLowerCase().includes(s);
+            const bName = (b.name || "").toLowerCase().includes(s);
+            return (bName ? 1 : 0) - (aName ? 1 : 0);
+          })
       : [...recipes];
 
     if (sort === "az") list.sort((a, b) => a.name.localeCompare(b.name));
@@ -947,6 +953,9 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                     <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />
                   )}
                   <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
+                  {onEditRecipe && (
+                    <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
+                  )}
                 </div>
               </div>
               <h1>{selected.name}</h1>

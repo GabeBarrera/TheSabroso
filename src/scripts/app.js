@@ -101,11 +101,17 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
   const findMatch = t.match(/^find\s+(.+)/);
   if (findMatch) {
     const query = findMatch[1].trim();
-    const matches = restaurants.filter((r) => {
-      const text = [r.name, r.cuisine, r.address, (r.description || "").replace(/<[^>]+>/g, "")]
-        .join(" ").toLowerCase();
-      return text.includes(query);
-    });
+    const matches = restaurants
+      .filter((r) => {
+        const text = [r.name, r.cuisine, r.address, (r.description || "").replace(/<[^>]+>/g, "")]
+          .join(" ").toLowerCase();
+        return text.includes(query);
+      })
+      .sort((a, b) => {
+        const aName = (a.name || "").toLowerCase().includes(query);
+        const bName = (b.name || "").toLowerCase().includes(query);
+        return (bName ? 1 : 0) - (aName ? 1 : 0);
+      });
     if (matches.length === 0) { setVoiceResult({ type: "none", query }); return false; }
     if (matches.length === 1) {
       setView(VIEW_MAP);
@@ -117,11 +123,17 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
   }
 
   // No explicit command matched — fall back to keyword search
-  const matches = restaurants.filter((r) => {
-    const text = [r.name, r.cuisine, r.address, (r.description || "").replace(/<[^>]+>/g, "")]
-      .join(" ").toLowerCase();
-    return text.includes(t);
-  });
+  const matches = restaurants
+    .filter((r) => {
+      const text = [r.name, r.cuisine, r.address, (r.description || "").replace(/<[^>]+>/g, "")]
+        .join(" ").toLowerCase();
+      return text.includes(t);
+    })
+    .sort((a, b) => {
+      const aName = (a.name || "").toLowerCase().includes(t);
+      const bName = (b.name || "").toLowerCase().includes(t);
+      return (bName ? 1 : 0) - (aName ? 1 : 0);
+    });
   if (matches.length === 0) return false;
   if (matches.length === 1) {
     setView(VIEW_MAP);
@@ -312,7 +324,7 @@ function App() {
     const list = target === "restaurant" ? restaurants : target === "recipe" ? recipes : notes;
     const items = [
       { label: target === "note" ? "New note" : "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
-      { label: target === "restaurant" ? "List entries" : target === "note" ? "List notes" : "Edit existing", hint: "modify", onClick: () => setModal(target === "restaurant" ? { kind: "list-entries" } : target === "note" ? { kind: "list-notes" } : { kind: "pick", target }) },
+      ...(target !== "recipe" ? [{ label: target === "restaurant" ? "List entries" : "List notes", hint: "modify", onClick: () => setModal(target === "restaurant" ? { kind: "list-entries" } : { kind: "list-notes" }) }] : []),
       { label: "Import", hint: "merge", onClick: () => setModal({ kind: "import", target }) },
       { label: "Backup", hint: "export", onClick: () =>
         target === "restaurant" ? setModal({ kind: "backup" }) : doBackup(target, list)
@@ -616,6 +628,7 @@ function AppInner(props) {
             navigate={setView}
             focusRecipeId={focusRecipeId}
             onAddToGrocery={addToGrocery}
+            onEditRecipe={(recipe) => setModal({ kind: "edit", target: "recipe", initial: recipe })}
           />
         </div>
       </div>
