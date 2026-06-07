@@ -192,6 +192,64 @@ function RestaurantForm({ initial, defaultLat, defaultLng, defaultAddress, onSav
    RECIPE FORM (new + edit)
    ============================================================ */
 
+const RECIPE_UNITS = ['tsp', 'tbsp', 'cup', 'oz', 'fl oz', 'lb', 'g', 'kg', 'ml', 'L', 'bunch', 'pinch', 'dash', 'to taste', 'slices', 'cloves', 'pieces'];
+const RECIPE_UNITS_SET = new Set(RECIPE_UNITS);
+
+function IngredientRow({ ing, idx, onChange, onRemove, showRemove }) {
+  const isCustom = ing.unit !== '' && !RECIPE_UNITS_SET.has(ing.unit);
+  const [customMode, setCustomMode] = useStateF(isCustom);
+  const selectVal = customMode ? '__custom' : ing.unit;
+
+  const handleSelect = (val) => {
+    if (val === '__custom') {
+      setCustomMode(true);
+    } else {
+      setCustomMode(false);
+      onChange(idx, { ...ing, unit: val });
+    }
+  };
+
+  return (
+    <div className="ingredient-row">
+      <input
+        className="field-input ing-qty-input"
+        type="text"
+        value={ing.qty}
+        onChange={(e) => onChange(idx, { ...ing, qty: e.target.value })}
+        placeholder="qty"
+      />
+      <select
+        className="field-select ing-unit-select"
+        value={selectVal}
+        onChange={(e) => handleSelect(e.target.value)}
+      >
+        <option value="">—</option>
+        {RECIPE_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+        <option value="__custom">Custom…</option>
+      </select>
+      {customMode && (
+        <input
+          className="field-input ing-unit-custom"
+          type="text"
+          value={ing.unit}
+          onChange={(e) => onChange(idx, { ...ing, unit: e.target.value })}
+          placeholder="unit"
+        />
+      )}
+      <input
+        className="field-input ing-name-input"
+        type="text"
+        value={ing.name}
+        onChange={(e) => onChange(idx, { ...ing, name: e.target.value })}
+        placeholder="ingredient"
+      />
+      {showRemove && (
+        <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>
+      )}
+    </div>
+  );
+}
+
 function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
@@ -200,9 +258,19 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
   const [serves, setServes] = useStateF(initial?.serves || 2);
   const [tagline, setTagline] = useStateF(initial?.tagline || "");
   const [description, setDescription] = useStateF(initial?.description || "");
+  const [ingredients, setIngredients] = useStateF(() => {
+    if (initial?.ingredients?.length) return initial.ingredients.map(i => ({ ...i }));
+    return [{ qty: '', unit: '', name: '' }];
+  });
+
+  const addIngredient = () => setIngredients(prev => [...prev, { qty: '', unit: '', name: '' }]);
+  const removeIngredient = (idx) => setIngredients(prev => prev.filter((_, i) => i !== idx));
+  const updateIngredient = (idx, updated) => setIngredients(prev => prev.map((ing, i) => i === idx ? updated : ing));
 
   const handleSave = () => {
     if (!name.trim()) { toast("Name is required", "warn"); return; }
+    const validIngredients = ingredients.filter(ing => ing.name.trim());
+    if (!validIngredients.length) { toast("At least one ingredient is required", "warn"); return; }
     onSave({
       id: initial?.id || SDStore.newId("rec"),
       name: name.trim(),
@@ -210,6 +278,7 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
       time: Number(time) || 0,
       serves: Number(serves) || 0,
       tagline: tagline.trim(),
+      ingredients: validIngredients,
       description,
       createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
     });
@@ -217,12 +286,12 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
 
   const exportOne = (fmt) => {
     if (fmt === "json") {
-      const e = { id: initial?.id || "draft", name, cuisine, time, serves, tagline, description };
+      const e = { id: initial?.id || "draft", name, cuisine, time, serves, tagline, ingredients, description };
       SDStore.download(`${(name || "recipe").replace(/\s+/g, "_").toLowerCase()}.json`, JSON.stringify(e, null, 2));
       toast("Exported JSON", "ok");
     } else {
-      const row = { name, cuisine, time, serves, tagline, description };
-      const csv = SDStore.toCSV([row], ["name","cuisine","time","serves","tagline","description"]);
+      const row = { name, cuisine, time, serves, tagline, ingredients: JSON.stringify(ingredients), description };
+      const csv = SDStore.toCSV([row], ["name","cuisine","time","serves","tagline","ingredients","description"]);
       SDStore.download(`${(name || "recipe").replace(/\s+/g, "_").toLowerCase()}.csv`, csv, "text/csv");
       toast("Exported CSV", "ok");
     }
@@ -282,8 +351,25 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
       </div>
 
       <div className="field">
-        <label className="field-label">Ingredients &amp; method</label>
-        <RichEditor value={description} onChange={setDescription} placeholder="Ingredients. Method. No filler. The reader is hungry." />
+        <label className="field-label">Ingredients</label>
+        <div className="ingredient-editor">
+          {ingredients.map((ing, idx) => (
+            <IngredientRow
+              key={idx}
+              ing={ing}
+              idx={idx}
+              onChange={updateIngredient}
+              onRemove={removeIngredient}
+              showRemove={ingredients.length > 1}
+            />
+          ))}
+          <button type="button" className="btn ghost add-ingredient-btn" onClick={addIngredient}>+ Add ingredient</button>
+        </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Method</label>
+        <RichEditor value={description} onChange={setDescription} placeholder="Method. No filler. The reader is hungry." />
       </div>
     </Modal>
   );

@@ -144,12 +144,56 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
   return true;
 }
 
+const MIGRATION_UNITS = new Set(['tsp','tbsp','cup','cups','oz','fl oz','lb','lbs','g','kg','ml','l','bunch','bunches','pinch','dash','clove','cloves','slice','slices','piece','pieces','tablespoon','tablespoons','teaspoon','teaspoons']);
+const MIGRATION_UNIT_NORM = { cups:'cup',lbs:'lb',bunches:'bunch',tablespoon:'tbsp',tablespoons:'tbsp',teaspoon:'tsp',teaspoons:'tsp',clove:'cloves',slice:'slices',piece:'pieces',l:'L' };
+
+function parseIngredientText(raw) {
+  const text = raw.replace(/<[^>]*>/g, '').replace(/[½¼¾]/g, m => ({'½':'1/2','¼':'1/4','¾':'3/4'})[m])
+    .replace(/(\d)[½]/g, '$1 1/2').replace(/(\d)[¼]/g, '$1 1/4').replace(/(\d)[¾]/g, '$1 3/4').trim();
+  const QTY = '(\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+(?:\\.\\d+)?)';
+  const unitList = [...MIGRATION_UNITS].sort((a,b) => b.length - a.length).map(u => u.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
+  const full = new RegExp('^' + QTY + '\\s+(' + unitList + ')(?:\\b|\\.)\\s*(.*)', 'i');
+  const qtyOnly = new RegExp('^' + QTY + '\\s+(.*)');
+  let m = text.match(full);
+  if (m) {
+    const unit = MIGRATION_UNIT_NORM[m[2].toLowerCase()] || m[2].toLowerCase();
+    return { qty: m[1], unit, name: m[3].trim() };
+  }
+  m = text.match(qtyOnly);
+  if (m) return { qty: m[1], unit: '', name: m[2].trim() };
+  return { qty: '', unit: '', name: text };
+}
+
+function migrateRecipeLegacy(recipe) {
+  if (recipe.ingredients) return recipe;
+  const div = document.createElement('div');
+  div.innerHTML = recipe.description || '';
+  const ingredients = [];
+  div.querySelectorAll('ul > li').forEach(li => {
+    const t = li.textContent.trim();
+    if (t) ingredients.push(parseIngredientText(t));
+  });
+  div.querySelectorAll('h3').forEach(h3 => {
+    const txt = h3.textContent.trim().toLowerCase();
+    if (txt === 'ingredients' || txt === 'garnishes') {
+      const next = h3.nextElementSibling;
+      if (next && next.tagName === 'UL') next.remove();
+      h3.remove();
+    }
+  });
+  return {
+    ...recipe,
+    ingredients: ingredients.length > 0 ? ingredients : [{ qty: '', unit: '', name: '' }],
+    description: div.innerHTML.trim(),
+  };
+}
+
 function App() {
   const [view, setView] = useState(() => {
     try { const v = parseInt(localStorage.getItem("sabroso_last_view"), 10); return (v === 0 || v === 1 || v === 2) ? v : VIEW_ABOUT; } catch { return VIEW_ABOUT; }
   });
   const [restaurants, setRestaurants] = useState(() => SDStore.loadRestaurants() ?? []);
-  const [recipes, setRecipes] = useState(() => SDStore.loadRecipes() ?? []);
+  const [recipes, setRecipes] = useState(() => (SDStore.loadRecipes() ?? []).map(migrateRecipeLegacy));
   const [dataReady, setDataReady] = useState(() => localStorage.getItem("sabroso_restaurants") !== null);
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem("sabroso_theme") || "light"; } catch (e) { return "light"; }
@@ -589,7 +633,7 @@ function AppInner(props) {
   // IMPORT commit
   const commitImport = (newList) => {
     if (modal.target === "restaurant") setRestaurants(newList);
-    else if (modal.target === "recipe") setRecipes(newList);
+    else if (modal.target === "recipe") setRecipes(newList.map(migrateRecipeLegacy));
     else if (modal.target === "note") setNotes(newList);
     closeModal();
   };

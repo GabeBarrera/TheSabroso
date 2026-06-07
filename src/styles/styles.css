@@ -2328,6 +2328,81 @@ a { color: inherit; }
 .copy-link-btn:hover { background: var(--terracotta); border-color: var(--terracotta); }
 .copy-link-btn.copied { background: var(--terracotta); border-color: var(--terracotta); min-width: 72px; }
 
+/* ---- Structured ingredient display (recipe detail) ---- */
+.recipe-ingredients {
+  margin-bottom: 28px;
+  max-width: 640px;
+}
+.r-ing-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.ingredient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ingredient-item {
+  display: grid;
+  grid-template-columns: 52px 68px 1fr;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.ingredient-item:first-child { border-top: 1px solid var(--hairline); }
+.ingredient-item .ing-qty {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+  font-weight: 600;
+}
+.ingredient-item .ing-unit {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .04em;
+  padding-top: 2px;
+}
+.ingredient-item .ing-name { color: var(--ink-2); }
+
+/* ---- Ingredient editor (recipe form) ---- */
+.ingredient-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ingredient-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.ing-qty-input  { width: 64px !important; flex-shrink: 0; }
+.ing-unit-select { width: 110px !important; flex-shrink: 0; }
+.ing-unit-custom { width: 84px !important; flex-shrink: 0; }
+.ing-name-input { flex: 1; min-width: 0; }
+.ing-del-btn {
+  flex-shrink: 0;
+  padding: 0 10px !important;
+  font-size: 14px !important;
+  line-height: 1;
+  color: var(--muted) !important;
+  border-color: var(--hairline) !important;
+}
+.ing-del-btn:hover { color: var(--terracotta) !important; border-color: var(--terracotta) !important; }
+.add-ingredient-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-size: 11px !important;
+  padding: 8px 14px !important;
+}
+
 /* ---- Recipe edit button ---- */
 .recipe-edit-btn {
   display: inline-flex;
@@ -2970,6 +3045,11 @@ a { color: inherit; }
   .modal-body { padding: 20px 18px; }
   .modal-foot { padding: 14px 18px; flex-wrap: wrap; gap: 10px; }
   .field-row { grid-template-columns: 1fr; }
+  .ingredient-row { flex-wrap: wrap; }
+  .ing-qty-input  { width: 64px !important; }
+  .ing-unit-select { width: calc(50% - 35px) !important; }
+  .ing-unit-custom { width: calc(50% - 35px) !important; }
+  .ing-name-input { width: 100% !important; flex-basis: 100%; }
 
   /* ---- PROFILE ---- */
 

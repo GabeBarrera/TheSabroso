@@ -539,24 +539,17 @@ function escapeHtml(s) {
 }
 
 /* ============================================================
-   GROCERY LIST — ingredient extraction + panel + add button
+   GROCERY LIST — ingredient panel + add button
    ============================================================ */
-
-function extractIngredients(html) {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  const ulItems = [...div.querySelectorAll('ul > li')].map(li => li.textContent.trim()).filter(Boolean);
-  if (ulItems.length) return ulItems;
-  return [...div.querySelectorAll('li')].map(li => li.textContent.trim()).filter(Boolean);
-}
 
 function AddToGroceryBtn({ recipe, onAdd }) {
   const [added, setAdded] = useStateV(false);
   const handle = (e) => {
     e.stopPropagation();
-    const ingredients = extractIngredients(recipe.description || '');
-    if (!ingredients.length) return;
-    onAdd(recipe, ingredients);
+    const ings = recipe.ingredients || [];
+    if (!ings.length) return;
+    const texts = ings.map(ing => [ing.qty, ing.unit, ing.name].filter(Boolean).join(' '));
+    onAdd(recipe, texts);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   };
@@ -597,6 +590,24 @@ function formatQty(n) {
     if (Math.abs(rem - val) < 0.02) return whole > 0 ? `${whole} ${str}` : str;
   }
   return parseFloat(n.toFixed(2)).toString();
+}
+
+function scaleQty(qtyStr, factor) {
+  if (!qtyStr || factor === 1) return qtyStr;
+  const s = String(qtyStr).trim();
+  // Range: "4–5" or "4-5"
+  const rangeM = s.match(/^(.+?)\s*[–-]\s*(.+)$/);
+  if (rangeM) return `${scaleQty(rangeM[1].trim(), factor)}–${scaleQty(rangeM[2].trim(), factor)}`;
+  // Mixed fraction: "1 1/2"
+  const mixedM = s.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if (mixedM) return formatQty((parseInt(mixedM[1]) + parseInt(mixedM[2]) / parseInt(mixedM[3])) * factor);
+  // Simple fraction: "1/2"
+  const fracM = s.match(/^(\d+)\/(\d+)$/);
+  if (fracM) return formatQty(parseInt(fracM[1]) / parseInt(fracM[2]) * factor);
+  // Integer or decimal
+  const numM = s.match(/^\d+(?:\.\d+)?$/);
+  if (numM) return formatQty(parseFloat(s) * factor);
+  return qtyStr;
 }
 
 function buildTotals(items) {
@@ -1059,6 +1070,20 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                   <button key={n} className={`scaler-btn${scale === n ? " active" : ""}`} onClick={() => setScale(n)}>×{n}</button>
                 ))}
               </div>
+              {selected.ingredients && selected.ingredients.length > 0 && (
+                <div className="recipe-ingredients">
+                  <div className="r-ing-label">Ingredients</div>
+                  <div className="ingredient-list">
+                    {selected.ingredients.map((ing, i) => (
+                      <div key={i} className="ingredient-item">
+                        <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
+                        <span className="ing-unit">{ing.unit}</span>
+                        <span className="ing-name">{ing.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick} dangerouslySetInnerHTML={{ __html: scaleHtml(selected.description || "", scale) }} />
             </>
           )}
