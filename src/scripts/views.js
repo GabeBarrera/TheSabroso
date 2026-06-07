@@ -1044,7 +1044,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
           ) : (
             <>
               <div className="r-eyebrow-row">
-                <div className="r-eyebrow">{selected.cuisine || "Recipe"} · Filed {selected.createdAt}</div>
+                <div className="r-eyebrow">{selected.cuisine || "Recipe"} · {selected.modifiedAt ? `Updated ${selected.modifiedAt}` : `Filed ${selected.createdAt}`}</div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {onAddToGrocery && (
                     <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />

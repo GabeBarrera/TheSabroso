@@ -602,11 +602,12 @@ function AppInner(props) {
 
   const saveRecipe = (entry) => {
     const isEdit = !!modal?.initial;
+    const saved = isEdit ? { ...entry, modifiedAt: new Date().toISOString().slice(0, 10) } : entry;
     setRecipes((list) => {
-      if (isEdit) return list.map((r) => (r.id === entry.id ? entry : r));
-      return [...list, entry];
+      if (isEdit) return list.map((r) => (r.id === saved.id ? saved : r));
+      return [...list, saved];
     });
-    toast(isEdit ? `Updated · ${entry.name}` : `Filed · ${entry.name}`, "ok");
+    toast(isEdit ? `Updated · ${saved.name}` : `Filed · ${saved.name}`, "ok");
     closeModal();
   };
 
