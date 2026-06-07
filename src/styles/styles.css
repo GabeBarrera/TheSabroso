@@ -1258,7 +1258,7 @@ a { color: inherit; }
   width: 380px;
   background: var(--paper);
   border-left: 1px solid var(--ink);
-  z-index: 290;
+  z-index: 310;
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 32px -8px rgba(26,24,22,.22);
@@ -2534,9 +2534,6 @@ a { color: inherit; }
 .theme-toggle:hover {
   background: var(--ink);
   color: var(--paper);
-}
-@media (hover: hover) {
-  .theme-toggle:hover { transform: rotate(-12deg); }
 }
 .theme-toggle svg {
   width: 18px;
