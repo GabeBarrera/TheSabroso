@@ -145,7 +145,9 @@ function handleVoiceCommand(transcript, restaurants, hiddenFilters, setHiddenFil
 }
 
 function App() {
-  const [view, setView] = useState(VIEW_ABOUT);
+  const [view, setView] = useState(() => {
+    try { const v = parseInt(localStorage.getItem("sabroso_last_view"), 10); return (v === 0 || v === 1 || v === 2) ? v : VIEW_ABOUT; } catch { return VIEW_ABOUT; }
+  });
   const [restaurants, setRestaurants] = useState(() => SDStore.loadRestaurants() ?? []);
   const [recipes, setRecipes] = useState(() => SDStore.loadRecipes() ?? []);
   const [dataReady, setDataReady] = useState(() => localStorage.getItem("sabroso_restaurants") !== null);
@@ -177,6 +179,7 @@ function App() {
   const recognitionRef = useRef(null);
   const hiddenFiltersRef = useRef(hiddenFilters);
   useEffect(() => { hiddenFiltersRef.current = hiddenFilters; }, [hiddenFilters]);
+  useEffect(() => { try { localStorage.setItem("sabroso_last_view", view); } catch {} }, [view]);
 
   // seed from JSON files on first visit
   useEffect(() => {

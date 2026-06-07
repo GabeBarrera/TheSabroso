@@ -707,7 +707,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
-  const [sort, setSort] = useStateV(null);
+  const [sort, setSort] = useStateV("az");
   const [sortOpen, setSortOpen] = useStateV(false);
   const [favorites, setFavorites] = useStateV(() => SDStore.loadFavorites());
   const [openCuisines, setOpenCuisines] = useStateV(() => new Set());
