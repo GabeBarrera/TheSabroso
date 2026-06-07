@@ -26,10 +26,11 @@ No npm, no build step. Open `index.html` from any static file server and it runs
 TheSabroso/
 ├── index.html               # Entry point — loads all scripts
 │
+├── editor.html              # Standalone data editor (open in browser)
+│
 ├── data/
 │   ├── restaurants.json     # Seed data — loaded into localStorage on first visit
-│   ├── recipes.json         # Seed data — loaded into localStorage on first visit
-│   └── editor.html          # Standalone data editor (open in browser)
+│   └── recipes.json         # Seed data — loaded into localStorage on first visit
 │
 └── src/
     ├── scripts/
@@ -121,7 +122,7 @@ Wipes `sabroso_restaurants`, `sabroso_recipes`, and `sabroso_contacts` from `loc
 
 ### Data editor
 
-Open `data/editor.html` in a browser (served over HTTP) for a full CRUD interface over both collections.
+Open `editor.html` in a browser (served over HTTP) for a full CRUD interface over both collections.
 
 ---
 

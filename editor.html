@@ -4,15 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sabroso · Data Editor</title>
-<link rel="icon" type="image/png" href="../src/img/favicon.png" />
-<link rel="apple-touch-icon" href="../src/img/apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="src/img/favicon.png" />
+<link rel="apple-touch-icon" href="src/img/apple-touch-icon.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
 <!-- All component CSS from the main app (modals, rich editor, star rating, forms…) -->
-<link rel="stylesheet" href="../src/styles/styles.css" />
+<link rel="stylesheet" href="src/styles/styles.css" />
 
 <style>
   /* Override main app's fixed-height viewport shell so editor scrolls */
@@ -225,7 +225,7 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <!-- Storage helpers — plain JS, no JSX needed -->
-<script src="../src/scripts/storage.js"></script>
+<script src="src/scripts/storage.js"></script>
 
 <!-- Everything else is inlined in one Babel block to avoid async src-load issues -->
 <script type="text/babel">
@@ -320,7 +320,6 @@ function StarRating({ value, onChange, size = 28 }) {
 
 /* ============================================================
    RICH TEXT EDITOR
-   — image paths use ../src/img/ since this file lives in data/
    ============================================================ */
 function RichEditor({ value, onChange, placeholder = "Write…" }) {
   const editorRef    = useRef(null);
@@ -338,7 +337,7 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
   }, []); // mount only
 
   useEffect(() => {
-    fetch("../src/img/manifest.json", { cache: "no-store" })
+    fetch("src/img/manifest.json", { cache: "no-store" })
       .then(r => r.ok ? r.json() : [])
       .then(data => setManifest(Array.isArray(data) ? data : (data.images || [])))
       .catch(() => setManifest([]));
@@ -375,9 +374,9 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
   const insertFromFilename = () => {
     const name = imgFilename.trim();
     if (!name) return;
-    const url = name.startsWith("http") || name.startsWith("../src/img/") || name.startsWith("/")
+    const url = name.startsWith("http") || name.startsWith("src/img/") || name.startsWith("/")
       ? name
-      : `../src/img/${name}`;
+      : `src/img/${name}`;
     insertImage(url, name.split("/").pop().replace(/\.[^.]+$/, ""));
   };
 
@@ -436,8 +435,8 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
                   const label = typeof m === "string" ? m : (m.label || m.file);
                   return (
                     <button key={file} type="button" className="img-thumb"
-                      onClick={() => insertImage(`../src/img/${file}`, label)}>
-                      <img src={`../src/img/${file}`} alt={label} />
+                      onClick={() => insertImage(`src/img/${file}`, label)}>
+                      <img src={`src/img/${file}`} alt={label} />
                       <span className="img-thumb-name">{label}</span>
                     </button>
                   );
@@ -820,7 +819,7 @@ function EditorApp() {
     setLoading(true);
     let rOk = false, recOk = false;
     try {
-      const res = await fetch("./restaurants.json?_=" + Date.now());
+      const res = await fetch("data/restaurants.json?_=" + Date.now());
       if (!res.ok) throw new Error(res.status);
       const data = await res.json();
       setRests(data);
@@ -831,7 +830,7 @@ function EditorApp() {
       if (c) { setRests(JSON.parse(c)); rOk = true; }
     }
     try {
-      const res = await fetch("./recipes.json?_=" + Date.now());
+      const res = await fetch("data/recipes.json?_=" + Date.now());
       if (!res.ok) throw new Error(res.status);
       const data = await res.json();
       setRecs(data);
@@ -917,6 +916,7 @@ function EditorApp() {
       <header className="ed-header">
         <div className="ed-wordmark">The <span>Sabroso</span> · Data Editor</div>
         <div className="ed-header-right">
+          <a className="ed-header-btn" href="index.html">← Back to app</a>
           <button className="ed-header-btn" onClick={loadData}>↺ Reload JSON</button>
           <button className="ed-header-btn" onClick={exportAll}>Export All</button>
         </div>
@@ -990,7 +990,7 @@ function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>restaurants.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
+        Loaded from <code>data/restaurants.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
       </div>
       {restaurants.length === 0 ? (
         <div className="ed-empty">No restaurants yet.</div>
@@ -1031,7 +1031,7 @@ function RecipePanel({ recipes, onNew, onEdit, onExport }) {
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>recipes.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
+        Loaded from <code>data/recipes.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
       </div>
       {recipes.length === 0 ? (
         <div className="ed-empty">No recipes yet.</div>

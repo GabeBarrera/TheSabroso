@@ -1063,7 +1063,8 @@ a { color: inherit; }
 }
 .recipe-body ol { padding-left: 22px; }
 .recipe-body ul { list-style: disc; padding-left: 20px; }
-.recipe-body ul input[type="checkbox"] { display: none; }
+.recipe-body ul input[type="checkbox"],
+.rt-editor ul input[type="checkbox"] { display: none; }
 .recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; }
 .recipe-body li.step-struck { text-decoration: line-through; color: var(--muted); }
 .recipe-body strong { font-weight: 800; }
