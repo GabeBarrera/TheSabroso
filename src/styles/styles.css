@@ -44,6 +44,7 @@
 }
 :root[data-theme="dark"] body { color-scheme: dark; }
 :root[data-theme="dark"] .leaflet-container { background: #1a1814 !important; }
+:root[data-theme="dark"] .stars-read .s { color: var(--muted); }
 
 * { box-sizing: border-box; }
 
@@ -706,6 +707,7 @@ a { color: inherit; }
   line-height: 1.05;
   margin-bottom: 6px;
   letter-spacing: -0.005em;
+  color: var(--ink);
 }
 .pin-pop .pop-addr {
   font-family: var(--mono);
@@ -728,6 +730,7 @@ a { color: inherit; }
   font-weight: 700;
   font-size: 20px;
   line-height: 1;
+  color: var(--ink);
 }
 .pin-pop .pop-rating .out {
   font-family: var(--mono);

@@ -130,11 +130,19 @@ Open `editor.html` in a browser (served over HTTP) for a full CRUD interface ove
 
 The **Grocery List** is a recipe-page-only feature accessible via the notepad icon in the bottom dock (visible only when on the Recipes view).
 
-- Each recipe's detail header has a **clipboard button** next to the copy-link button. Clicking it extracts all unordered-list (`<ul>`) items from the recipe description as ingredients and adds them to the grocery list.
-- Re-clicking the button for the same recipe **replaces** that recipe's entries (acts as a refresh).
-- The grocery list panel slides in from the right and groups items by recipe, so every ingredient is labeled with its source.
-- Individual recipe entries can be removed via their **Remove** button; the **Clear all** button wipes the entire list.
-- The list persists in `localStorage` under `sabroso_grocery`.
+**Adding ingredients:**
+- Each recipe's detail header has a **clipboard button**. Clicking it parses the recipe's HTML description and extracts every `<li>` element inside a `<ul>` as an ingredient line.
+- Re-clicking the button for the same recipe **replaces** that recipe's existing entries (acts as a refresh, not a duplicate append).
+- You can also type a custom ingredient into the input at the bottom of the panel and click **Add**.
+
+**Two view modes (toggled via the tabs at the top of the panel):**
+- **By Recipe** — items grouped under their source recipe name. Each group has a **Remove** button to drop that recipe's entire block.
+- **Total** — all items aggregated alphabetically. Quantities are parsed and summed across recipes (e.g. `1/2 cup flour` from two recipes → `1 cup flour`). The source recipes are shown beneath each line.
+
+**Checking off and clearing:**
+- Tap any item to check it off (strikethrough). Checked state persists in `localStorage` under `sabroso_grocery_checked`.
+- Individual items can be removed with the **×** button (by-recipe view only).
+- **Clear all** wipes the entire list and resets all checked state.
 
 ---
 
@@ -163,6 +171,7 @@ Admin session is stored in `sessionStorage` and expires when the tab is closed.
 | `sabroso_admin_session` | Set to `"1"` while an admin session is active |
 | `sabroso_recipe_favs` | Array of favorited recipe IDs |
 | `sabroso_grocery` | Array of grocery list items (each with `id`, `text`, `recipeId`, `recipeName`) |
+| `sabroso_grocery_checked` | Array of checked ingredient keys (ingredient text lowercased) |
 | `sabroso_theme` | `"light"` or `"dark"` |
 
 ---
