@@ -7,14 +7,52 @@
     "serves": 4,
     "tagline": "Skirt steak, charred lime, no shortcuts. This is the güey.",
     "ingredients": [
-      {"qty": "2", "unit": "lb", "name": "skirt steak, trimmed"},
-      {"qty": "4", "unit": "", "name": "garlic cloves, smashed"},
-      {"qty": "1", "unit": "bunch", "name": "cilantro, stems & all"},
-      {"qty": "3", "unit": "", "name": "limes, juiced"},
-      {"qty": "1", "unit": "", "name": "orange, juiced"},
-      {"qty": "2", "unit": "tbsp", "name": "soy sauce"},
-      {"qty": "1", "unit": "tbsp", "name": "ground cumin"},
-      {"qty": "1", "unit": "", "name": "jalapeño, sliced"}
+      {
+        "qty": "2",
+        "unit": "lb",
+        "name": "skirt steak",
+        "notes": "trimmed"
+      },
+      {
+        "qty": "4",
+        "unit": "",
+        "name": "garlic cloves",
+        "notes": "smashed"
+      },
+      {
+        "qty": "1",
+        "unit": "bunch",
+        "name": "cilantro",
+        "notes": "stems & all"
+      },
+      {
+        "qty": "3",
+        "unit": "",
+        "name": "limes",
+        "notes": "juiced"
+      },
+      {
+        "qty": "1",
+        "unit": "",
+        "name": "orange",
+        "notes": "juiced"
+      },
+      {
+        "qty": "2",
+        "unit": "tbsp",
+        "name": "soy sauce"
+      },
+      {
+        "qty": "1",
+        "unit": "tbsp",
+        "name": "ground cumin"
+      },
+      {
+        "qty": "1",
+        "unit": "",
+        "name": "jalapeño",
+        "notes": "sliced"
+      }
     ],
     "description": "<h3>Method</h3><ol><li><strong>Marinade.</strong> Blitz everything except the steak. Pour over the meat. Bag it. <em>Six hours minimum, twelve is better.</em></li><li><strong>Heat.</strong> The grill must scream. Smoke point or you've already failed.</li><li><strong>Sear.</strong> Two minutes per side. No moving the meat around like an amateur.</li><li><strong>Rest.</strong> Ten minutes. Under foil. Walk away.</li><li><strong>Slice.</strong> Against the grain. Thin. Salt on the cutting board.</li></ol>",
     "createdAt": "2025-09-20"
@@ -27,13 +65,41 @@
     "serves": 4,
     "tagline": "Beer battered, cabbage, crema. A San Diego classic.",
     "ingredients": [
-      {"qty": "1", "unit": "lb", "name": "cod or rockfish, cut into fingers"},
-      {"qty": "1", "unit": "cup", "name": "flour"},
-      {"qty": "1", "unit": "cup", "name": "cold lager"},
-      {"qty": "1", "unit": "tsp", "name": "baking powder"},
-      {"qty": "", "unit": "", "name": "Cabbage, shredded fine"},
-      {"qty": "", "unit": "", "name": "Crema, lime, hot sauce"},
-      {"qty": "", "unit": "", "name": "Corn tortillas, warmed on flame"}
+      {
+        "qty": "1",
+        "unit": "lb",
+        "name": "cod or rockfish, cut into fingers"
+      },
+      {
+        "qty": "1",
+        "unit": "cup",
+        "name": "flour"
+      },
+      {
+        "qty": "1",
+        "unit": "cup",
+        "name": "cold lager"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "baking powder"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Cabbage, shredded fine"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Crema, lime, hot sauce"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Corn tortillas, warmed on flame"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Whisk the batter cold. <strong>Cold</strong>. Lumps are fine.</li><li>Oil at 375°F. Test with a wooden spoon — should hiss.</li><li>Dip fish, fry 3 minutes, drain on rack — never paper towels, you'll steam them soggy.</li><li>Build: tortilla, fish, cabbage, crema, lime. Done.</li></ol>",
     "createdAt": "2025-10-08"
@@ -46,15 +112,54 @@
     "serves": 2,
     "tagline": "Butter bread, egg custard, maple syrup. A breakfast maple staple.",
     "ingredients": [
-      {"qty": "2", "unit": "", "name": "large eggs"},
-      {"qty": "4", "unit": "slices", "name": "Martin's Old-Fashioned Real Butter Bread"},
-      {"qty": "1/4", "unit": "cup", "name": "milk"},
-      {"qty": "1", "unit": "tsp", "name": "vanilla extract"},
-      {"qty": "1/2", "unit": "tsp", "name": "ground cinnamon"},
-      {"qty": "", "unit": "pinch", "name": "salt"},
-      {"qty": "2", "unit": "tbsp", "name": "butter"},
-      {"qty": "1/2", "unit": "cup", "name": "maple syrup, warmed"},
-      {"qty": "", "unit": "", "name": "Powdered sugar, for serving"}
+      {
+        "qty": "2",
+        "unit": "",
+        "name": "eggs",
+        "notes": "large preferably"
+      },
+      {
+        "qty": "4",
+        "unit": "slices",
+        "name": "Martin's Old-Fashioned Real Butter Bread"
+      },
+      {
+        "qty": "1/4",
+        "unit": "cup",
+        "name": "milk"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "vanilla extract"
+      },
+      {
+        "qty": "1/2",
+        "unit": "tsp",
+        "name": "ground cinnamon"
+      },
+      {
+        "qty": "",
+        "unit": "pinch",
+        "name": "salt"
+      },
+      {
+        "qty": "2",
+        "unit": "tbsp",
+        "name": "butter"
+      },
+      {
+        "qty": "1/2",
+        "unit": "cup",
+        "name": "maple syrup",
+        "notes": "warmed"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Powdered sugar",
+        "notes": "topping"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Crack eggs into a shallow dish. Add milk and whisk to combine.</li><li>Whisk in vanilla, cinnamon, and a pinch of salt.</li><li>Melt butter in a medium skillet over medium heat.</li><li>Dip bread slices in egg mixture on both sides — coated, not soaked through.</li><li>Fry until golden brown, about 2–3 minutes per side.</li><li>Serve warm with butter and maple syrup. Powdered sugar if you want.</li></ol>",
     "createdAt": "2026-05-27"
@@ -67,14 +172,46 @@
     "serves": 8,
     "tagline": "Russets and Yukons, a stick and a half of butter, sour cream. That's the whole secret.",
     "ingredients": [
-      {"qty": "3", "unit": "lb", "name": "mixed potatoes (russets and Yukon Golds), peeled, cut into 1\" pieces"},
-      {"qty": "", "unit": "", "name": "Kosher salt"},
-      {"qty": "1/2", "unit": "cup", "name": "whole milk"},
-      {"qty": "3/4", "unit": "cup", "name": "unsalted butter (1 1/2 sticks)"},
-      {"qty": "2", "unit": "tbsp", "name": "unsalted butter, for topping"},
-      {"qty": "1/2", "unit": "cup", "name": "sour cream, room temperature"},
-      {"qty": "", "unit": "", "name": "Freshly ground black pepper"},
-      {"qty": "", "unit": "", "name": "Chopped fresh parsley, for serving"}
+      {
+        "qty": "3",
+        "unit": "lb",
+        "name": "mixed potatoes (russets and Yukon Golds), peeled, cut into 1\" pieces"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Kosher salt"
+      },
+      {
+        "qty": "1/2",
+        "unit": "cup",
+        "name": "whole milk"
+      },
+      {
+        "qty": "3/4",
+        "unit": "cup",
+        "name": "unsalted butter (1 1/2 sticks)"
+      },
+      {
+        "qty": "2",
+        "unit": "tbsp",
+        "name": "unsalted butter, for topping"
+      },
+      {
+        "qty": "1/2",
+        "unit": "cup",
+        "name": "sour cream, room temperature"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Freshly ground black pepper"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Chopped fresh parsley, for serving"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Cover potatoes with water in a large pot, add a generous pinch of salt. Bring to a boil and cook until softened, 15–20 minutes.</li><li>Drain and return potatoes to the pot. Mash with a potato masher or ricer until smooth.</li><li>While potatoes cook, warm milk and 3/4 cup butter in a small saucepan over medium-low heat until butter melts, about 3 minutes.</li><li>Pour milk mixture over potatoes and stir until creamy. Add sour cream and stir to combine. Season generously with salt and pepper.</li><li>Transfer to a serving bowl. Top with remaining 2 tbsp butter, more pepper, and parsley.</li></ol>",
     "createdAt": "2026-05-27"
@@ -87,10 +224,30 @@
     "serves": 2,
     "tagline": "Three ingredients. Four if you count the water.",
     "ingredients": [
-      {"qty": "200", "unit": "g", "name": "tonnarelli or spaghetti"},
-      {"qty": "100", "unit": "g", "name": "pecorino romano, finely grated"},
-      {"qty": "", "unit": "", "name": "Black peppercorns, freshly cracked"},
-      {"qty": "", "unit": "", "name": "Pasta water — heavily starchy"}
+      {
+        "qty": "200",
+        "unit": "g",
+        "name": "tonnarelli",
+        "notes": "spaghetti or your fav pasta works too"
+      },
+      {
+        "qty": "100",
+        "unit": "g",
+        "name": "pecorino romano",
+        "notes": "finely grated"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Black peppercorns",
+        "notes": "freshly cracked"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Pasta water",
+        "notes": "heavily starchy"
+      }
     ],
     "description": "<h3>Method</h3><ol><li><strong>Toast the pepper.</strong> Dry pan, low heat, smell it bloom.</li><li>Pasta in salted water — less salt than you think. The cheese is salty.</li><li>Reserve a cup of water. Drain pasta one minute under.</li><li>Off the heat: pecorino, splash of water, whisk to a paste. Add pasta. <em>Toss like you mean it.</em></li><li>If it breaks, you added cheese too hot. Start again.</li></ol>",
     "createdAt": "2025-11-05"
@@ -103,20 +260,82 @@
     "serves": 24,
     "tagline": "Cayenne, cinnamon, molten marshmallow. Chocolate cookie with a secret inside.",
     "ingredients": [
-      {"qty": "1 1/2", "unit": "cup", "name": "all-purpose flour (192g)"},
-      {"qty": "1/2", "unit": "cup", "name": "cocoa powder, preferably Dutch-processed (51g)"},
-      {"qty": "1", "unit": "tsp", "name": "baking soda"},
-      {"qty": "1", "unit": "tsp", "name": "kosher salt (Diamond Crystal)"},
-      {"qty": "1/2", "unit": "tsp", "name": "ground cayenne"},
-      {"qty": "3", "unit": "tsp", "name": "ground cinnamon (2 tsp for dough, 1 tsp for coating)"},
-      {"qty": "1/2", "unit": "cup", "name": "unsalted butter, room temperature (113g)"},
-      {"qty": "1 1/2", "unit": "cup", "name": "light brown sugar (305g)"},
-      {"qty": "1", "unit": "", "name": "large egg, room temperature"},
-      {"qty": "2", "unit": "tsp", "name": "vanilla extract"},
-      {"qty": "", "unit": "", "name": "Mini marshmallows, frozen solid"},
-      {"qty": "1/4", "unit": "cup", "name": "granulated sugar (50g)"}
+      {
+        "qty": "1 1/2",
+        "unit": "cup",
+        "name": "all-purpose flour",
+        "notes": "(192g)"
+      },
+      {
+        "qty": "1/2",
+        "unit": "cup",
+        "name": "cocoa powder",
+        "notes": "preferably Dutch-processed (51g)"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "baking soda"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "kosher salt",
+        "notes": "(Diamond Crystal)"
+      },
+      {
+        "qty": "1/2",
+        "unit": "tsp",
+        "name": "ground cayenne"
+      },
+      {
+        "qty": "3",
+        "unit": "tsp",
+        "name": "ground cinnamon",
+        "notes": "(2 tsp for dough, 1 tsp for coating)"
+      },
+      {
+        "qty": "1/2",
+        "unit": "cup",
+        "name": "unsalted butter",
+        "notes": " +1 tbs, room temperature (113g)"
+      },
+      {
+        "qty": "1 1/2",
+        "unit": "cup",
+        "name": "light brown sugar",
+        "notes": "(305g)"
+      },
+      {
+        "qty": "1",
+        "unit": "",
+        "name": "large egg",
+        "notes": "room temperature"
+      },
+      {
+        "qty": "2",
+        "unit": "tsp",
+        "name": "vanilla extract"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Mini marshmallows",
+        "notes": " frozen solid"
+      },
+      {
+        "qty": "1/4",
+        "unit": "cup",
+        "name": "granulated sugar",
+        "notes": "(50g)"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "instant espresso powder"
+      }
     ],
-    "description": "<h3>Method</h3><ol><li>Whisk together flour, cocoa powder, baking soda, salt, cayenne, and 2 tsp cinnamon in a medium bowl. Set aside.</li><li>Beat butter and brown sugar on medium-high until light and fluffy, about 2 minutes. Add egg and vanilla. Beat until creamy, 2 more minutes. Add flour mixture and beat on low until no dry spots remain, about 1 minute.</li><li>Scoop dough into 2-tablespoon mounds on a baking sheet. Cover and <strong>refrigerate at least 2 hours, up to overnight.</strong> Freeze marshmallows if you haven't already.</li><li>Heat oven to 350°F. Line 2 baking sheets with parchment. Mix the granulated sugar and remaining 1 tsp cinnamon in a small bowl.</li><li>Let dough sit 5 minutes at room temperature if very stiff. Flatten a mound in your palm, pile 5 frozen marshmallows in the center, and bring the dough up and over to fully enclose them. Roll into a ball, then roll in cinnamon sugar. Place 3 inches apart on prepared sheets.</li><li>Bake 10–12 minutes, rotating halfway, until cookies puff and bits of molten marshmallow peek through. Cool on the sheet 5 minutes, then transfer to a wire rack.</li></ol><p style=\"margin-top:16px;font-size:14px;color:var(--muted)\"><strong>Tip:</strong> Uncoated dough balls freeze for up to 3 months. To bake from frozen, thaw 5 minutes, roll in cinnamon sugar, and bake 13–15 minutes.</p>",
+    "description": "<h3>Ingredients</h3><ul><li><input type=\"checkbox\"> 1½ cups / 192g all-purpose flour</li><li><input type=\"checkbox\"> ½ cup / 51g cocoa powder, preferably Dutch-processed</li><li><input type=\"checkbox\"> 1 tsp baking soda</li><li><input type=\"checkbox\"> 1 tsp kosher salt (Diamond Crystal)</li><li><input type=\"checkbox\"> ½ tsp ground cayenne</li><li>1 tsp instant espresso powder&nbsp;</li><li><input type=\"checkbox\"> 3 tsp ground cinnamon (2 tsp for dough, 1 tsp for coating)</li><li><input type=\"checkbox\"> ½ cup, plus 1 tbsp unsalted butter, room temperature</li><li><input type=\"checkbox\"> 1½ cups / 305g light brown sugar</li><li><input type=\"checkbox\"> 1 large egg, room temperature</li><li><input type=\"checkbox\"> 2 tsp vanilla extract</li><li><input type=\"checkbox\"> Mini marshmallows, frozen solid</li><li><input type=\"checkbox\"> ¼ cup / 50g granulated sugar</li></ul><h3>Method</h3><ol><li>Whisk together flour, cocoa powder, baking soda, salt, cayenne, instant espresso powder, and 2 tsp cinnamon in a medium bowl. Set aside.</li><li>Beat butter and brown sugar on medium-high until light and fluffy, about 2 minutes. Add egg and vanilla. Beat until creamy, 2 more minutes. Add flour mixture and beat on low until no dry spots remain, about 1 minute.</li><li>Scoop dough into 2-tablespoon mounds on a baking sheet. Cover and <strong>refrigerate at least 2 hours, up to overnight.</strong> Freeze marshmallows if you haven't already.</li><li>Heat oven to 350°F. Line 2 baking sheets with parchment. Mix the granulated sugar and remaining 1 tsp cinnamon in a small bowl.</li><li>Let dough sit 5 minutes at room temperature if very stiff. Flatten a mound in your palm, pile 5 frozen marshmallows in the center, and bring the dough up and over to fully enclose them. Roll into a ball, then roll in cinnamon sugar. Place 3 inches apart on prepared sheets.</li><li>Bake 10–12 minutes, rotating halfway, until cookies puff and bits of molten marshmallow peek through. Cool on the sheet 5 minutes, then transfer to a wire rack.</li></ol><p style=\"margin-top:16px;font-size:14px;color:var(--muted)\"><strong>Tip:</strong> Uncoated dough balls freeze for up to 3 months. To bake from frozen, thaw 5 minutes, roll in cinnamon sugar, and bake 13–15 minutes.</p>",
     "createdAt": "2026-05-29"
   },
   {
@@ -127,12 +346,37 @@
     "serves": 4,
     "tagline": "The legendary red rice. The chicken broth is doing all the work.",
     "ingredients": [
-      {"qty": "1", "unit": "cup", "name": "white rice"},
-      {"qty": "3", "unit": "", "name": "tomatoes, chopped"},
-      {"qty": "5", "unit": "", "name": "cloves garlic"},
-      {"qty": "1/2", "unit": "", "name": "onion"},
-      {"qty": "2", "unit": "cup", "name": "chicken broth"},
-      {"qty": "", "unit": "", "name": "Oil"}
+      {
+        "qty": "1",
+        "unit": "cup",
+        "name": "white rice"
+      },
+      {
+        "qty": "3",
+        "unit": "",
+        "name": "tomatoes",
+        "notes": "chopped"
+      },
+      {
+        "qty": "5",
+        "unit": "",
+        "name": "cloves garlic"
+      },
+      {
+        "qty": "1/2",
+        "unit": "",
+        "name": "onion"
+      },
+      {
+        "qty": "2",
+        "unit": "cup",
+        "name": "chicken broth"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "oil"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Warm the chicken broth in a separate pot. Keep it hot — you'll need it.</li><li>Heat a pan with oil over low heat. When warm, pour in the rice and toast, stirring occasionally.</li><li>Add the garlic cloves and onion half <em>unchopped</em> to the rice. Stir and roast together until the rice turns light brown.</li><li>Add the chopped tomatoes and enough chicken broth to just cover the rice.</li><li>Cover and cook on low heat for 20 minutes.</li><li><strong>Keep a pot of hot water nearby</strong> in case the rice dries out before it's done. <em>Do not use cold water — it will shock the rice.</em></li></ol>",
     "createdAt": "2026-05-29"
@@ -145,19 +389,71 @@
     "serves": 8,
     "tagline": "Tomatillo-blended broth, fall-apart chicken, three cans of hominy. The green is the whole point.",
     "ingredients": [
-      {"qty": "2", "unit": "lb", "name": "chicken thighs, bone-in"},
-      {"qty": "1", "unit": "lb", "name": "tomatillos, husked and rinsed"},
-      {"qty": "2", "unit": "", "name": "large white onions"},
-      {"qty": "3", "unit": "", "name": "jalapeño peppers"},
-      {"qty": "2", "unit": "cloves", "name": "garlic"},
-      {"qty": "1", "unit": "tbsp", "name": "Mexican oregano"},
-      {"qty": "1", "unit": "tsp", "name": "kosher salt"},
-      {"qty": "6", "unit": "cup", "name": "chicken broth"},
-      {"qty": "1", "unit": "cup", "name": "cilantro, stems and leaves"},
-      {"qty": "50", "unit": "oz", "name": "white hominy, drained and rinsed (3 cans)"},
-      {"qty": "4–5", "unit": "", "name": "limes"},
-      {"qty": "1", "unit": "bunch", "name": "radishes"},
-      {"qty": "1/2", "unit": "", "name": "head cabbage, thinly shredded"}
+      {
+        "qty": "2",
+        "unit": "lb",
+        "name": "chicken thighs, bone-in"
+      },
+      {
+        "qty": "1",
+        "unit": "lb",
+        "name": "tomatillos, husked and rinsed"
+      },
+      {
+        "qty": "2",
+        "unit": "",
+        "name": "large white onions"
+      },
+      {
+        "qty": "3",
+        "unit": "",
+        "name": "jalapeño peppers"
+      },
+      {
+        "qty": "2",
+        "unit": "cloves",
+        "name": "garlic"
+      },
+      {
+        "qty": "1",
+        "unit": "tbsp",
+        "name": "Mexican oregano"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "kosher salt"
+      },
+      {
+        "qty": "6",
+        "unit": "cup",
+        "name": "chicken broth"
+      },
+      {
+        "qty": "1",
+        "unit": "cup",
+        "name": "cilantro, stems and leaves"
+      },
+      {
+        "qty": "50",
+        "unit": "oz",
+        "name": "white hominy, drained and rinsed (3 cans)"
+      },
+      {
+        "qty": "4–5",
+        "unit": "",
+        "name": "limes"
+      },
+      {
+        "qty": "1",
+        "unit": "bunch",
+        "name": "radishes"
+      },
+      {
+        "qty": "1/2",
+        "unit": "",
+        "name": "head cabbage, thinly shredded"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Add chicken thighs, tomatillos, one rough-chopped onion, jalapeños, garlic, oregano, salt, and broth to a large pot or Dutch oven.</li><li>Bring to a boil over high heat. Reduce to low, partially cover, and simmer 40 minutes until the chicken is fall-apart tender.</li><li>Transfer chicken to a cutting board. Shred with two forks. Set aside.</li><li>Using a slotted spoon, transfer the cooked tomatillos, onion, jalapeños, and garlic to a blender. Add 1 cup of the cooking liquid and the cilantro. Blend until completely smooth.</li><li>Pour the green sauce back into the pot. Stir in the shredded chicken and drained hominy.</li><li>Bring to a simmer over medium-high heat. Cook uncovered 15 minutes. Taste and season with salt and a squeeze of lime.</li><li>Ladle into bowls. Serve with sliced radishes, shredded cabbage, chopped cilantro, diced white onion, lime wedges, and a sprinkle of oregano.</li></ol>",
     "createdAt": "2026-05-29"
@@ -170,16 +466,56 @@
     "serves": 2,
     "tagline": "Poached in Chardonnay, cheddar-crusted, on a spinach bed. Treat it like a king.",
     "ingredients": [
-      {"qty": "16", "unit": "oz", "name": "salmon"},
-      {"qty": "1", "unit": "cup", "name": "Chardonnay or white wine"},
-      {"qty": "1–2", "unit": "cup", "name": "water (or replace entirely with white wine)"},
-      {"qty": "6–7", "unit": "", "name": "bay leaves"},
-      {"qty": "", "unit": "", "name": "Peppercorns"},
-      {"qty": "", "unit": "", "name": "Salt"},
-      {"qty": "1/4–1/2", "unit": "", "name": "onion"},
-      {"qty": "", "unit": "", "name": "Sharp cheddar, grated — a lot"},
-      {"qty": "", "unit": "", "name": "Spinach — a lot"},
-      {"qty": "", "unit": "", "name": "Butter (optional)"}
+      {
+        "qty": "16",
+        "unit": "oz",
+        "name": "salmon"
+      },
+      {
+        "qty": "1",
+        "unit": "cup",
+        "name": "Chardonnay or white wine"
+      },
+      {
+        "qty": "1–2",
+        "unit": "cup",
+        "name": "water (or replace entirely with white wine)"
+      },
+      {
+        "qty": "6–7",
+        "unit": "",
+        "name": "bay leaves"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Peppercorns"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Salt"
+      },
+      {
+        "qty": "1/4–1/2",
+        "unit": "",
+        "name": "onion"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Sharp cheddar, grated — a lot"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Spinach — a lot"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Butter (optional)"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Grate a big bowl of sharp cheddar. Set aside.</li><li>Sauté onions in butter. Add spinach and sauté until wilted.</li><li>Transfer spinach to an oven-safe dish. Spread into a bed wide enough for the salmon to rest on. <em>Treat your salmon like a king — he'll take care of you.</em></li><li>Poach salmon in Chardonnay and water with salt, peppercorns, and bay leaves, about 10 minutes. As this point the salmon is halfway cooked.</li><li>Place poached salmon on the spinach bed. Cover with the grated cheddar.</li><li>Cover dish with foil. Bake at 400°F for ~15 minutes until the cheese melts.</li><li>Remove foil, cool, and eat.</li></ol>",
     "createdAt": "2026-05-29"
@@ -192,12 +528,37 @@
     "serves": 16,
     "tagline": "Four ripe bananas, oil not butter, two loaves. The ratio is the whole recipe.",
     "ingredients": [
-      {"qty": "2", "unit": "cup", "name": "mashed bananas (~4 ripe bananas)"},
-      {"qty": "2", "unit": "cup", "name": "flour"},
-      {"qty": "2", "unit": "", "name": "eggs"},
-      {"qty": "3/4", "unit": "cup", "name": "vegetable oil"},
-      {"qty": "1 1/4", "unit": "cup", "name": "sugar"},
-      {"qty": "1", "unit": "tbsp", "name": "baking soda"}
+      {
+        "qty": "2",
+        "unit": "cup",
+        "name": "bananas ",
+        "notes": "mashed (~4 ripe bananas)"
+      },
+      {
+        "qty": "2",
+        "unit": "cup",
+        "name": "flour"
+      },
+      {
+        "qty": "2",
+        "unit": "",
+        "name": "eggs"
+      },
+      {
+        "qty": "3/4",
+        "unit": "cup",
+        "name": "vegetable oil"
+      },
+      {
+        "qty": "1 1/4",
+        "unit": "cup",
+        "name": "sugar"
+      },
+      {
+        "qty": "1",
+        "unit": "tbsp",
+        "name": "baking soda"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Preheat oven to 350°F.</li><li>Whisk flour and baking soda together. Set aside.</li><li>Beat the eggs. Mix in sugar, vegetable oil, and mashed bananas.</li><li>Add the flour mixture and stir until no dry spots remain.</li><li>Pour into two greased bread pans.</li><li>Bake 50–55 minutes. Test with a toothpick — comes out clean when done.</li></ol>",
     "createdAt": "2026-05-29"
@@ -210,12 +571,36 @@
     "serves": 10,
     "tagline": "Chex, chocolate, peanut butter, powdered sugar. Diabetes never tasted so good.",
     "ingredients": [
-      {"qty": "9", "unit": "cup", "name": "Chex cereal"},
-      {"qty": "1", "unit": "cup", "name": "semi-sweet chocolate chips (6oz)"},
-      {"qty": "1/2", "unit": "cup", "name": "smooth peanut butter"},
-      {"qty": "1/4", "unit": "cup", "name": "butter"},
-      {"qty": "1–2", "unit": "tsp", "name": "vanilla"},
-      {"qty": "1 1/2", "unit": "cup", "name": "powdered sugar"}
+      {
+        "qty": "9",
+        "unit": "cup",
+        "name": "Chex cereal"
+      },
+      {
+        "qty": "1",
+        "unit": "cup",
+        "name": "semi-sweet chocolate chips (6oz)"
+      },
+      {
+        "qty": "1/2",
+        "unit": "cup",
+        "name": "smooth peanut butter"
+      },
+      {
+        "qty": "1/4",
+        "unit": "cup",
+        "name": "butter"
+      },
+      {
+        "qty": "1–2",
+        "unit": "tsp",
+        "name": "vanilla"
+      },
+      {
+        "qty": "1 1/2",
+        "unit": "cup",
+        "name": "powdered sugar"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Measure cereal into a large bowl. Set aside.</li><li>Microwave chocolate chips, peanut butter, and butter for 1 minute on high. Stir. Microwave another 30 seconds until smooth. Stir in vanilla.</li><li>Pour mixture over cereal and stir until fully coated.</li><li>Transfer to a large Ziploc bag. Add powdered sugar, seal, and shake until well coated.</li><li>Spread on waxed paper to cool. Store in a sealed bag or container.</li></ol><p style='margin-top:16px;font-size:14px;color:var(--muted)'><strong>Note:</strong> If you only have small bags, add the cereal a little at a time when shaking with the powdered sugar.</p>",
     "createdAt": "2026-05-29"
@@ -228,16 +613,56 @@
     "serves": 4,
     "tagline": "Six tablespoons of butter, Dijon, cayenne, garlic. Melt and stir — that's the recipe.",
     "ingredients": [
-      {"qty": "6", "unit": "tbsp", "name": "butter"},
-      {"qty": "4", "unit": "", "name": "garlic cloves, minced"},
-      {"qty": "1", "unit": "tbsp", "name": "Dijon mustard"},
-      {"qty": "", "unit": "", "name": "Zest of 1 lemon + juice of 1/2 lemon"},
-      {"qty": "1", "unit": "tsp", "name": "paprika"},
-      {"qty": "1/2", "unit": "tsp", "name": "cayenne"},
-      {"qty": "1", "unit": "tsp", "name": "chili flakes"},
-      {"qty": "1", "unit": "tsp", "name": "fresh thyme"},
-      {"qty": "2", "unit": "tbsp", "name": "fresh parsley, chopped"},
-      {"qty": "", "unit": "", "name": "Salt & pepper"}
+      {
+        "qty": "6",
+        "unit": "tbsp",
+        "name": "butter"
+      },
+      {
+        "qty": "4",
+        "unit": "",
+        "name": "garlic cloves, minced"
+      },
+      {
+        "qty": "1",
+        "unit": "tbsp",
+        "name": "Dijon mustard"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Zest of 1 lemon + juice of 1/2 lemon"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "paprika"
+      },
+      {
+        "qty": "1/2",
+        "unit": "tsp",
+        "name": "cayenne"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "chili flakes"
+      },
+      {
+        "qty": "1",
+        "unit": "tsp",
+        "name": "fresh thyme"
+      },
+      {
+        "qty": "2",
+        "unit": "tbsp",
+        "name": "fresh parsley, chopped"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "Salt & pepper"
+      }
     ],
     "description": "<h3>Method</h3><ol><li>Melt butter in a pan. Add Dijon, cayenne, paprika, lemon zest, and garlic. Stir to combine.</li><li>Stir in chili flakes, thyme, parsley, lemon juice, salt, and pepper.</li></ol>",
     "createdAt": "2026-05-29"
