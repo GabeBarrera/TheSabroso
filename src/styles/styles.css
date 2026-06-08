@@ -338,6 +338,27 @@ a { color: inherit; }
   margin-left: -5px;
 }
 
+.about-demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  padding: 11px 22px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.about-demo-btn:hover {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+}
+
 .about-meta {
   position: absolute;
   bottom: 32px;
