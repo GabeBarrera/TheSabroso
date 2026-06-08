@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sabroso · Data Editor</title>
+<title>Sabroso · Editor</title>
 <link rel="icon" type="image/png" href="src/img/site-icons/favicon.png" />
 <link rel="apple-touch-icon" href="src/img/site-icons/apple-touch-icon.png" />
 
@@ -831,17 +831,49 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
 }
 
 /* ============================================================
+   EXPORT MODAL
+   ============================================================ */
+function ExportModal({ defaultKind, onExport, onClose }) {
+  return (
+    <Modal
+      eyebrow="Export"
+      title="Choose"
+      italicTitle="what to export"
+      onClose={onClose}
+      footer={<button className="btn ghost" onClick={onClose}>Cancel</button>}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <button
+          className={`btn-sm${defaultKind === "restaurant" ? " accent" : ""}`}
+          onClick={() => { onExport("restaurant"); onClose(); }}>
+          Restaurant list
+        </button>
+        <button
+          className={`btn-sm${defaultKind === "recipe" ? " accent" : ""}`}
+          onClick={() => { onExport("recipe"); onClose(); }}>
+          Recipe list
+        </button>
+        <button className="btn-sm" onClick={() => { onExport("both"); onClose(); }}>
+          Both lists
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+/* ============================================================
    EDITOR APP
    ============================================================ */
 const R_KEY   = "sabroso_restaurants";
 const REC_KEY = "sabroso_recipes";
 
 function EditorApp() {
-  const [tab,   setTab]   = useState("restaurants");
-  const [rests, setRests] = useState([]);
-  const [recs,  setRecs]  = useState([]);
-  const [modal, setModal] = useState(null); // { kind: "restaurant"|"recipe", entry? }
-  const [loading, setLoading] = useState(true);
+  const [tab,         setTab]         = useState("restaurants");
+  const [rests,       setRests]       = useState([]);
+  const [recs,        setRecs]        = useState([]);
+  const [modal,       setModal]       = useState(null); // { kind: "restaurant"|"recipe", entry? }
+  const [exportModal, setExportModal] = useState(null); // { defaultKind: "restaurant"|"recipe" }
+  const [loading,     setLoading]     = useState(true);
   const toast = useToast();
 
   useEffect(() => { loadData(); }, []);
@@ -942,14 +974,17 @@ function EditorApp() {
     if (saved) toast("Exported restaurants.json + recipes.json", "ok");
   }
 
+  async function handleExport(kind) {
+    if (kind === "both") await exportAll();
+    else await exportJSON(kind);
+  }
+
   return (
     <>
       <header className="ed-header">
-        <div className="ed-wordmark">The <span>Sabroso</span> · Data Editor</div>
+        <div className="ed-wordmark">The <span>Sabroso</span> · Editor</div>
         <div className="ed-header-right">
           <a className="ed-header-btn" href="index.html">← Back to app</a>
-          <button className="ed-header-btn" onClick={loadData}>↺ Reload JSON</button>
-          <button className="ed-header-btn" onClick={exportAll}>Export All</button>
         </div>
       </header>
 
@@ -971,7 +1006,7 @@ function EditorApp() {
               restaurants={rests}
               onNew={() => setModal({ kind: "restaurant" })}
               onEdit={r  => setModal({ kind: "restaurant", entry: r })}
-              onExport={() => exportJSON("restaurant")}
+              onExport={() => setExportModal({ defaultKind: "restaurant" })}
             />
           )}
           {tab === "recipes" && (
@@ -979,7 +1014,7 @@ function EditorApp() {
               recipes={recs}
               onNew={() => setModal({ kind: "recipe" })}
               onEdit={r  => setModal({ kind: "recipe", entry: r })}
-              onExport={() => exportJSON("recipe")}
+              onExport={() => setExportModal({ defaultKind: "recipe" })}
             />
           )}
         </div>
@@ -1005,6 +1040,13 @@ function EditorApp() {
           onDelete={modal.entry ? () => deleteRecipe(modal.entry) : undefined}
         />
       )}
+      {exportModal && (
+        <ExportModal
+          defaultKind={exportModal.defaultKind}
+          onExport={handleExport}
+          onClose={() => setExportModal(null)}
+        />
+      )}
     </>
   );
 }
@@ -1016,12 +1058,12 @@ function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
       <div className="ed-panel-head">
         <h2 className="ed-panel-title">Restaurants</h2>
         <div className="ed-panel-actions">
-          <button className="btn-sm ghost" onClick={onExport}>Export JSON</button>
-          <button className="btn-sm accent" onClick={onNew}>+ New Restaurant</button>
+          <button className="btn-sm ghost" onClick={onExport}>Export</button>
+          <button className="btn-sm accent" onClick={onNew}>+ New Entry</button>
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>data/restaurants.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
+        Loaded from <code>data/restaurants.json</code>. Edit freely — click <strong>Export</strong> to download the updated file for git push.
       </div>
       {restaurants.length === 0 ? (
         <div className="ed-empty">No restaurants yet.</div>
@@ -1057,12 +1099,12 @@ function RecipePanel({ recipes, onNew, onEdit, onExport }) {
       <div className="ed-panel-head">
         <h2 className="ed-panel-title">Recipes</h2>
         <div className="ed-panel-actions">
-          <button className="btn-sm ghost" onClick={onExport}>Export JSON</button>
-          <button className="btn-sm accent" onClick={onNew}>+ New Recipe</button>
+          <button className="btn-sm ghost" onClick={onExport}>Export</button>
+          <button className="btn-sm accent" onClick={onNew}>+ New Entry</button>
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>data/recipes.json</code>. Edit freely — click <strong>Export JSON</strong> to download the updated file for git push.
+        Loaded from <code>data/recipes.json</code>. Edit freely — click <strong>Export</strong> to download the updated file for git push.
       </div>
       {recipes.length === 0 ? (
         <div className="ed-empty">No recipes yet.</div>
