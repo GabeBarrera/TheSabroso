@@ -68,7 +68,8 @@
       {
         "qty": "1",
         "unit": "lb",
-        "name": "cod or rockfish, cut into fingers"
+        "name": "cod",
+        "notes": "cut into fingers; rockfish or any white fish will also do"
       },
       {
         "qty": "1",
@@ -88,21 +89,34 @@
       {
         "qty": "",
         "unit": "",
-        "name": "Cabbage, shredded fine"
+        "name": "cabbage",
+        "notes": "shredded fine"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Crema, lime, hot sauce"
+        "name": "corn tortillas",
+        "notes": "warmed on flame"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Corn tortillas, warmed on flame"
+        "name": "cream"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "lime"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "hot sauce"
       }
     ],
     "description": "<h3>Method</h3><ol><li>Whisk the batter cold. <strong>Cold</strong>. Lumps are fine.</li><li>Oil at 375°F. Test with a wooden spoon — should hiss.</li><li>Dip fish, fry 3 minutes, drain on rack — never paper towels, you'll steam them soggy.</li><li>Build: tortilla, fish, cabbage, crema, lime. Done.</li></ol>",
-    "createdAt": "2025-10-08"
+    "createdAt": "2025-10-08",
+    "modifiedAt": "2026-06-08"
   },
   {
     "id": "rec5",
@@ -161,8 +175,9 @@
         "notes": "topping"
       }
     ],
-    "description": "<h3>Method</h3><ol><li>Crack eggs into a shallow dish. Add milk and whisk to combine.</li><li>Whisk in vanilla, cinnamon, and a pinch of salt.</li><li>Melt butter in a medium skillet over medium heat.</li><li>Dip bread slices in egg mixture on both sides — coated, not soaked through.</li><li>Fry until golden brown, about 2–3 minutes per side.</li><li>Serve warm with butter and maple syrup. Powdered sugar if you want.</li></ol>",
-    "createdAt": "2026-05-27"
+    "description": "<h3>Method</h3><ol><li>Crack eggs into a shallow dish.</li><li>Add milk and whisk in vanilla, cinnamon, and a pinch of salt.</li><li>Melt butter in a medium skillet over medium heat.</li><li>Dip bread slices in egg mixture on both sides — coated, not soaked through.</li><li>Fry until golden brown, about 2–3 minutes per side.</li><li>Serve warm with butter and maple syrup. Powdered sugar if you want.</li></ol>",
+    "createdAt": "2026-05-27",
+    "modifiedAt": "2026-06-08"
   },
   {
     "id": "rec6",
@@ -175,12 +190,8 @@
       {
         "qty": "3",
         "unit": "lb",
-        "name": "mixed potatoes (russets and Yukon Golds), peeled, cut into 1\" pieces"
-      },
-      {
-        "qty": "",
-        "unit": "",
-        "name": "Kosher salt"
+        "name": "potatoes",
+        "notes": "I prefer Russets; peel and cut into thick pieces"
       },
       {
         "qty": "1/2",
@@ -190,31 +201,43 @@
       {
         "qty": "3/4",
         "unit": "cup",
-        "name": "unsalted butter (1 1/2 sticks)"
-      },
-      {
-        "qty": "2",
-        "unit": "tbsp",
-        "name": "unsalted butter, for topping"
+        "name": "unsalted butter",
+        "notes": "about 1 1/2 sticks; have a tbsp or two extra for toppings"
       },
       {
         "qty": "1/2",
         "unit": "cup",
-        "name": "sour cream, room temperature"
+        "name": "sour cream",
+        "notes": "room temperature"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Freshly ground black pepper"
+        "name": "black pepper",
+        "notes": "freshly ground"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Chopped fresh parsley, for serving"
+        "name": "parsley",
+        "notes": "chopped; for aesthetics"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "salt",
+        "notes": "Kosher or whatever you have"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "ranch seasoning",
+        "notes": "Hidden Valley or DIY; optional but tasty"
       }
     ],
-    "description": "<h3>Method</h3><ol><li>Cover potatoes with water in a large pot, add a generous pinch of salt. Bring to a boil and cook until softened, 15–20 minutes.</li><li>Drain and return potatoes to the pot. Mash with a potato masher or ricer until smooth.</li><li>While potatoes cook, warm milk and 3/4 cup butter in a small saucepan over medium-low heat until butter melts, about 3 minutes.</li><li>Pour milk mixture over potatoes and stir until creamy. Add sour cream and stir to combine. Season generously with salt and pepper.</li><li>Transfer to a serving bowl. Top with remaining 2 tbsp butter, more pepper, and parsley.</li></ol>",
-    "createdAt": "2026-05-27"
+    "description": "<h3>Method</h3><ol><li>Fill a large pot with water and ensure potatoes are submerged in it, then add a generous pinch of salt. Bring to a boil and cook until they are softened, most likely around 15 minutes.</li><li>Drain the potatoes and return them to the pot. Mash with a potato masher or ricer until desired smoothness but don't overdo it. Too much gets the texture funny. Less is more.</li><li>While potatoes cook, warm milk and 3/4 cup butter in a small saucepan over medium-low heat until butter melts, about 3 minutes.</li><li>Pour milk mixture over potatoes and stir until creamy. Add sour cream and stir to combine. Season generously with salt and pepper. If you enjoy a ranch-like mashed potatoes, add the ranch seasoning as well.</li><li>Transfer to a serving bowl. Top it off with some extra butter, pepper, and parsley.</li></ol>",
+    "createdAt": "2026-05-27",
+    "modifiedAt": "2026-06-08"
   },
   {
     "id": "rec4",
@@ -393,22 +416,26 @@
       {
         "qty": "2",
         "unit": "lb",
-        "name": "chicken thighs, bone-in"
+        "name": "chicken thighs",
+        "notes": "bone-in is better; boneless is okay"
       },
       {
-        "qty": "1",
+        "qty": "1 1/2",
         "unit": "lb",
-        "name": "tomatillos, husked and rinsed"
+        "name": "tomatillos",
+        "notes": "husked and rinsed"
       },
       {
         "qty": "2",
         "unit": "",
-        "name": "large white onions"
+        "name": "white onions",
+        "notes": "1 for soup, 1 for garnish"
       },
       {
         "qty": "3",
         "unit": "",
-        "name": "jalapeño peppers"
+        "name": "jalapeño peppers",
+        "notes": "de-seeded if you want less spicy"
       },
       {
         "qty": "2",
@@ -418,27 +445,32 @@
       {
         "qty": "1",
         "unit": "tbsp",
-        "name": "Mexican oregano"
+        "name": "Mexican oregano",
+        "notes": "Regular oregano works but will disappoint"
       },
       {
         "qty": "1",
         "unit": "tsp",
-        "name": "kosher salt"
+        "name": "salt",
+        "notes": "Kosher or whatever you got"
       },
       {
-        "qty": "6",
+        "qty": "8",
         "unit": "cup",
-        "name": "chicken broth"
+        "name": "chicken broth",
+        "notes": "bone broth also works"
       },
       {
         "qty": "1",
         "unit": "cup",
-        "name": "cilantro, stems and leaves"
+        "name": "cilantro",
+        "notes": "stems and leaves"
       },
       {
-        "qty": "50",
+        "qty": "100",
         "unit": "oz",
-        "name": "white hominy, drained and rinsed (3 cans)"
+        "name": "white hominy",
+        "notes": "drained and rinsed"
       },
       {
         "qty": "4–5",
@@ -453,18 +485,20 @@
       {
         "qty": "1/2",
         "unit": "",
-        "name": "head cabbage, thinly shredded"
+        "name": "head cabbage",
+        "notes": " thinly shredded"
       }
     ],
-    "description": "<h3>Method</h3><ol><li>Add chicken thighs, tomatillos, one rough-chopped onion, jalapeños, garlic, oregano, salt, and broth to a large pot or Dutch oven.</li><li>Bring to a boil over high heat. Reduce to low, partially cover, and simmer 40 minutes until the chicken is fall-apart tender.</li><li>Transfer chicken to a cutting board. Shred with two forks. Set aside.</li><li>Using a slotted spoon, transfer the cooked tomatillos, onion, jalapeños, and garlic to a blender. Add 1 cup of the cooking liquid and the cilantro. Blend until completely smooth.</li><li>Pour the green sauce back into the pot. Stir in the shredded chicken and drained hominy.</li><li>Bring to a simmer over medium-high heat. Cook uncovered 15 minutes. Taste and season with salt and a squeeze of lime.</li><li>Ladle into bowls. Serve with sliced radishes, shredded cabbage, chopped cilantro, diced white onion, lime wedges, and a sprinkle of oregano.</li></ol>",
-    "createdAt": "2026-05-29"
+    "description": "<h3>Method 1&nbsp;— Full Spicy Batch</h3><ol><li>Fill a large pot with the broth.</li><li>Add in the chicken thighs, tomatillos, one rough-chopped onion, jalapeños, garlic, oregano, salt.</li><li>Bring to a boil over high heat. Reduce to low, partially cover, and simmer for about 40 minutes until the chicken is cooked.</li><li>Transfer chicken to a cutting board and either shred it or chop it into pieces. Set this aside for now.</li><li>Using a slotted spoon, transfer the cooked tomatillos, onion, jalapeños, and garlic to a blender. Add 1 cup of the cooking liquid and the cilantro. Blend until completely smooth.</li><li>Pour the green sauce back into the pot. Stir in the shredded chicken and drained hominy.</li><li>Bring to a simmer over medium-high heat. Cook uncovered 15 minutes. Taste and season with salt and a squeeze of lime.</li><li>Ladle into bowls. Serve with sliced radishes, shredded cabbage, chopped cilantro, diced white onion, lime wedges, and a sprinkle of oregano.</li></ol><div><h3>Method 2 — Half Mild, Half Spicy Batch&nbsp;</h3></div><div><ol><li>Fill a large pot with 6 cups of broth. Fill a medium pot with the remaining broth.</li><li>Add in the chicken thighs, tomatillos, one rough-chopped onion, garlic, oregano, salt. Add the&nbsp;jalapeños to the medium pot.</li><li>Bring both pots to a boil over high heat. Reduce to low, partially cover, and simmer for about 40 minutes until the chicken is cooked.</li><li>Transfer chicken to a cutting board and either shred it or chop it into pieces. Set this aside for now.</li><li>Using a slotted spoon, transfer the cooked tomatillos, onion, and garlic to a blender. Add 1 cup of the cooking liquid and the cilantro. Blend until completely smooth.</li><li>Pour half of the green sauce back into the large pot.&nbsp;</li><li>Using a slotted spoon, transfer the jalapeños into the blender with the remaining half of the green sauce. Add 1 cup of the broth from the medium pot. Blend until completely smooth.</li><li>Split the shredded chicken and drained hominy in half for each pot and stir them in.</li><li>Bring both pots to a simmer over medium-high heat. Cook uncovered 15 minutes. Taste and season with salt and a squeeze of lime.</li><li>Ladle into bowls. Serve with sliced radishes, shredded cabbage, chopped cilantro, diced white onion, lime wedges, and a sprinkle of oregano.</li></ol></div>",
+    "createdAt": "2026-05-29",
+    "modifiedAt": "2026-06-08"
   },
   {
     "id": "rec10",
     "name": "The Cheddar Salmon",
     "cuisine": "Seafood",
     "time": 35,
-    "serves": 2,
+    "serves": 4,
     "tagline": "Poached in Chardonnay, cheddar-crusted, on a spinach bed. Treat it like a king.",
     "ingredients": [
       {
@@ -475,12 +509,14 @@
       {
         "qty": "1",
         "unit": "cup",
-        "name": "Chardonnay or white wine"
+        "name": "white wine",
+        "notes": "Chardonnay"
       },
       {
         "qty": "1–2",
         "unit": "cup",
-        "name": "water (or replace entirely with white wine)"
+        "name": "water ",
+        "notes": "or replace entirely with white wine if you're about that life"
       },
       {
         "qty": "6–7",
@@ -490,36 +526,40 @@
       {
         "qty": "",
         "unit": "",
-        "name": "Peppercorns"
+        "name": "peppercorns"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Salt"
+        "name": "salt"
       },
       {
-        "qty": "1/4–1/2",
+        "qty": "1",
         "unit": "",
         "name": "onion"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Sharp cheddar, grated — a lot"
+        "name": "sharp cheddar",
+        "notes": "grated; a lot"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Spinach — a lot"
+        "name": "spinach",
+        "notes": "a lot"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Butter (optional)"
+        "name": "butter",
+        "notes": "optional"
       }
     ],
-    "description": "<h3>Method</h3><ol><li>Grate a big bowl of sharp cheddar. Set aside.</li><li>Sauté onions in butter. Add spinach and sauté until wilted.</li><li>Transfer spinach to an oven-safe dish. Spread into a bed wide enough for the salmon to rest on. <em>Treat your salmon like a king — he'll take care of you.</em></li><li>Poach salmon in Chardonnay and water with salt, peppercorns, and bay leaves, about 10 minutes. As this point the salmon is halfway cooked.</li><li>Place poached salmon on the spinach bed. Cover with the grated cheddar.</li><li>Cover dish with foil. Bake at 400°F for ~15 minutes until the cheese melts.</li><li>Remove foil, cool, and eat.</li></ol>",
-    "createdAt": "2026-05-29"
+    "description": "<h3>Method</h3><ol><li>Grate a big bowl of sharp cheddar. Set aside.</li><li>Sauté onions in butter. Add spinach and sauté until wilted.</li><li>Transfer spinach to an oven-safe dish. Spread into a bed wide enough for the salmon to rest on.</li><li>Poach salmon in Chardonnay and water with salt, peppercorns, and bay leaves, for about 10 minutes.</li><li>Place poached salmon on the spinach bed. Cover with the grated cheddar.</li><li>Cover dish with foil. Bake at 400°F for ~15 minutes or until the cheese melts.</li><li>Remove foil and let cool.</li></ol>",
+    "createdAt": "2026-05-29",
+    "modifiedAt": "2026-06-08"
   },
   {
     "id": "rec11",
@@ -561,8 +601,9 @@
         "name": "baking soda"
       }
     ],
-    "description": "<h3>Method</h3><ol><li>Preheat oven to 350°F.</li><li>Whisk flour and baking soda together. Set aside.</li><li>Beat the eggs. Mix in sugar, vegetable oil, and mashed bananas.</li><li>Add the flour mixture and stir until no dry spots remain.</li><li>Pour into two greased bread pans.</li><li>Bake 50–55 minutes. Test with a toothpick — comes out clean when done.</li></ol>",
-    "createdAt": "2026-05-29"
+    "description": "<h3>Method</h3><ol><li>Preheat oven to 350°F.</li><li>Whisk flour and baking soda together. Set aside.</li><li>Beat the eggs. Mix in sugar, vegetable oil, and mashed bananas.</li><li>Add the flour mixture and stir until no dry spots remain.</li><li>Pour into two greased bread pans.</li><li>Bake 50–55 minutes. Test with a toothpick — it should come out clean if it's done.</li></ol>",
+    "createdAt": "2026-05-29",
+    "modifiedAt": "2026-06-08"
   },
   {
     "id": "rec12",
@@ -622,7 +663,8 @@
       {
         "qty": "4",
         "unit": "",
-        "name": "garlic cloves, minced"
+        "name": "garlic cloves",
+        "notes": "minced"
       },
       {
         "qty": "1",
@@ -630,9 +672,10 @@
         "name": "Dijon mustard"
       },
       {
-        "qty": "",
+        "qty": "2",
         "unit": "",
-        "name": "Zest of 1 lemon + juice of 1/2 lemon"
+        "name": "lemons",
+        "notes": "zest of 1 lemon + juice of 1/2 lemon"
       },
       {
         "qty": "1",
@@ -657,15 +700,22 @@
       {
         "qty": "2",
         "unit": "tbsp",
-        "name": "fresh parsley, chopped"
+        "name": "fresh parsley",
+        "notes": "chopped"
       },
       {
         "qty": "",
         "unit": "",
-        "name": "Salt & pepper"
+        "name": "salt"
+      },
+      {
+        "qty": "",
+        "unit": "",
+        "name": "pepper"
       }
     ],
     "description": "<h3>Method</h3><ol><li>Melt butter in a pan. Add Dijon, cayenne, paprika, lemon zest, and garlic. Stir to combine.</li><li>Stir in chili flakes, thyme, parsley, lemon juice, salt, and pepper.</li></ol>",
-    "createdAt": "2026-05-29"
+    "createdAt": "2026-05-29",
+    "modifiedAt": "2026-06-08"
   }
 ]
