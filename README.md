@@ -27,8 +27,11 @@ No npm, no build step. Open `index.html` from any static file server and it runs
 ```
 TheSabroso/
 ├── index.html               # Entry point — loads all scripts
-│
+├── recipe.html              # Standalone recipes-only PWA variant
 ├── editor.html              # Standalone data editor (open in browser)
+├── 404.html                 # Error page
+├── manifest.json            # PWA manifest for main app
+├── recipe-manifest.json     # PWA manifest for recipe.html
 │
 ├── data/
 │   ├── restaurants.json     # Seed data — loaded into localStorage on first visit
@@ -94,9 +97,13 @@ The map chrome shows real-time **weather** (temperature + condition icon) and yo
 |---|---|
 | `surprise me` | Opens a random restaurant profile |
 | `craving [cuisine]` | Suggests a matching restaurant |
+| `hide all` / `show all` | Hides or shows all pins at once |
 | `hide [cuisine / bar / restaurant]` | Hides matching pins |
 | `show [cuisine / bar / restaurant]` | Shows hidden pins |
 | `find nearest restaurant` | Uses your location + haversine distance to open the closest entry |
+| `find [keyword]` | Keyword search across name, cuisine, address, and description |
+
+Results appear in a collapsible **Voice Result** drawer (with distance info where applicable). A keyboard help modal lists all commands — accessible via the `?` key while the mic is active.
 
 ### Recipes
 
@@ -145,6 +152,54 @@ Selecting a recipe in the sidebar opens the detail panel with:
 
 **Add to Grocery.** The clipboard button in the detail header sends the recipe's ingredients to the Grocery List. Re-clicking refreshes that recipe's block (no duplicate append).
 
+**Legacy migration.** Older recipes that stored ingredients as `<ul><li>` elements inside the description field are automatically migrated to the structured `ingredients` array on first load. The `<h3>` "Ingredients" header and list are removed from the description and parsed into `qty`, `unit`, and `name` fields.
+
+---
+
+## Navigation
+
+The three views (Map, About, Recipes) are arranged in a horizontal carousel.
+
+| Input | Effect |
+|---|---|
+| Arrow Left / Arrow Right | Move one view in that direction |
+| Home | Jump to the About view |
+| Swipe left / right | Swipe on mobile or touchpad to advance views |
+
+The last active view is saved to `localStorage` (`sabroso_last_view`) and restored on the next visit.
+
+**Deep-linking.** Append a hash to jump directly to a profile on load:
+
+| URL | Effect |
+|---|---|
+| `/#map/{id}` | Open the Map view with that restaurant/note profile already open |
+| `/#recipes/{id}` | Open the Recipes view with that recipe selected |
+
+---
+
+## PWA
+
+The app ships with a Web App Manifest and can be installed as a standalone PWA on desktop and mobile. On first visit, a dismissible install prompt appears if the browser supports it.
+
+- **Main app** (`manifest.json`): name "The Sabroso", short name "Sabroso", start URL `/`
+- **Recipes variant** (`recipe-manifest.json`): name "The Recipes", short name "Recipes", start URL `/recipe.html`
+
+`recipe.html` is a standalone page that loads only the Recipes view and its own manifest — useful as a lightweight cooking companion app installed separately from the full journal.
+
+---
+
+## Bottom dock
+
+A floating action bar persists across all views. The three-dot FAB collapses and expands it.
+
+| Icon | Available on | Effect |
+|---|---|---|
+| Notepad | Recipes view | Toggle the Grocery List panel |
+| Eye | Map view | Show / hide the weather and location chrome on the map |
+| Edit | About view | Open `editor.html` in a new tab |
+| Sun / Moon | All views | Toggle light / dark theme |
+| Lock | All views | Open the admin login modal |
+
 ---
 
 ## Dropping a map pin
@@ -173,6 +228,8 @@ The restaurant **Backup** button opens a modal with export options:
 - `restaurants.json` — always available
 - `contacts.json` — admin only
 - Both files — admin only
+
+Restaurant entries can also be exported as **CSV** directly from the restaurant form (Edit mode), producing a flat spreadsheet-friendly file.
 
 ### Import
 
@@ -282,6 +339,7 @@ The description fields in restaurant and recipe forms use a `contentEditable` ri
 | `sabroso_grocery` | Array of grocery list items (each with `id`, `text`, `recipeId`, `recipeName`) |
 | `sabroso_grocery_checked` | Array of checked ingredient keys (ingredient text lowercased) |
 | `sabroso_theme` | `"light"` or `"dark"` |
+| `sabroso_last_view` | Index of the last active view (0 = Map, 1 = About, 2 = Recipes) |
 
 ---
 

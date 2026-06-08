@@ -10,6 +10,8 @@ const VIEW_MAP = 0;
 const VIEW_ABOUT = 1;
 const VIEW_RECIPES = 2;
 
+const isPWA = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
+
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 3959;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -225,16 +227,16 @@ function App() {
   useEffect(() => { hiddenFiltersRef.current = hiddenFilters; }, [hiddenFilters]);
   useEffect(() => { try { localStorage.setItem("sabroso_last_view", view); } catch {} }, [view]);
 
-  // seed from JSON files on first visit
+  // seed on first visit (PWA) or always fetch fresh (browser — keeps the read-only view up to date)
   useEffect(() => {
-    if (dataReady) return;
+    if (dataReady && isPWA) return;
     Promise.all([
       fetch("./data/restaurants.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
       fetch("./data/recipes.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
     ]).then(([r, rec]) => {
       setRestaurants(r);
-      setRecipes(rec);
-      setDataReady(true);
+      setRecipes(rec.map(migrateRecipeLegacy));
+      if (!dataReady) setDataReady(true);
     });
   }, []);
 
@@ -413,6 +415,7 @@ function App() {
         mapActionsRef={mapActionsRef}
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
+        isPWA={isPWA}
         cmdError={cmdError}
         cmdErrorKey={cmdErrorKey}
         showCmdError={showCmdError}
@@ -499,7 +502,7 @@ function AppInner(props) {
     theme, setTheme,
     chatActive, setChatActive, hiddenFilters, setHiddenFilters,
     voiceResult, setVoiceResult, mapActionsRef,
-    isAdmin, setIsAdmin,
+    isAdmin, setIsAdmin, isPWA,
     cmdError, cmdErrorKey, showCmdError,
     focusRecipeId,
   } = props;
@@ -676,7 +679,10 @@ function AppInner(props) {
             navigate={setView}
             focusRecipeId={focusRecipeId}
             onAddToGrocery={addToGrocery}
-            onEditRecipe={(recipe) => setModal({ kind: "edit", target: "recipe", initial: recipe })}
+            isAdmin={isAdmin}
+            isPWA={isPWA}
+            onResync={() => setModal({ kind: "resync" })}
+            onEditRecipe={isAdmin ? (recipe) => setModal({ kind: "edit", target: "recipe", initial: recipe }) : null}
           />
         </div>
       </div>

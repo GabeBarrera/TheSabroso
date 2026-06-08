@@ -849,7 +849,7 @@ function scaleHtml(html, factor) {
   });
 }
 
-function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery, onEditRecipe }) {
+function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery, onEditRecipe, isAdmin, isPWA, onResync }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
@@ -1027,7 +1027,11 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
           <strong>{recipes.length}</strong>
           recipes on file
         </div>
-        <ManageMenu items={openManage("recipe")} />
+        {isAdmin ? (
+          <ManageMenu items={openManage("recipe")} />
+        ) : isPWA ? (
+          <button className="manage-btn" onClick={onResync}>Resync</button>
+        ) : null}
       </div>
 
       <div className={`recipes-body${!sidebarOpen ? " sidebar-closed" : ""}`}>
