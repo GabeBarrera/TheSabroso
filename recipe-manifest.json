@@ -1,0 +1,21 @@
+{
+  "name": "The Recipes",
+  "short_name": "Recipes",
+  "description": "Your personal recipe collection",
+  "start_url": "/recipe.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "src/img/recipe-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "src/img/recipe-favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

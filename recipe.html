@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recipes</title>
+  <link rel="icon" type="image/png" href="src/img/recipe-favicon.png" />
+  <link rel="apple-touch-icon" href="src/img/recipe-touch-icon.png" />
+  <link rel="manifest" href="recipe-manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -1640,15 +1643,10 @@
        PWA INSTALL PROMPT
        ============================================================ */
     function PwaInstallPrompt() {
-      const [visible, setVisible] = useState(() =>
-        !isPWA && sessionStorage.getItem('recipe_pwa_dismissed') !== '1'
-      );
+      const [visible, setVisible] = useState(!isPWA);
       if (!visible) return null;
 
-      const dismiss = () => {
-        sessionStorage.setItem('recipe_pwa_dismissed', '1');
-        setVisible(false);
-      };
+      const dismiss = () => setVisible(false);
 
       const ua = navigator.userAgent;
       const isIos     = /iPad|iPhone|iPod/.test(ua);
