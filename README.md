@@ -152,6 +152,8 @@ Selecting a recipe in the sidebar opens the detail panel with:
 
 **Add to Grocery.** The clipboard button in the detail header sends the recipe's ingredients to the Grocery List. Re-clicking refreshes that recipe's block (no duplicate append).
 
+**Edit button.** An **Edit** button appears in the detail header — admin only. It opens the recipe's edit form directly from the detail panel.
+
 **Legacy migration.** Older recipes that stored ingredients as `<ul><li>` elements inside the description field are automatically migrated to the structured `ingredients` array on first load. The `<h3>` "Ingredients" header and list are removed from the description and parsed into `qty`, `unit`, and `name` fields.
 
 ---
@@ -185,6 +187,18 @@ The app ships with a Web App Manifest and can be installed as a standalone PWA o
 - **Recipes variant** (`recipe-manifest.json`): name "The Recipes", short name "Recipes", start URL `/recipe.html`
 
 `recipe.html` is a standalone page that loads only the Recipes view and its own manifest — useful as a lightweight cooking companion app installed separately from the full journal.
+
+### Browser vs. PWA behavior
+
+The app detects its display context via `matchMedia('(display-mode: standalone)')` and adjusts behavior accordingly:
+
+| Context | Data on load | Recipes manage area |
+|---|---|---|
+| Browser tab (not installed) | Always fetches fresh seed data silently — no prompt, no reload | Hidden (admin) or nothing (non-admin) |
+| Installed PWA + not admin | Seeds on first visit only; data persists across opens | **Resync** button — triggers the confirmation modal |
+| Installed PWA + admin | Seeds on first visit only | Full **Manage** menu |
+
+The browser auto-refresh keeps read-only visitors in sync with the latest seed files without any user action. The PWA preserves local edits between sessions, so resync is always an explicit choice.
 
 ---
 
@@ -220,7 +234,11 @@ Press and hold anywhere on the map (600 ms) to drop a pin at that location. A pi
 **Manage** (restaurants) menu:
 - New entry, Edit existing, Import, Backup, Resync data
 
-**Recipes view** — its own **Manage** menu with New, Edit, Import, Backup, and Resync for recipes.
+**Recipes view** — the header control in this area varies by context:
+
+- **Admin (any context):** Full **Manage** menu with New, Edit, Import, Backup, and Resync for recipes.
+- **PWA, not admin:** A single **Resync** button that opens the resync confirmation modal.
+- **Browser tab, not admin:** No control shown — data is refreshed automatically on every load.
 
 ### Backup
 
@@ -271,6 +289,8 @@ Accessible via the notepad icon in the bottom dock (visible only while on the Re
 Click the lock icon in the bottom dock to log in. Default password: **anyonecancook**.
 
 Admin unlocks:
+- **Manage menu** in the Recipes view header (New, Edit, Import, Backup, Resync)
+- **Edit button** in the recipe detail panel
 - Contacts management on restaurant profiles (stored separately in `sabroso_contacts`)
 - `contacts.json` backup and import options
 - Additional warning text in the Resync confirmation
