@@ -8,12 +8,12 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "src/img/recipe-touch-icon.png",
+      "src": "src/img/demo-icons/recipe-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "src/img/recipe-favicon.png",
+      "src": "src/img/demo-icons/recipe-favicon.png",
       "sizes": "any",
       "type": "image/png"
     }
