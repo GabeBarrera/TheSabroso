@@ -443,6 +443,22 @@
     }
 
     /* ============================================================
+       PWA INSTALL PROMPT
+       ============================================================ */
+    .pwa-prompt { position: fixed; bottom: 76px; right: 22px; width: 300px; background: var(--paper); border: 1px solid var(--ink); z-index: 70; box-shadow: 0 8px 32px -12px rgba(26,24,22,.35); animation: rise 280ms 800ms cubic-bezier(.2,.7,.2,1) both; }
+    .pwa-prompt-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 14px 16px 12px; border-bottom: 1px solid var(--hairline); background: var(--cream); }
+    .pwa-prompt-eyebrow { font-family: var(--mono); font-size: 8px; letter-spacing: .22em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 4px; }
+    .pwa-prompt-title { font-family: var(--serif); font-weight: 700; font-size: 16px; letter-spacing: -0.01em; line-height: 1.1; }
+    .pwa-prompt-close { flex-shrink: 0; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--ink); font-family: var(--mono); font-size: 13px; margin-top: 1px; transition: background 160ms ease; }
+    .pwa-prompt-close:hover { background: var(--ink); color: var(--paper); }
+    .pwa-prompt-body { padding: 12px 16px 14px; }
+    .pwa-prompt-desc { font-family: var(--sans); font-size: 12px; line-height: 1.5; color: var(--muted); margin: 0 0 12px; }
+    .pwa-prompt-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; }
+    .pwa-prompt-steps li { display: flex; align-items: flex-start; gap: 8px; font-family: var(--sans); font-size: 12px; line-height: 1.45; color: var(--ink-2); }
+    .pwa-step-num { flex-shrink: 0; width: 16px; height: 16px; display: grid; place-items: center; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 8px; font-weight: 700; margin-top: 1px; }
+    .pwa-prompt-note { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--hairline); }
+
+    /* ============================================================
        MOBILE — max-width 640px
        ============================================================ */
     @media (max-width: 640px) {
@@ -471,6 +487,7 @@
       .toast-stack { right: 12px; bottom: 70px; }
       .grocery-toggle { right: 76px; }
       .theme-toggle { right: 22px; }
+      .pwa-prompt { left: 0; right: 0; bottom: 76px; width: auto; border-left: none; border-right: none; }
     }
   </style>
 </head>
@@ -1620,6 +1637,79 @@
     }
 
     /* ============================================================
+       PWA INSTALL PROMPT
+       ============================================================ */
+    function PwaInstallPrompt() {
+      const [visible, setVisible] = useState(() =>
+        !isPWA && sessionStorage.getItem('recipe_pwa_dismissed') !== '1'
+      );
+      if (!visible) return null;
+
+      const dismiss = () => {
+        sessionStorage.setItem('recipe_pwa_dismissed', '1');
+        setVisible(false);
+      };
+
+      const ua = navigator.userAgent;
+      const isIos     = /iPad|iPhone|iPod/.test(ua);
+      const isAndroid = /Android/.test(ua);
+
+      let platform, steps, note;
+      if (isIos) {
+        platform = 'iPhone · iPad';
+        steps = [
+          'Open this page in Safari (not Chrome)',
+          <>Tap the <strong>Share</strong> button (□↑) at the bottom of Safari</>,
+          <>Scroll and tap <strong>"Add to Home Screen"</strong></>,
+          <>Tap <strong>"Add"</strong> to confirm</>,
+        ];
+        note = 'iOS PWA install requires Safari';
+      } else if (isAndroid) {
+        platform = 'Android';
+        steps = [
+          'Open this page in Chrome',
+          <>Tap the <strong>menu button (⋮)</strong> in the top-right corner</>,
+          <>Tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong></>,
+          <>Tap <strong>"Add"</strong> to confirm</>,
+        ];
+      } else {
+        platform = 'Desktop';
+        steps = [
+          <>Look for the <strong>install icon (⊕)</strong> in your browser's address bar</>,
+          <>Or open the <strong>browser menu (⋮ / ···)</strong></>,
+          <>Select <strong>"Install"</strong> or <strong>"Add to desktop"</strong></>,
+        ];
+        note = 'Works in Chrome, Edge, and other Chromium browsers';
+      }
+
+      return (
+        <div className="pwa-prompt" role="complementary" aria-label="Install as app">
+          <div className="pwa-prompt-head">
+            <div>
+              <div className="pwa-prompt-eyebrow">Install · {platform}</div>
+              <div className="pwa-prompt-title">Save as an App</div>
+            </div>
+            <button className="pwa-prompt-close" onClick={dismiss} aria-label="Dismiss">×</button>
+          </div>
+          <div className="pwa-prompt-body">
+            <p className="pwa-prompt-desc">
+              Get the full experience — recipes stay saved between visits when installed as an app.
+            </p>
+            <ol className="pwa-prompt-steps">
+              {steps.map((step, i) => (
+                <li key={i}>
+                  <span className="pwa-step-num">{i + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            {note && <p className="pwa-prompt-note">{note}</p>}
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
        ROOT APP
        ============================================================ */
     function RecipeApp() {
@@ -1785,6 +1875,8 @@
               </svg>
             )}
           </button>
+
+          <PwaInstallPrompt />
         </>
       );
     }

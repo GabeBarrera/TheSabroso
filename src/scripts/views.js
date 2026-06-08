@@ -73,7 +73,7 @@ function AboutView({ goLeft, goRight }) {
         <p className="about-intro">
           <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the classroom; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. <br></br><br></br>Welcome to the place where<br></br>you either find delicious food or make it.<br></br><br></br><i>Buen provecho, bon appétit, and just eat gud y'all!</i><br></br><b>~ G</b>
         </p>
-        <a href="recipe.html" className="about-demo-btn">Download Demo</a>
+        <a href="recipe.html" className="about-demo-btn">Download RECIPE Demo</a>
       </div>
 
       <div className="about-meta">
@@ -162,6 +162,10 @@ function isFilterHidden(r, hiddenFilters) {
   return false;
 }
 
+// Session-scoped location decision — persists across component remounts, resets on page reload.
+// null = undecided, 'granted' = user said yes, 'denied' = user said no this session
+let _locDecision = null;
+
 function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef,
                    cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive, widgetsVisible,
                    notes, openNoteProfile, onPinDrop }) {
@@ -174,6 +178,8 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const cityTimerRef = useRefV(null);
   const [cityName, setCityName] = useStateV("San Diego");
   const [weather, setWeather] = useStateV(null);
+  const [showLocPrompt, setShowLocPrompt] = useStateV(false);
+  const geoCallbackRef = useRefV(null);
   const toast = useToast();
   // Always-current refs so delegated handlers don't go stale
   const restaurantsRef = useRefV(restaurants);
@@ -276,35 +282,56 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     map.on("moveend", fetchCity);
     fetchCity();
 
-    // try geolocation
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const icon = L.divIcon({
-            className: "",
-            html: '<div class="sd-marker user-marker"><div class="pulse"></div><div class="dot"></div></div>',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14],
-          });
-          const m = L.marker([latitude, longitude], { icon }).addTo(map);
-          m.bindPopup('<div class="pin-pop"><div class="pop-cuisine">You are here</div><div class="pop-name">Current location</div></div>');
-          userMarkerRef.current = m;
-        },
-        () => {
-          // fallback — pretend the user is downtown
-          const icon = L.divIcon({
-            className: "",
-            html: '<div class="sd-marker user-marker"><div class="pulse"></div><div class="dot"></div></div>',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14],
-          });
-          const m = L.marker([32.7157, -117.1611], { icon }).addTo(map);
-          m.bindPopup('<div class="pin-pop"><div class="pop-cuisine">Approximate location</div><div class="pop-name">Downtown San Diego</div><div class="pop-addr" style="margin-top:6px">Location services unavailable</div></div>');
-          userMarkerRef.current = m;
-        },
-        { timeout: 6000 }
-      );
+    // location helpers — stored in ref so prompt handlers can call them after effect exits
+    const placeUserMarker = (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const icon = L.divIcon({
+        className: "",
+        html: '<div class="sd-marker user-marker"><div class="pulse"></div><div class="dot"></div></div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      });
+      const m = L.marker([latitude, longitude], { icon }).addTo(map);
+      m.bindPopup('<div class="pin-pop"><div class="pop-cuisine">You are here</div><div class="pop-name">Current location</div></div>');
+      userMarkerRef.current = m;
+    };
+
+    const placeDefaultMarker = () => {
+      const icon = L.divIcon({
+        className: "",
+        html: '<div class="sd-marker user-marker"><div class="pulse"></div><div class="dot"></div></div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      });
+      const m = L.marker([32.7157, -117.1611], { icon }).addTo(map);
+      m.bindPopup('<div class="pin-pop"><div class="pop-cuisine">Approximate location</div><div class="pop-name">Downtown San Diego</div><div class="pop-addr" style="margin-top:6px">Location services unavailable</div></div>');
+      userMarkerRef.current = m;
+    };
+
+    const tryGeoloc = () => {
+      if (!navigator.geolocation) { placeDefaultMarker(); return; }
+      navigator.geolocation.getCurrentPosition(placeUserMarker, placeDefaultMarker, { timeout: 6000 });
+    };
+
+    geoCallbackRef.current = { allow: tryGeoloc, deny: placeDefaultMarker };
+
+    if (_locDecision === 'granted') {
+      tryGeoloc();
+    } else if (_locDecision === 'denied') {
+      placeDefaultMarker();
+    } else {
+      // check if browser has already made a permission decision
+      (async () => {
+        try {
+          if (navigator.permissions) {
+            const result = await navigator.permissions.query({ name: 'geolocation' });
+            if (result.state === 'granted') { _locDecision = 'granted'; tryGeoloc(); return; }
+            if (result.state === 'denied')  { _locDecision = 'denied'; placeDefaultMarker(); return; }
+          }
+        } catch {}
+        // state is 'prompt' (or permissions API unavailable) — show our in-theme dialog
+        setShowLocPrompt(true);
+      })();
     }
 
     return () => {
@@ -462,6 +489,18 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     });
   }, [notes]);
 
+  const handleLocAllow = () => {
+    _locDecision = 'granted';
+    setShowLocPrompt(false);
+    geoCallbackRef.current?.allow();
+  };
+
+  const handleLocDeny = () => {
+    _locDecision = 'denied';
+    setShowLocPrompt(false);
+    geoCallbackRef.current?.deny();
+  };
+
   return (
     <div className="map-view" data-screen-label="02 Map">
       <div className="map-header">
@@ -519,6 +558,22 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           <div className="wx-label">{label}</div>
         </div>
       ); })()}
+
+      {showLocPrompt && (
+        <div className="loc-prompt" role="dialog" aria-modal="false" aria-label="Location access">
+          <div className="loc-prompt-head">
+            <div className="loc-prompt-eyebrow">Map · Location</div>
+            <div className="loc-prompt-title">Use your location?</div>
+          </div>
+          <p className="loc-prompt-body">
+            Show your current position on the map for easier navigation. Your location is never stored or shared.
+          </p>
+          <div className="loc-prompt-actions">
+            <button className="btn ghost" style={{ fontSize: 10 }} onClick={handleLocDeny}>No thanks</button>
+            <button className="btn primary" style={{ fontSize: 10 }} onClick={handleLocAllow}>Allow</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
