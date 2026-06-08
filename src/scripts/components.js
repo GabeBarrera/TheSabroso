@@ -111,6 +111,36 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
     onChange(editorRef.current.innerHTML);
   };
 
+  const clearFormat = () => {
+    editorRef.current?.focus();
+    const sel = window.getSelection();
+    if (sel && sel.isCollapsed && editorRef.current) {
+      const blockTags = new Set(["P", "H1", "H2", "H3", "H4", "LI", "DIV", "BLOCKQUOTE"]);
+      let block = sel.anchorNode;
+      while (block && block !== editorRef.current && !blockTags.has(block.nodeName)) {
+        block = block.parentNode;
+      }
+      if (block && block !== editorRef.current) {
+        const range = document.createRange();
+        range.selectNodeContents(block);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+    document.execCommand("removeFormat", false);
+    if (document.queryCommandState("insertUnorderedList")) document.execCommand("insertUnorderedList", false);
+    if (document.queryCommandState("insertOrderedList")) document.execCommand("insertOrderedList", false);
+    document.execCommand("formatBlock", false, "p");
+    updateActive();
+    onChange(editorRef.current.innerHTML);
+  };
+
+  const insertNote = () => {
+    editorRef.current?.focus();
+    document.execCommand("insertHTML", false, '<p style="margin-top:16px;font-size:14px;color:var(--muted)"><strong>Notes:</strong> </p>');
+    onChange(editorRef.current.innerHTML);
+  };
+
   const insertImage = (src, alt = "") => {
     restoreRange();
     // Build an img tag with figure for cleaner output
@@ -175,7 +205,8 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
           ▢ Photo
         </button>
         <div className="rt-divider" />
-        <button type="button" className="rt-tool" onClick={() => exec("removeFormat")} title="Clear formatting">⌫</button>
+        <button type="button" className="rt-tool" onClick={clearFormat} title="Clear formatting — strips bold/italic/heading/list from current block">⌫</button>
+        <button type="button" className="rt-tool" onClick={insertNote} title="Insert a muted note paragraph">Note</button>
       </div>
 
       {imgOpen && (

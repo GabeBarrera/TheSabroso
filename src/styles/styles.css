@@ -1780,7 +1780,6 @@ a { color: inherit; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid var(--hairline);
   transition: background 140ms ease;
   background: transparent;
 }

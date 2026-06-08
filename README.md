@@ -15,6 +15,8 @@ Live at [thesabroso.com](https://thesabroso.com)
 | Map | Leaflet 1.9 + CartoDB tiles |
 | Fonts | Playfair Display · Manrope · JetBrains Mono |
 | Persistence | `localStorage` (restaurants and recipes seeded from JSON on first visit) |
+| Geocoding | Nominatim reverse geocoding API |
+| Weather | Open-Meteo API |
 
 No npm, no build step. Open `index.html` from any static file server and it runs.
 
@@ -67,22 +69,87 @@ Then open `http://localhost:8080`.
 
 ## Views
 
-**About** — masthead, journal intro, issue metadata.
+### About
 
-**Map** — Leaflet map of San Diego. Each logged entry drops a pin:
-- Terracotta pin — restaurant (or restaurant + bar)
-- Blue pin — bar only
-- Gold square pin — note
+Masthead with the journal's title, byline, intro paragraph, and version/coordinate metadata. Links to the author's site.
 
-Hover a pin to open its popup. Click "Open profile →" or "Open note →" for the full detail view.
+### Map
 
-**Recipes** — searchable list with a detail panel. Select a recipe to see its structured ingredient list and method. Ingredients scale ×1/×2/×3 via the buttons above the list. Click any ingredient row to cross it out while cooking. Use the clipboard button to send the recipe's ingredients to your grocery list, then open the list via the notepad icon in the bottom dock.
+Leaflet map of San Diego. Each entry drops a color-coded pin:
+
+- **Terracotta (R)** — restaurant (or restaurant + bar)
+- **Blue (B)** — bar only
+- **Gold square** — note
+- **Pulsing blue dot** — your current location (if geolocation is granted)
+
+Hover or tap a pin to open its popup with name, cuisine, and address. Click **Open profile →** or **Open note →** for the full detail modal.
+
+The map chrome shows real-time **weather** (temperature + condition icon) and your **current neighborhood** via reverse geocoding. Both update automatically on load.
+
+**Filtering.** The top-left corner has a filter row. Toggle any cuisine or the Restaurant / Bar tags to hide or show those pins on the map. Active filters persist while you navigate.
+
+**Voice commands.** Click the mic icon to speak a command:
+
+| Phrase | Effect |
+|---|---|
+| `surprise me` | Opens a random restaurant profile |
+| `craving [cuisine]` | Suggests a matching restaurant |
+| `hide [cuisine / bar / restaurant]` | Hides matching pins |
+| `show [cuisine / bar / restaurant]` | Shows hidden pins |
+| `find nearest restaurant` | Uses your location + haversine distance to open the closest entry |
+
+### Recipes
+
+Split-pane layout: a searchable/sortable sidebar on the left, a detail panel on the right.
+
+**Search.** The search bar filters by name, cuisine, tagline, and description text simultaneously.
+
+**Sort.** The sort dropdown offers:
+
+| Option | Behavior |
+|---|---|
+| A–Z / Z–A | Alphabetical by name |
+| Time | Ascending by cook time |
+| Serves | Ascending by serving count |
+| Cuisine | Grouped sections by cuisine (expand/collapse) |
+| Type | Grouped sections by badge type (Meat, Seafood, Veg, Baked, Sweet) |
+
+**Badge filter.** Below the sort control, pill badges let you filter the list to only show recipes of a given type. Active badge is highlighted; click again to clear.
+
+**Favorites.** Click the ★ next to any recipe to favorite it. Favorited recipes sort to the top of the list regardless of the active sort order. Favorites persist in `localStorage`.
+
+**Recipe badges** are auto-detected from the recipe name and cuisine:
+
+| Badge | Triggered by |
+|---|---|
+| Meat | beef, pork, chicken, lamb, steak, asada, carnitas, etc. |
+| Seafood | fish, shrimp, salmon, crab, lobster, tuna, etc. |
+| Veg | vegetarian, vegan, salad, vegetable, etc. |
+| Baked | bread, cake, cookie, pastry, pizza, etc. |
+| Sweet | dessert, chocolate, ice cream, pie, tart, etc. |
 
 ---
 
-## Dropping a pin
+## Recipe detail
 
-Press and hold anywhere on the map (600ms) to drop a pin at that location. A picker appears asking whether to place a **Restaurant** or a **Note**. Both forms open pre-filled with the coordinates from the drop point.
+Selecting a recipe in the sidebar opens the detail panel with:
+
+- Name, cuisine, time, and serving count
+- Tagline
+- Structured ingredient list with qty, unit, name, and optional notes
+- Rich HTML method section
+
+**Ingredient scaling.** Buttons above the ingredient list multiply all quantities ×1, ×2, or ×3. Fractions (e.g. `1/2`) and mixed numbers (e.g. `1 1/2`) are resolved before scaling.
+
+**Step striking.** Click any ingredient row or any method paragraph to cross it out while cooking. State resets when you navigate away.
+
+**Add to Grocery.** The clipboard button in the detail header sends the recipe's ingredients to the Grocery List. Re-clicking refreshes that recipe's block (no duplicate append).
+
+---
+
+## Dropping a map pin
+
+Press and hold anywhere on the map (600 ms) to drop a pin at that location. A picker appears asking whether to place a **Restaurant** or a **Note**. Both forms open pre-filled with the coordinates from the drop point.
 
 ---
 
@@ -90,7 +157,7 @@ Press and hold anywhere on the map (600ms) to drop a pin at that location. A pic
 
 ### Manage menus
 
-**Map view** has two manage menus in the top-right corner:
+**Map view** — two manage menus in the top-right corner:
 
 **Notes** menu:
 - New note, Edit existing, Import (`notes.json`), Backup (`notes.json`)
@@ -98,7 +165,7 @@ Press and hold anywhere on the map (600ms) to drop a pin at that location. A pic
 **Manage** (restaurants) menu:
 - New entry, Edit existing, Import, Backup, Resync data
 
-**Recipes view** has its own **Manage** menu with the same options for recipes, plus a **Grocery List** button in the bottom dock (replaces the widget-toggle while on the recipes page).
+**Recipes view** — its own **Manage** menu with New, Edit, Import, Backup, and Resync for recipes.
 
 ### Backup
 
@@ -120,28 +187,24 @@ Notes and recipes import directly using the same duplicate-detection flow.
 
 Wipes `sabroso_restaurants`, `sabroso_recipes`, and `sabroso_contacts` from `localStorage`, then reloads from the seed JSON files. Notes are **not** cleared — they are user-generated and have no seed equivalent.
 
-### Data editor
-
-Open `editor.html` in a browser (served over HTTP) for a full CRUD interface over both collections.
-
 ---
 
 ## Grocery list
 
-The **Grocery List** is a recipe-page-only feature accessible via the notepad icon in the bottom dock (visible only when on the Recipes view).
+Accessible via the notepad icon in the bottom dock (visible only while on the Recipes view).
 
 **Adding ingredients:**
-- Each recipe's detail header has a **clipboard button**. Clicking it adds the recipe's structured ingredient list (qty + unit + name) as grocery lines.
-- Re-clicking the button for the same recipe **replaces** that recipe's existing entries (acts as a refresh, not a duplicate append).
-- You can also type a custom ingredient into the input at the bottom of the panel and click **Add**.
+- Click the clipboard button in any recipe's detail header to add that recipe's structured ingredients (qty + unit + name) to the list.
+- Re-clicking replaces that recipe's existing block — not a duplicate append.
+- Type a custom item into the input at the bottom of the panel and click **Add**.
 
-**Two view modes (toggled via the tabs at the top of the panel):**
+**Two view modes (tabs at the top of the panel):**
 - **By Recipe** — items grouped under their source recipe name. Each group has a **Remove** button to drop that recipe's entire block.
-- **Total** — all items aggregated alphabetically. Quantities are parsed and summed across recipes (e.g. `1/2 cup flour` from two recipes → `1 cup flour`). The source recipes are shown beneath each line.
+- **Total** — all items aggregated alphabetically. Quantities are parsed and summed across recipes (e.g. `1/2 cup flour` from two recipes → `1 cup flour`). Source recipes are listed beneath each line.
 
 **Checking off and clearing:**
 - Tap any item to check it off (strikethrough). Checked state persists in `localStorage` under `sabroso_grocery_checked`.
-- Individual items can be removed with the **×** button (by-recipe view only).
+- Individual items can be removed with the **×** button (By Recipe view only).
 - **Clear all** wipes the entire list and resets all checked state.
 
 ---
@@ -156,6 +219,52 @@ Admin unlocks:
 - Additional warning text in the Resync confirmation
 
 Admin session is stored in `sessionStorage` and expires when the tab is closed.
+
+---
+
+## Dark / light theme
+
+The sun/moon icon in the bottom dock toggles between light and dark themes. The preference is saved to `localStorage` under `sabroso_theme` and applied on every load.
+
+---
+
+## Data editor (`editor.html`)
+
+Open `editor.html` from the same static server for a full CRUD interface over both collections.
+
+**Features:**
+- Tab interface — **Restaurants** | **Recipes** with entry counts
+- Restaurant list showing name, cuisine, address, tag badges (R/B), and star rating
+- Recipe list showing name, cuisine, cook time, and serves
+- **Edit** button per entry to open the full form in a modal
+- **New Restaurant / New Recipe** buttons
+- **Export JSON** button per collection
+- **Export All** to download both collections at once
+- **Reload JSON** to re-fetch seed data without navigating away
+- All changes save directly to `localStorage` so the main app reflects them immediately
+- Toast notifications for success/error feedback
+
+Forms in the editor are the same components used in the main app, including the full rich-text editor.
+
+---
+
+## Rich-text editor
+
+The description fields in restaurant and recipe forms use a `contentEditable` rich-text editor with a formatting toolbar:
+
+| Button | Action |
+|---|---|
+| **B** | Bold |
+| *I* | Italic |
+| U | Underline |
+| P | Paragraph (body text) |
+| H₃ | Heading |
+| H₂ | Big heading |
+| • — | Unordered list |
+| 1. | Ordered list |
+| ▢ Photo | Insert image (browse `src/img/`, enter filename, or upload from device) |
+| ⌫ | Clear formatting — strips bold/italic/heading/list from the current block; auto-selects the block if nothing is highlighted |
+| Note | Insert a muted, smaller-text note paragraph (e.g. "Notes: store in an airtight container…") |
 
 ---
 
@@ -210,15 +319,15 @@ Admin session is stored in `sessionStorage` and expires when the tab is closed.
   "serves":      4,
   "tagline":     "Skirt steak, charred lime, no shortcuts.",
   "ingredients": [
-    { "qty": "2", "unit": "lb",  "name": "skirt steak", "notes": "ask for outside skirt" },
-    { "qty": "2", "unit": "tbsp","name": "olive oil",   "notes": "" }
+    { "qty": "2", "unit": "lb",   "name": "skirt steak", "notes": "ask for outside skirt" },
+    { "qty": "2", "unit": "tbsp", "name": "olive oil",   "notes": "" }
   ],
   "description": "<p>HTML method content...</p>",
   "createdAt":   "2025-09-20"
 }
 ```
 
-`ingredients` is a structured array separate from `description`. Each entry has `qty`, `unit`, `name`, and an optional `notes` field. The `notes` field is displayed in the recipe detail view but is not included in grocery list exports. Older recipes without an `ingredients` field are auto-migrated from `<li>` elements in the description on first load.
+`ingredients` is a structured array separate from `description`. Each entry has `qty`, `unit`, `name`, and an optional `notes` field. Notes appear in the recipe detail view but are not included in grocery list exports. Older recipes without an `ingredients` field are auto-migrated from `<li>` elements in the description on first load.
 
 ### Note
 
@@ -235,7 +344,7 @@ Admin session is stored in `sessionStorage` and expires when the tab is closed.
 }
 ```
 
-`address` is optional. `tag` is freeform text (e.g. "Parking", "Hidden Gem", "Note").
+`address` is optional. `tag` is freeform text (e.g. `"Parking"`, `"Hidden Gem"`, `"Note"`).
 
 ### Contacts (stored separately)
 
