@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* ============================================================
+       CSS VARIABLES — light + dark
+       ============================================================ */
+    :root {
+      --cream:        #f5f0e6;
+      --cream-2:      #ebe4d5;
+      --paper:        #faf6ed;
+      --ink:          #1a1816;
+      --ink-2:        #2c2924;
+      --muted:        #6b655c;
+      --muted-2:      #a39c8e;
+      --hairline:     #d8d0bd;
+      --terracotta:   #c4502d;
+      --terracotta-2: #a8401f;
+      --marine:       #1f4a5e;
+      --marine-2:     #133344;
+      --shadow:       0 1px 0 rgba(26,24,22,.08), 0 12px 32px -16px rgba(26,24,22,.18);
+      --serif: "Playfair Display", "Times New Roman", serif;
+      --sans:  "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono:  "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+    }
+    :root[data-theme="dark"] {
+      --cream:        #14130f;
+      --cream-2:      #1d1b15;
+      --paper:        #1a1814;
+      --ink:          #f0ead9;
+      --ink-2:        #d8d0bd;
+      --muted:        #8a8478;
+      --muted-2:      #5a544a;
+      --hairline:     #3a352c;
+      --terracotta:   #e06b3f;
+      --terracotta-2: #c4502d;
+      --marine:       #5fa3c2;
+      --marine-2:     #3d7d9c;
+      --shadow:       0 1px 0 rgba(0,0,0,.4), 0 16px 40px -16px rgba(0,0,0,.6);
+    }
+    :root[data-theme="dark"] body { color-scheme: dark; }
+
+    /* ============================================================
+       BASE
+       ============================================================ */
+    * { box-sizing: border-box; }
+    html, body, #root { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      transition: background 320ms ease, color 320ms ease;
+    }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
+    input, textarea, select { font: inherit; color: inherit; }
+    a { color: inherit; }
+
+    /* ============================================================
+       RECIPES VIEW
+       ============================================================ */
+    .recipes-view { height: 100%; display: flex; flex-direction: column; background: var(--cream); }
+
+    .recipes-head {
+      position: relative;
+      border-bottom: 1px solid var(--ink);
+      background: var(--paper);
+      padding: 72px 60px 32px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
+    }
+    .recipes-head > .manage-wrap { position: absolute; top: 0; right: 28px; height: 56px; display: flex; align-items: center; }
+    .recipes-head .title { font-family: var(--serif); font-weight: 800; font-size: 64px; line-height: .95; letter-spacing: -0.02em; margin: 0; }
+    .recipes-head .title .it { font-style: italic; font-weight: 400; color: var(--terracotta); }
+    .recipes-head .sub { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
+    .recipes-head .count { font-family: var(--serif); font-size: 14px; color: var(--muted); text-align: right; font-style: italic; }
+    .recipes-head .count strong { display: block; font-family: var(--serif); font-size: 56px; font-style: normal; color: var(--ink); line-height: 1; }
+
+    .recipes-body { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
+
+    .recipes-sidebar {
+      border-right: 1px solid var(--ink);
+      padding: 24px;
+      background: var(--paper);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+    }
+
+    /* ============================================================
+       SEARCH + SORT
+       ============================================================ */
+    .search-field { position: relative; border: 1px solid var(--ink); background: var(--cream); }
+    .search-field input { width: 100%; padding: 12px 14px 12px 40px; background: transparent; border: none; outline: none; font-family: var(--sans); font-size: 14px; }
+    .search-field .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border: 1.5px solid var(--ink); border-radius: 50%; }
+    .search-field .icon::after { content: ""; position: absolute; width: 6px; height: 1.5px; background: var(--ink); bottom: -3px; right: -3px; transform: rotate(45deg); }
+
+    .search-bar-row { display: flex; gap: 8px; align-items: stretch; }
+    .search-bar-row .search-field { flex: 1; min-width: 0; }
+    .sort-wrap { position: relative; flex-shrink: 0; }
+    .sort-btn { display: flex; align-items: center; gap: 6px; padding: 0 12px; height: 100%; border: 1px solid var(--ink); background: var(--cream); font-family: var(--mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background 120ms ease, color 120ms ease; }
+    .sort-btn:hover, .sort-btn.active { background: var(--ink); color: var(--paper); }
+    .sort-chev { display: inline-block; width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); margin-top: -2px; flex-shrink: 0; }
+    .sort-menu { position: absolute; top: calc(100% + 4px); right: 0; min-width: 170px; background: var(--paper); border: 1px solid var(--ink); z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+    .sort-menu button { display: block; width: 100%; text-align: left; padding: 10px 14px; background: transparent; font-family: var(--mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid var(--hairline); transition: background 100ms ease; }
+    .sort-menu button:last-child { border-bottom: none; }
+    .sort-menu button:hover { background: var(--cream); }
+    .sort-menu button.active { background: var(--ink); color: var(--paper); }
+
+    /* ============================================================
+       RECIPE LIST
+       ============================================================ */
+    .recipe-list { display: flex; flex-direction: column; }
+    .recipe-row { display: block; width: 100%; text-align: left; padding: 14px 12px; border-bottom: 1px solid var(--hairline); cursor: pointer; transition: background 160ms ease; background: transparent; position: relative; }
+    .recipe-row:hover { background: var(--cream); }
+    .recipe-row.active { background: var(--ink); color: var(--paper); }
+    .recipe-row .r-name { font-family: var(--serif); font-weight: 700; font-size: 17px; letter-spacing: -0.005em; line-height: 1.15; }
+    .recipe-row .r-meta { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; margin-top: 4px; opacity: .65; }
+    .r-row-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .r-row-top .r-name { flex: 1; min-width: 0; }
+
+    .star-btn { flex-shrink: 0; background: none; border: none; cursor: pointer; font-size: 15px; line-height: 1; padding: 1px 0 0 4px; color: var(--hairline); transition: color 120ms ease, transform 120ms ease; }
+    .star-btn:hover { color: var(--terracotta); transform: scale(1.2); }
+    .star-btn.on { color: var(--terracotta); }
+    .recipe-row.active .star-btn { color: rgba(255,255,255,.35); }
+    .recipe-row.active .star-btn.on { color: #fff; }
+
+    .recipe-section-label { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--terracotta); padding: 10px 12px 4px; }
+    .recipe-list-divider { height: 1px; background: var(--hairline); margin: 4px 0 0; }
+
+    .cuisine-section { border-bottom: 1px solid var(--hairline); }
+    .cuisine-header { display: flex; align-items: center; width: 100%; text-align: left; padding: 12px; background: transparent; cursor: pointer; gap: 8px; transition: background 120ms ease; }
+    .cuisine-header:hover { background: var(--cream); }
+    .cuisine-label { flex: 1; font-family: var(--serif); font-weight: 700; font-size: 15px; letter-spacing: -0.005em; }
+    .cuisine-count { font-family: var(--mono); font-size: 9px; letter-spacing: .18em; color: var(--muted); }
+    .cuisine-chev { width: 6px; height: 6px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: rotate(-45deg); transition: transform 180ms ease; flex-shrink: 0; }
+    .cuisine-header.expanded .cuisine-chev { transform: rotate(45deg); margin-top: -3px; }
+
+    /* ============================================================
+       RECIPE DETAIL
+       ============================================================ */
+    .recipe-detail { padding: 48px 60px; overflow-y: auto; background: var(--cream); }
+    .sidebar-toggle-btn { display: none; }
+
+    .r-eyebrow-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .recipe-detail .r-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: var(--terracotta); }
+    .recipe-detail h1 { font-family: var(--serif); font-weight: 800; font-size: 56px; line-height: 1; letter-spacing: -0.02em; margin: 0 0 12px; text-wrap: balance; }
+    .recipe-detail .r-tagline { font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--muted); margin: 0 0 28px; max-width: 620px; text-wrap: pretty; }
+    .recipe-detail .r-stats { display: flex; gap: 36px; padding: 18px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); margin-bottom: 32px; }
+    .recipe-detail .r-stats .stat .k { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .recipe-detail .r-stats .stat .v { font-family: var(--serif); font-weight: 700; font-size: 22px; margin-top: 2px; }
+
+    .r-scaler { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+    .r-scaler-label { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+    .scaler-btn { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; padding: 4px 10px; border: 1px solid var(--hairline); background: transparent; color: var(--muted); cursor: pointer; transition: background 140ms, color 140ms, border-color 140ms; }
+    .scaler-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .scaler-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+    .recipe-body { font-family: var(--serif); font-size: 17px; line-height: 1.65; max-width: 640px; color: var(--ink-2); }
+    .recipe-body h2, .recipe-body h3 { font-family: var(--serif); margin-top: 28px; margin-bottom: 8px; }
+    .recipe-body ol { padding-left: 22px; }
+    .recipe-body ul { list-style: disc; padding-left: 20px; }
+    .recipe-body ul input[type="checkbox"] { display: none; }
+    .recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; }
+    .recipe-body li.step-struck { text-decoration: line-through; color: var(--muted); }
+    .recipe-body strong { font-weight: 800; }
+    .recipe-body em { font-style: italic; }
+    .recipe-body figure.rt-fig { margin: 18px 0; border: 1px solid var(--ink); background: var(--cream); }
+    .recipe-body figure.rt-fig img { display: block; width: 100%; height: auto; max-height: 360px; object-fit: cover; }
+    .recipe-body figure.rt-fig figcaption { padding: 8px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); border-top: 1px solid var(--hairline); background: var(--paper); }
+
+    /* ============================================================
+       INGREDIENT DISPLAY
+       ============================================================ */
+    .recipe-ingredients { margin-bottom: 28px; max-width: 640px; }
+    .r-ing-label { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .ingredient-list { display: flex; flex-direction: column; gap: 0; }
+    .ingredient-item { display: grid; grid-template-columns: 52px 68px 1fr 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--hairline); font-family: var(--serif); font-size: 16px; line-height: 1.4; cursor: pointer; user-select: none; transition: opacity .15s; }
+    .ingredient-item:hover { opacity: .75; }
+    .ingredient-item:first-child { border-top: 1px solid var(--hairline); }
+    .ingredient-item .ing-qty { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); font-weight: 600; }
+    .ingredient-item .ing-unit { color: var(--muted); font-family: var(--mono); font-size: 12px; letter-spacing: .04em; padding-top: 2px; }
+    .ingredient-item .ing-name { color: var(--ink-2); }
+    .ingredient-item .ing-notes { color: var(--muted); font-family: var(--mono); font-size: 12px; font-style: italic; padding-top: 2px; align-self: center; }
+    .ingredient-item.struck .ing-qty,
+    .ingredient-item.struck .ing-unit,
+    .ingredient-item.struck .ing-name,
+    .ingredient-item.struck .ing-notes { text-decoration: line-through; opacity: .45; }
+
+    /* ============================================================
+       INGREDIENT EDITOR (form)
+       ============================================================ */
+    .ingredient-editor { display: flex; flex-direction: column; gap: 6px; }
+    .ingredient-row { display: flex; gap: 6px; align-items: stretch; }
+    .ing-qty-input  { width: 64px !important; flex-shrink: 0; }
+    .ing-unit-select { width: 110px !important; flex-shrink: 0; }
+    .ing-unit-custom { width: 84px !important; flex-shrink: 0; }
+    .ing-name-input { flex: 1; min-width: 0; }
+    .ing-notes-input { flex: 1; min-width: 0; }
+    .ing-del-btn { flex-shrink: 0; padding: 0 10px !important; font-size: 14px !important; line-height: 1; color: var(--muted) !important; border-color: var(--hairline) !important; }
+    .ing-del-btn:hover { color: var(--terracotta) !important; border-color: var(--terracotta) !important; }
+    .add-ingredient-btn { align-self: flex-start; margin-top: 4px; font-size: 11px !important; padding: 8px 14px !important; }
+
+    /* ============================================================
+       RECIPE BADGES
+       ============================================================ */
+    .recipe-badge { display: inline-flex; align-items: center; justify-content: center; padding: 1px 6px; font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #fff; flex-shrink: 0; }
+    .recipe-badge.meat    { background: #c4502d; }
+    .recipe-badge.seafood { background: #2563a5; }
+    .recipe-badge.veg     { background: #3a7d44; }
+    .recipe-badge.baked   { background: #9b6914; }
+    .recipe-badge.dessert { background: #9e4060; }
+    .recipe-row.active .recipe-badge { opacity: .85; }
+
+    /* ============================================================
+       EMPTY STATE
+       ============================================================ */
+    .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; color: var(--muted); padding: 40px; }
+    .empty .glyph { font-family: var(--serif); font-size: 64px; font-style: italic; color: var(--hairline); margin-bottom: 8px; }
+    .empty .ln1 { font-family: var(--serif); font-size: 22px; font-style: italic; margin-bottom: 6px; }
+    .empty .ln2 { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+
+    /* ============================================================
+       ADD TO GROCERY + COPY LINK + EDIT BUTTONS
+       ============================================================ */
+    .add-grocery-btn { display: inline-flex; align-items: center; justify-content: center; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 10px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background 160ms ease, border-color 160ms ease, min-width 160ms ease; min-width: 38px; }
+    .add-grocery-btn:hover { background: var(--marine); border-color: var(--marine); }
+    .add-grocery-btn.added { background: var(--marine); border-color: var(--marine); min-width: 64px; }
+
+    .copy-link-btn { display: inline-flex; align-items: center; justify-content: center; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 10px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background 160ms ease, border-color 160ms ease, min-width 160ms ease; min-width: 38px; }
+    .copy-link-btn:hover { background: var(--terracotta); border-color: var(--terracotta); }
+    .copy-link-btn.copied { background: var(--terracotta); border-color: var(--terracotta); min-width: 72px; }
+
+    .recipe-edit-btn { display: inline-flex; align-items: center; justify-content: center; background: var(--terracotta); color: var(--paper); border: 1px solid var(--terracotta); padding: 10px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background 160ms ease, border-color 160ms ease; }
+    .recipe-edit-btn:hover { background: var(--terracotta-2); border-color: var(--terracotta-2); }
+
+    /* ============================================================
+       GROCERY PANEL
+       ============================================================ */
+    .grocery-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 380px; background: var(--paper); border-left: 1px solid var(--ink); z-index: 1200; display: flex; flex-direction: column; box-shadow: -4px 0 32px -8px rgba(26,24,22,.22); animation: slide-from-right 260ms cubic-bezier(.4,0,.2,1); }
+    @keyframes slide-from-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .grocery-panel-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 28px 28px 20px; border-bottom: 1px solid var(--ink); background: var(--cream); flex-shrink: 0; }
+    .grocery-panel-eyebrow { font-family: var(--mono); font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 4px; }
+    .grocery-panel-title { font-family: var(--serif); font-weight: 800; font-size: 26px; line-height: 1; letter-spacing: -0.01em; }
+    .grocery-panel-close { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--ink); font-family: var(--mono); font-size: 14px; transition: background 160ms ease; flex-shrink: 0; }
+    .grocery-panel-close:hover { background: var(--ink); color: var(--paper); }
+    .grocery-clear-btn { padding: 6px 12px; font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; border: 1px solid var(--hairline); color: var(--muted); transition: background 140ms ease, color 140ms ease, border-color 140ms ease; }
+    .grocery-clear-btn:hover { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+    .grocery-panel-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+    .grocery-panel-body::-webkit-scrollbar { display: none; }
+    .grocery-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 60px 40px; text-align: center; color: var(--muted); }
+    .grocery-empty-line1 { font-family: var(--serif); font-style: italic; font-size: 20px; margin-bottom: 6px; }
+    .grocery-empty-line2 { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+    .grocery-group { border-bottom: 1px solid var(--ink); }
+    .grocery-group:last-child { border-bottom: none; }
+    .grocery-group-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; gap: 12px; background: var(--cream); border-bottom: 1px solid var(--hairline); }
+    .grocery-group-name { font-family: var(--serif); font-weight: 700; font-size: 16px; letter-spacing: -0.005em; flex: 1; min-width: 0; }
+    .grocery-group-remove { font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); padding: 4px 8px; border: 1px solid var(--hairline); flex-shrink: 0; transition: background 130ms ease, color 130ms ease, border-color 130ms ease; }
+    .grocery-group-remove:hover { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+    .grocery-item { display: flex; align-items: baseline; gap: 10px; padding: 9px 20px; border-bottom: 1px solid var(--hairline); cursor: pointer; }
+    .grocery-item:last-child { border-bottom: none; }
+    .grocery-item:hover { background: var(--hairline); }
+    .grocery-item--checked .grocery-item-text { text-decoration: line-through; color: var(--muted-2); }
+    .grocery-item--checked .grocery-item-bullet { opacity: 0.4; }
+    .grocery-item-remove { margin-left: auto; flex-shrink: 0; background: none; border: none; cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted-2); padding: 0 2px; opacity: 0; transition: opacity 150ms, color 150ms; }
+    .grocery-item:hover .grocery-item-remove { opacity: 1; }
+    .grocery-item-remove:hover { color: var(--terracotta); }
+    .grocery-view-bar { display: flex; border-bottom: 1px solid var(--ink); flex-shrink: 0; }
+    .grocery-view-tab { flex: 1; font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; padding: 10px 0; border: none; border-right: 1px solid var(--ink); background: var(--paper); color: var(--muted); cursor: pointer; transition: background 150ms ease, color 150ms ease; }
+    .grocery-view-tab:last-child { border-right: none; }
+    .grocery-view-tab.active { background: var(--ink); color: var(--paper); }
+    .grocery-view-tab:not(.active):hover { background: var(--cream); color: var(--ink); }
+    .grocery-item-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .grocery-item-sources { font-family: var(--mono); font-size: 9px; letter-spacing: .12em; color: var(--muted-2); text-transform: uppercase; }
+    .grocery-add-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--hairline); background: var(--paper); flex-shrink: 0; }
+    .grocery-add-input { flex: 1; font-family: var(--serif); font-size: 14px; padding: 7px 10px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); outline: none; border-radius: 0; }
+    .grocery-add-input:focus { border-color: var(--marine); }
+    .grocery-add-input::placeholder { color: var(--muted-2); }
+    .grocery-add-btn { font-family: var(--mono); font-size: 12px; padding: 7px 14px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; transition: background 150ms, color 150ms; flex-shrink: 0; }
+    .grocery-add-btn:hover { background: var(--marine); border-color: var(--marine); color: var(--paper); }
+    .grocery-item-bullet { font-family: var(--mono); font-size: 11px; color: var(--terracotta); flex-shrink: 0; }
+    .grocery-item-text { font-family: var(--serif); font-size: 15px; line-height: 1.4; color: var(--ink-2); }
+
+    /* ============================================================
+       MANAGE DROPDOWN
+       ============================================================ */
+    .manage-wrap { position: relative; z-index: 1100; display: flex; align-items: center; gap: 8px; }
+    .env-tag { font-family: var(--mono); font-size: 8px; letter-spacing: .18em; text-transform: uppercase; padding: 3px 7px; border: 1px solid var(--hairline); color: var(--muted); background: var(--cream); white-space: nowrap; flex-shrink: 0; }
+    .env-tag.pwa { border-color: var(--marine); color: var(--marine); }
+    .env-tag.browser { border-color: var(--muted-2); color: var(--muted-2); }
+    .manage-btn { display: inline-flex; align-items: center; gap: 10px; padding: 9px 16px; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; transition: background 160ms ease; }
+    .manage-btn:hover { background: var(--terracotta); }
+    .manage-btn .chev { width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); margin-top: -3px; transition: transform 200ms ease; }
+    .manage-btn.open .chev { transform: rotate(-135deg); margin-top: 3px; }
+    .manage-menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 220px; background: var(--paper); border: 1px solid var(--ink); box-shadow: var(--shadow); z-index: 1100; animation: drop 180ms cubic-bezier(.4,0,.2,1); }
+    @keyframes drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .manage-menu button { width: 100%; text-align: left; padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--hairline); font-family: var(--sans); font-size: 14px; font-weight: 500; transition: background 140ms ease; }
+    .manage-menu button:last-child { border-bottom: none; }
+    .manage-menu button:hover { background: var(--cream); color: var(--terracotta); }
+    .manage-menu button .kbd { font-family: var(--mono); font-size: 9px; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; }
+
+    /* ============================================================
+       MODAL + FORMS
+       ============================================================ */
+    .modal-bg { position: fixed; inset: 0; background: rgba(26,24,22,.4); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 40px; animation: fade 220ms ease; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: var(--paper); border: 1px solid var(--ink); width: 100%; max-width: 760px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px -20px rgba(26,24,22,.5); animation: rise 280ms cubic-bezier(.2,.7,.2,1); }
+    @keyframes rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-bottom: 1px solid var(--ink); background: var(--cream); }
+    .modal-head .eyebrow { font-family: var(--mono); font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 4px; }
+    .modal-head .h { font-family: var(--serif); font-weight: 800; font-size: 26px; line-height: 1; letter-spacing: -0.01em; }
+    .modal-head .h .it { font-style: italic; font-weight: 400; }
+    .modal-close { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--ink); font-family: var(--mono); font-size: 14px; transition: background 160ms ease; }
+    .modal-close:hover { background: var(--ink); color: var(--paper); }
+    .modal-body { padding: 28px; overflow-y: auto; flex: 1; }
+    .modal-foot { padding: 18px 28px; border-top: 1px solid var(--ink); background: var(--cream); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+
+    .field { margin-bottom: 18px; }
+    .field-label { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; display: block; }
+    .field-input, .field-select, .field-textarea { width: 100%; padding: 12px 14px; background: var(--cream); border: 1px solid var(--ink); outline: none; font-family: var(--sans); font-size: 15px; transition: background 160ms ease; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { background: var(--paper); }
+    .field-textarea { resize: vertical; min-height: 80px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field-optional { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-left: 6px; font-weight: 400; }
+    .field-input-err { border-color: var(--terracotta) !important; background: color-mix(in srgb, var(--terracotta) 6%, var(--cream)); }
+    .field-err-msg { margin-top: 6px; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--terracotta); }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; border: 1px solid var(--ink); background: var(--paper); transition: all 160ms ease; }
+    .btn:hover { background: var(--ink); color: var(--paper); }
+    .btn.primary { background: var(--ink); color: var(--paper); }
+    .btn.primary:hover { background: var(--terracotta); border-color: var(--terracotta); }
+    .btn.accent { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+    .btn.accent:hover { background: var(--terracotta-2); border-color: var(--terracotta-2); }
+    .btn.ghost { border-color: var(--hairline); color: var(--muted); }
+    .btn.ghost:hover { background: var(--cream); color: var(--ink); border-color: var(--ink); }
+    .btn.danger { border-color: var(--terracotta); color: var(--terracotta); }
+    .btn.danger:hover { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+
+    /* ============================================================
+       EXPORT GROUP + IMPORT DUPE ROW
+       ============================================================ */
+    .export-group { display: inline-flex; border: 1px solid var(--ink); }
+    .export-group button { padding: 9px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; background: var(--paper); border-right: 1px solid var(--ink); }
+    .export-group button:last-child { border-right: none; }
+    .export-group button:hover { background: var(--ink); color: var(--paper); }
+    .export-group .lbl { padding: 9px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); border-right: 1px solid var(--ink); background: var(--cream); }
+
+    .dup-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--hairline); background: var(--paper); margin-bottom: 8px; }
+    .dup-row .dup-name { font-family: var(--serif); font-weight: 700; font-size: 17px; }
+    .dup-row .dup-actions { display: inline-flex; gap: 6px; }
+    .dup-row .mini { padding: 6px 10px; font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; border: 1px solid var(--ink); }
+    .dup-row .mini:hover { background: var(--ink); color: var(--paper); }
+    .dup-row .mini.danger:hover { background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); }
+    .er-name { font-family: var(--serif); font-weight: 700; font-size: 18px; }
+    .er-meta { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+    /* ============================================================
+       RICH TEXT EDITOR
+       ============================================================ */
+    .rt-toolbar { display: flex; flex-wrap: wrap; gap: 2px; border: 1px solid var(--ink); border-bottom: none; background: var(--cream); padding: 6px; }
+    .rt-tool { min-width: 32px; height: 30px; padding: 0 10px; font-family: var(--sans); font-size: 13px; display: inline-flex; align-items: center; justify-content: center; transition: background 140ms ease; background: transparent; }
+    .rt-tool:hover { background: var(--paper); }
+    .rt-tool.active { background: var(--ink); color: var(--paper); }
+    .rt-tool.bold { font-weight: 800; }
+    .rt-tool.italic { font-style: italic; font-weight: 600; }
+    .rt-tool.under { text-decoration: underline; font-weight: 600; }
+    .rt-tool .sz-sm { font-size: 11px; }
+    .rt-tool .sz-md { font-size: 14px; }
+    .rt-tool .sz-lg { font-size: 17px; font-weight: 700; }
+    .rt-divider { width: 1px; background: var(--hairline); margin: 4px 4px; }
+    .rt-editor { min-height: 180px; max-height: 280px; overflow-y: auto; padding: 16px 18px; background: var(--paper); border: 1px solid var(--ink); font-family: var(--serif); font-size: 16px; line-height: 1.6; outline: none; }
+    .rt-editor:empty::before { content: attr(data-placeholder); color: var(--muted-2); font-style: italic; }
+    .rt-editor h2 { font-size: 22px; margin: 14px 0 6px; font-weight: 700; }
+    .rt-editor h3 { font-size: 18px; margin: 12px 0 4px; font-weight: 700; }
+    .rt-editor ul, .rt-editor ol { padding-left: 22px; }
+    .rt-editor li { margin-bottom: 4px; }
+    .rt-editor figure.rt-fig { margin: 18px 0; border: 1px solid var(--ink); background: var(--cream); }
+    .rt-editor figure.rt-fig img { display: block; width: 100%; height: auto; max-height: 360px; object-fit: cover; }
+    .rt-editor figure.rt-fig figcaption { padding: 8px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); border-top: 1px solid var(--hairline); background: var(--paper); }
+    .img-picker { position: absolute; top: 48px; left: 0; right: 0; background: var(--paper); border: 1px solid var(--ink); z-index: 50; box-shadow: 0 16px 40px -14px rgba(26,24,22,.4); animation: drop 180ms cubic-bezier(.4,0,.2,1); }
+    .img-picker-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--ink); background: var(--cream); }
+    .img-picker-title { font-family: var(--serif); font-weight: 700; font-size: 16px; }
+    .img-picker-close { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid var(--ink); font-family: var(--mono); font-size: 12px; background: var(--paper); }
+    .img-picker-close:hover { background: var(--ink); color: var(--paper); }
+    .img-picker-section { padding: 14px 16px; border-bottom: 1px solid var(--hairline); }
+    .img-picker-section:last-child { border-bottom: none; }
+    .img-picker-label { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .img-picker-label .hint { color: var(--muted-2); letter-spacing: .08em; text-transform: none; font-size: 10px; margin-left: 6px; }
+    .img-picker-row { display: flex; gap: 8px; }
+    .img-picker-input { flex: 1; padding: 10px 12px; background: var(--cream); border: 1px solid var(--ink); outline: none; font-family: var(--mono); font-size: 13px; }
+    .img-picker-input:focus { background: var(--paper); }
+
+    /* ============================================================
+       TOASTS
+       ============================================================ */
+    .toast-stack { position: fixed; bottom: 24px; right: 24px; z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { background: var(--ink); color: var(--paper); padding: 12px 18px; border: 1px solid var(--ink); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; min-width: 260px; animation: rise 240ms cubic-bezier(.2,.7,.2,1); pointer-events: auto; }
+    .toast.ok { background: var(--marine); }
+    .toast.warn { background: var(--terracotta); }
+
+    /* ============================================================
+       FIXED CONTROLS (grocery + theme)
+       ============================================================ */
+    .grocery-toggle { position: fixed; bottom: 22px; right: 76px; width: 44px; height: 44px; display: grid; place-items: center; background: var(--paper); color: var(--ink); border: 1px solid var(--ink); z-index: 60; cursor: pointer; transition: background 200ms ease, color 200ms ease; }
+    .grocery-toggle:hover { background: var(--ink); color: var(--paper); }
+    .grocery-toggle.active { background: var(--marine); border-color: var(--marine); color: var(--paper); }
+    .grocery-toggle svg { width: 18px; height: 18px; display: block; }
+
+    .theme-toggle { position: fixed; bottom: 22px; right: 22px; width: 44px; height: 44px; display: grid; place-items: center; background: var(--paper); color: var(--ink); border: 1px solid var(--ink); z-index: 60; cursor: pointer; transition: background 200ms ease, color 200ms ease, transform 200ms ease; }
+    .theme-toggle:hover { background: var(--ink); color: var(--paper); }
+    .theme-toggle svg { width: 18px; height: 18px; display: block; }
+
+    /* ============================================================
+       UTILITY
+       ============================================================ */
+    .row { display: flex; align-items: center; gap: 12px; }
+    .muted { color: var(--muted); }
+    .hidden-file { display: none; }
+
+    /* ============================================================
+       iOS TOUCH — prevent auto-zoom
+       ============================================================ */
+    @media (hover: none) and (pointer: coarse) {
+      input, textarea, select { font-size: 16px; }
+    }
+
+    /* ============================================================
+       MOBILE — max-width 640px
+       ============================================================ */
+    @media (max-width: 640px) {
+      .recipes-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; gap: 0; }
+      .recipes-head .sub { display: none; }
+      .recipes-head .count { display: none; }
+      .recipes-head > .manage-wrap { position: static; height: auto; }
+      .recipes-head .title { font-size: 40px; }
+      .recipes-body { grid-template-columns: 1fr; position: relative; }
+      .recipes-sidebar { position: absolute; inset: 0; z-index: 10; transform: translateX(0); transition: transform 320ms cubic-bezier(.4,0,.2,1); }
+      .recipes-body.sidebar-closed .recipes-sidebar { transform: translateX(-100%); pointer-events: none; }
+      .recipe-detail { padding: 20px 20px 70px; height: 100%; }
+      .recipe-detail h1 { font-size: 34px; }
+      .sidebar-toggle-btn { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; padding: 9px 14px; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; border: none; cursor: pointer; }
+      .modal-bg { padding: 0; align-items: flex-end; }
+      .modal { max-height: 90vh; max-width: 100%; }
+      .modal-body { padding: 20px 18px; }
+      .modal-foot { padding: 14px 18px; flex-wrap: wrap; gap: 10px; }
+      .field-row { grid-template-columns: 1fr; }
+      .ingredient-row { flex-wrap: wrap; }
+      .ing-qty-input  { width: 64px !important; }
+      .ing-unit-select { width: calc(50% - 35px) !important; }
+      .ing-unit-custom { width: calc(50% - 35px) !important; }
+      .ing-name-input { width: 100% !important; flex-basis: 100%; }
+      .grocery-panel { width: 100%; }
+      .toast-stack { right: 12px; bottom: 70px; }
+      .grocery-toggle { right: 76px; }
+      .theme-toggle { right: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+    /* ============================================================
+       STORAGE — all keys prefixed "recipe_"
+       ============================================================ */
+    const RECIPES_KEY         = 'recipe_recipes';
+    const FAVS_KEY            = 'recipe_favs';
+    const GROCERY_KEY         = 'recipe_grocery';
+    const GROCERY_CHECKED_KEY = 'recipe_grocery_checked';
+    const THEME_KEY           = 'recipe_theme';
+
+    /* ============================================================
+       PWA DETECTION + BROWSER RESYNC
+       ============================================================ */
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                  window.navigator.standalone === true;
+
+    if (!isPWA) {
+      [RECIPES_KEY, FAVS_KEY, GROCERY_KEY, GROCERY_CHECKED_KEY].forEach(k => {
+        try { localStorage.removeItem(k); } catch {}
+      });
+    }
+
+    function loadRecipes() {
+      try { const r = localStorage.getItem(RECIPES_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+    }
+    function saveRecipes(list) { try { localStorage.setItem(RECIPES_KEY, JSON.stringify(list)); } catch {} }
+
+    function loadFavorites() {
+      try { const r = localStorage.getItem(FAVS_KEY); return new Set(r ? JSON.parse(r) : []); } catch { return new Set(); }
+    }
+    function saveFavorites(set) { try { localStorage.setItem(FAVS_KEY, JSON.stringify([...set])); } catch {} }
+
+    function loadGroceryList() {
+      try { const r = localStorage.getItem(GROCERY_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+    }
+    function saveGroceryList(list) { try { localStorage.setItem(GROCERY_KEY, JSON.stringify(list)); } catch {} }
+
+    function loadGroceryChecked() {
+      try { const r = localStorage.getItem(GROCERY_CHECKED_KEY); return new Set(r ? JSON.parse(r) : []); } catch { return new Set(); }
+    }
+    function saveGroceryChecked(set) { try { localStorage.setItem(GROCERY_CHECKED_KEY, JSON.stringify([...set])); } catch {} }
+
+    /* ============================================================
+       UTILITIES
+       ============================================================ */
+    function newId(prefix = 'x') {
+      return prefix + '_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+    }
+
+    function download(filename, content, type = 'application/json') {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    function toCSV(rows, columns) {
+      const esc = v => {
+        if (v === null || v === undefined) return '';
+        const s = String(v).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+        return s;
+      };
+      return columns.join(',') + '\n' + rows.map(r => columns.map(c => esc(r[c])).join(',')).join('\n');
+    }
+
+    function formatQty(n) {
+      if (Number.isInteger(n)) return String(n);
+      const whole = Math.floor(n);
+      const rem = n - whole;
+      for (const [val, str] of [[1/4,'1/4'],[1/3,'1/3'],[1/2,'1/2'],[2/3,'2/3'],[3/4,'3/4']]) {
+        if (Math.abs(rem - val) < 0.02) return whole > 0 ? `${whole} ${str}` : str;
+      }
+      return parseFloat(n.toFixed(2)).toString();
+    }
+
+    function scaleQty(qtyStr, factor) {
+      if (!qtyStr || factor === 1) return qtyStr;
+      const s = String(qtyStr).trim();
+      const rangeM = s.match(/^(.+?)\s*[–-]\s*(.+)$/);
+      if (rangeM) return `${scaleQty(rangeM[1].trim(), factor)}–${scaleQty(rangeM[2].trim(), factor)}`;
+      const mixedM = s.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+      if (mixedM) return formatQty((parseInt(mixedM[1]) + parseInt(mixedM[2]) / parseInt(mixedM[3])) * factor);
+      const fracM = s.match(/^(\d+)\/(\d+)$/);
+      if (fracM) return formatQty(parseInt(fracM[1]) / parseInt(fracM[2]) * factor);
+      const numM = s.match(/^\d+(?:\.\d+)?$/);
+      if (numM) return formatQty(parseFloat(s) * factor);
+      return qtyStr;
+    }
+
+    function scaleHtml(html, factor) {
+      if (factor === 1) return html;
+      return html.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, text) => {
+        if (tag) return tag;
+        return text.replace(/\b(\d+)\s+(\d+)\/(\d+)\b|\b(\d+)\/(\d+)\b|\b(\d+(?:\.\d+)?)\b/g,
+          (match, wn, wfn, wfd, fn, fd, plain) => {
+            let val;
+            if (wn !== undefined) val = parseInt(wn) + parseInt(wfn) / parseInt(wfd);
+            else if (fn !== undefined) val = parseInt(fn) / parseInt(fd);
+            else val = parseFloat(plain);
+            const scaled = val * factor;
+            return Number.isInteger(scaled) ? scaled.toString() : parseFloat(scaled.toFixed(2)).toString();
+          }
+        );
+      });
+    }
+
+    function getRecipeBadge(recipe) {
+      const text = `${recipe.name} ${recipe.cuisine || ''}`.toLowerCase();
+      if (/fish|seafood|shrimp|crab|lobster|tuna|salmon|cod|snapper|clam|oyster|prawn|anchovy/.test(text)) return 'seafood';
+      if (/cake|cookie|pastry|bread|muffin|biscuit|croissant|scone|tart|pie|baked|french toast|toast|waffle|pancake/.test(text)) return 'baked';
+      if (/dessert|sweet|chocolate|ice cream|sorbet|pudding|candy/.test(text)) return 'dessert';
+      if (/salad|vegetar|vegan|veggie|vegetable|tofu|mushroom|lentil/.test(text)) return 'veg';
+      if (/carne|steak|beef|pork|chicken|lamb|turkey|bacon|sausage|asada|chorizo|meat/.test(text)) return 'meat';
+      const cuisine = (recipe.cuisine || '').toLowerCase();
+      if (/breakfast|brunch/.test(cuisine)) return 'baked';
+      if (/salad|vegetar|vegan/.test(cuisine)) return 'veg';
+      return null;
+    }
+
+    const BADGE_LABELS = { meat: 'Meat', seafood: 'Seafood', veg: 'Veg', baked: 'Baked', dessert: 'Sweet' };
+
+    function parseIngredient(text) {
+      const s = text.trim();
+      const mixed = s.match(/^(\d+)\s+(\d+)\/(\d+)\s+(.*)/);
+      if (mixed) return { qty: parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3]), key: mixed[4].toLowerCase() };
+      const frac = s.match(/^(\d+)\/(\d+)\s+(.*)/);
+      if (frac) return { qty: parseInt(frac[1]) / parseInt(frac[2]), key: frac[3].toLowerCase() };
+      const num = s.match(/^(\d+(?:\.\d+)?)\s+(.*)/);
+      if (num) return { qty: parseFloat(num[1]), key: num[2].toLowerCase() };
+      return { qty: null, key: s.toLowerCase() };
+    }
+
+    function buildTotals(items) {
+      const map = new Map();
+      items.forEach(item => {
+        const { qty, key } = parseIngredient(item.text);
+        if (!map.has(key)) map.set(key, { key, firstText: item.text, totalQty: 0, hasNumeric: false, sources: new Set() });
+        const e = map.get(key);
+        e.sources.add(item.recipeName || 'Custom');
+        if (qty !== null) { e.totalQty += qty; e.hasNumeric = true; }
+      });
+      return [...map.values()].sort((a, b) => a.key.localeCompare(b.key)).map(e => ({
+        key: e.key,
+        displayText: e.hasNumeric ? `${formatQty(e.totalQty)} ${e.key}` : e.firstText,
+        sources: [...e.sources],
+      }));
+    }
+
+    /* ============================================================
+       TOAST
+       ============================================================ */
+    const ToastCtx = React.createContext(null);
+
+    function ToastProvider({ children }) {
+      const [toasts, setToasts] = useState([]);
+      const push = useCallback((message, kind = 'ok', ms = 3000) => {
+        const id = Math.random().toString(36).slice(2, 9);
+        setToasts(t => [...t, { id, message, kind }]);
+        setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), ms);
+      }, []);
+      return (
+        <ToastCtx.Provider value={push}>
+          {children}
+          <div className="toast-stack">
+            {toasts.map(t => <div key={t.id} className={`toast ${t.kind}`}>{t.message}</div>)}
+          </div>
+        </ToastCtx.Provider>
+      );
+    }
+
+    function useToast() { return React.useContext(ToastCtx); }
+
+    /* ============================================================
+       MODAL
+       ============================================================ */
+    function Modal({ eyebrow, title, italicTitle, onClose, children, footer, wide }) {
+      useEffect(() => {
+        const onEsc = e => { if (e.key === 'Escape') onClose(); };
+        document.addEventListener('keydown', onEsc);
+        return () => document.removeEventListener('keydown', onEsc);
+      }, [onClose]);
+      return (
+        <div className="modal-bg" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
+          <div className="modal" style={wide ? { maxWidth: 900 } : {}}>
+            <div className="modal-head">
+              <div>
+                {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+                <div className="h">
+                  {title}
+                  {italicTitle && <span className="it"> {italicTitle}</span>}
+                </div>
+              </div>
+              <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
+            </div>
+            <div className="modal-body">{children}</div>
+            {footer && <div className="modal-foot">{footer}</div>}
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       MANAGE MENU
+       ============================================================ */
+    function ManageMenu({ items, label = 'Manage', tag }) {
+      const [open, setOpen] = useState(false);
+      const wrapRef = useRef(null);
+      useEffect(() => {
+        if (!open) return;
+        const onDoc = e => { if (!wrapRef.current?.contains(e.target)) setOpen(false); };
+        const onEsc = e => { if (e.key === 'Escape') setOpen(false); };
+        document.addEventListener('mousedown', onDoc);
+        document.addEventListener('keydown', onEsc);
+        return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onEsc); };
+      }, [open]);
+      return (
+        <div className="manage-wrap" ref={wrapRef}>
+          {tag && <span className={`env-tag ${tag.toLowerCase()}`}>{tag}</span>}
+          <button className={`manage-btn${open ? ' open' : ''}`} onClick={() => setOpen(!open)}>
+            {label}<span className="chev" />
+          </button>
+          {open && (
+            <div className="manage-menu" role="menu">
+              {items.map((it, i) => (
+                <button key={i} onClick={() => { setOpen(false); it.onClick(); }}>
+                  <span>{it.label}</span>
+                  {it.hint && <span className="kbd">{it.hint}</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ============================================================
+       RICH TEXT EDITOR
+       ============================================================ */
+    function RichEditor({ value, onChange, placeholder = 'Write…' }) {
+      const editorRef = useRef(null);
+      const [activeMarks, setActiveMarks] = useState({});
+      const [imgOpen, setImgOpen] = useState(false);
+      const [imgUrl, setImgUrl] = useState('');
+      const uploadRef = useRef(null);
+      const savedRangeRef = useRef(null);
+
+      useEffect(() => {
+        if (editorRef.current && editorRef.current.innerHTML !== (value || '')) {
+          editorRef.current.innerHTML = value || '';
+        }
+      }, []); // only on mount
+
+      const saveRange = () => {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
+          savedRangeRef.current = sel.getRangeAt(0).cloneRange();
+        }
+      };
+      const restoreRange = () => {
+        editorRef.current?.focus();
+        const sel = window.getSelection();
+        if (savedRangeRef.current) { sel.removeAllRanges(); sel.addRange(savedRangeRef.current); }
+      };
+
+      const exec = (cmd, arg) => {
+        editorRef.current?.focus();
+        document.execCommand(cmd, false, arg);
+        updateActive();
+        onChange(editorRef.current.innerHTML);
+      };
+
+      const clearFormat = () => {
+        editorRef.current?.focus();
+        const sel = window.getSelection();
+        if (sel && sel.isCollapsed && editorRef.current) {
+          const blockTags = new Set(['P','H1','H2','H3','H4','LI','DIV','BLOCKQUOTE']);
+          let block = sel.anchorNode;
+          while (block && block !== editorRef.current && !blockTags.has(block.nodeName)) block = block.parentNode;
+          if (block && block !== editorRef.current) {
+            const range = document.createRange(); range.selectNodeContents(block);
+            sel.removeAllRanges(); sel.addRange(range);
+          }
+        }
+        document.execCommand('removeFormat', false);
+        if (document.queryCommandState('insertUnorderedList')) document.execCommand('insertUnorderedList', false);
+        if (document.queryCommandState('insertOrderedList')) document.execCommand('insertOrderedList', false);
+        document.execCommand('formatBlock', false, 'p');
+        updateActive();
+        onChange(editorRef.current.innerHTML);
+      };
+
+      const insertImage = (src, alt = '') => {
+        restoreRange();
+        const html = `<figure class="rt-fig"><img src="${src}" alt="${alt.replace(/"/g, '&quot;')}" />${alt ? `<figcaption>${alt}</figcaption>` : ''}</figure><p><br/></p>`;
+        document.execCommand('insertHTML', false, html);
+        onChange(editorRef.current.innerHTML);
+        setImgOpen(false);
+        setImgUrl('');
+      };
+
+      const insertFromUrl = () => {
+        const u = imgUrl.trim();
+        if (!u) return;
+        insertImage(u, u.split('/').pop().replace(/\.[^.]+$/, ''));
+      };
+
+      const handleUpload = f => {
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => insertImage(reader.result, f.name.replace(/\.[^.]+$/, ''));
+        reader.readAsDataURL(f);
+      };
+
+      const updateActive = () => {
+        try {
+          setActiveMarks({
+            bold: document.queryCommandState('bold'),
+            italic: document.queryCommandState('italic'),
+            underline: document.queryCommandState('underline'),
+            ul: document.queryCommandState('insertUnorderedList'),
+            ol: document.queryCommandState('insertOrderedList'),
+          });
+        } catch {}
+      };
+
+      return (
+        <div style={{ position: 'relative' }}>
+          <div className="rt-toolbar">
+            <button type="button" className={`rt-tool bold${activeMarks.bold ? ' active' : ''}`} onClick={() => exec('bold')} title="Bold">B</button>
+            <button type="button" className={`rt-tool italic${activeMarks.italic ? ' active' : ''}`} onClick={() => exec('italic')} title="Italic">I</button>
+            <button type="button" className={`rt-tool under${activeMarks.underline ? ' active' : ''}`} onClick={() => exec('underline')} title="Underline">U</button>
+            <div className="rt-divider" />
+            <button type="button" className="rt-tool" onClick={() => exec('formatBlock', 'p')} title="Body"><span className="sz-sm">P</span></button>
+            <button type="button" className="rt-tool" onClick={() => exec('formatBlock', 'h3')} title="Heading"><span className="sz-md">H₃</span></button>
+            <button type="button" className="rt-tool" onClick={() => exec('formatBlock', 'h2')} title="Big Heading"><span className="sz-lg">H₂</span></button>
+            <div className="rt-divider" />
+            <button type="button" className={`rt-tool${activeMarks.ul ? ' active' : ''}`} onClick={() => exec('insertUnorderedList')} title="Bullets">• —</button>
+            <button type="button" className={`rt-tool${activeMarks.ol ? ' active' : ''}`} onClick={() => exec('insertOrderedList')} title="Numbered">1.</button>
+            <div className="rt-divider" />
+            <button type="button" className={`rt-tool${imgOpen ? ' active' : ''}`}
+              onMouseDown={e => { e.preventDefault(); saveRange(); }}
+              onClick={() => setImgOpen(!imgOpen)} title="Insert photo">▢ Photo</button>
+            <div className="rt-divider" />
+            <button type="button" className="rt-tool" onClick={clearFormat} title="Clear formatting">⌫</button>
+          </div>
+
+          {imgOpen && (
+            <div className="img-picker">
+              <div className="img-picker-head">
+                <div className="img-picker-title">Insert photo</div>
+                <button className="img-picker-close" onClick={() => setImgOpen(false)}>×</button>
+              </div>
+              <div className="img-picker-section">
+                <div className="img-picker-label">Image URL or path <span className="hint">(paste a URL or local path)</span></div>
+                <div className="img-picker-row">
+                  <input className="img-picker-input" placeholder="https://example.com/photo.jpg" value={imgUrl}
+                    onChange={e => setImgUrl(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); insertFromUrl(); } }} />
+                  <button type="button" className="btn primary" onClick={insertFromUrl}>Insert</button>
+                </div>
+              </div>
+              <div className="img-picker-section">
+                <div className="img-picker-label">Or upload from device <span className="hint">(inlined as data URL)</span></div>
+                <button type="button" className="btn ghost" onClick={() => uploadRef.current?.click()}>Choose file…</button>
+                <input ref={uploadRef} type="file" accept="image/*" className="hidden-file"
+                  onChange={e => handleUpload(e.target.files?.[0])} />
+              </div>
+            </div>
+          )}
+
+          <div ref={editorRef} className="rt-editor" contentEditable suppressContentEditableWarning
+            data-placeholder={placeholder}
+            onInput={e => onChange(e.currentTarget.innerHTML)}
+            onKeyUp={() => { updateActive(); saveRange(); }}
+            onMouseUp={() => { updateActive(); saveRange(); }}
+            onFocus={updateActive}
+            onBlur={saveRange}
+          />
+        </div>
+      );
+    }
+
+    /* ============================================================
+       INGREDIENT ROW
+       ============================================================ */
+    const RECIPE_UNITS = ['tsp','tbsp','cup','oz','fl oz','lb','g','kg','ml','L','bunch','pinch','dash','to taste','slices','cloves','pieces'];
+    const RECIPE_UNITS_SET = new Set(RECIPE_UNITS);
+
+    function IngredientRow({ ing, idx, onChange, onRemove, showRemove }) {
+      const isCustom = ing.unit !== '' && !RECIPE_UNITS_SET.has(ing.unit);
+      const [customMode, setCustomMode] = useState(isCustom);
+      const selectVal = customMode ? '__custom' : ing.unit;
+
+      const handleSelect = val => {
+        if (val === '__custom') { setCustomMode(true); }
+        else { setCustomMode(false); onChange(idx, { ...ing, unit: val }); }
+      };
+
+      return (
+        <div className="ingredient-row">
+          <input className="field-input ing-qty-input" type="text" value={ing.qty}
+            onChange={e => onChange(idx, { ...ing, qty: e.target.value })} placeholder="qty" />
+          <select className="field-select ing-unit-select" value={selectVal} onChange={e => handleSelect(e.target.value)}>
+            <option value="">—</option>
+            {RECIPE_UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+            <option value="__custom">Custom…</option>
+          </select>
+          {customMode && (
+            <input className="field-input ing-unit-custom" type="text" value={ing.unit}
+              onChange={e => onChange(idx, { ...ing, unit: e.target.value })} placeholder="unit" />
+          )}
+          <input className="field-input ing-name-input" type="text" value={ing.name}
+            onChange={e => onChange(idx, { ...ing, name: e.target.value })} placeholder="ingredient" />
+          <input className="field-input ing-notes-input" type="text" value={ing.notes || ''}
+            onChange={e => onChange(idx, { ...ing, notes: e.target.value })} placeholder="notes (optional)" />
+          {showRemove && (
+            <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>
+          )}
+        </div>
+      );
+    }
+
+    /* ============================================================
+       RECIPE FORM
+       ============================================================ */
+    function RecipeForm({ initial, onSave, onCancel, onDelete, mode = 'new' }) {
+      const toast = useToast();
+      const [name, setName] = useState(initial?.name || '');
+      const [cuisine, setCuisine] = useState(initial?.cuisine || '');
+      const [time, setTime] = useState(initial?.time ?? 30);
+      const [serves, setServes] = useState(initial?.serves ?? 2);
+      const [tagline, setTagline] = useState(initial?.tagline || '');
+      const [description, setDescription] = useState(initial?.description || '');
+      const [ingredients, setIngredients] = useState(() => {
+        if (initial?.ingredients?.length) return initial.ingredients.map(i => ({ ...i }));
+        return [{ qty: '', unit: '', name: '' }];
+      });
+
+      const addIngredient = () => setIngredients(prev => [...prev, { qty: '', unit: '', name: '' }]);
+      const removeIngredient = idx => setIngredients(prev => prev.filter((_, i) => i !== idx));
+      const updateIngredient = (idx, updated) => setIngredients(prev => prev.map((ing, i) => i === idx ? updated : ing));
+
+      const handleSave = () => {
+        if (!name.trim()) { toast('Name is required', 'warn'); return; }
+        const validIngredients = ingredients.filter(ing => ing.name.trim());
+        if (!validIngredients.length) { toast('At least one ingredient is required', 'warn'); return; }
+        onSave({
+          id: initial?.id || newId('rec'),
+          name: name.trim(),
+          cuisine: cuisine.trim(),
+          time: Number(time) || 0,
+          serves: Number(serves) || 0,
+          tagline: tagline.trim(),
+          ingredients: validIngredients,
+          description,
+          createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
+        });
+      };
+
+      const exportOne = fmt => {
+        if (fmt === 'json') {
+          const e = { id: initial?.id || 'draft', name, cuisine, time, serves, tagline, ingredients, description };
+          download(`${(name || 'recipe').replace(/\s+/g, '_').toLowerCase()}.json`, JSON.stringify(e, null, 2));
+          toast('Exported JSON', 'ok');
+        } else {
+          const row = { name, cuisine, time, serves, tagline, ingredients: JSON.stringify(ingredients), description };
+          const csv = toCSV([row], ['name','cuisine','time','serves','tagline','ingredients','description']);
+          download(`${(name || 'recipe').replace(/\s+/g, '_').toLowerCase()}.csv`, csv, 'text/csv');
+          toast('Exported CSV', 'ok');
+        }
+      };
+
+      return (
+        <Modal
+          eyebrow={mode === 'new' ? 'New recipe' : 'Edit recipe'}
+          title={mode === 'new' ? 'Add a' : 'Refine'}
+          italicTitle={mode === 'new' ? 'recipe' : 'the recipe'}
+          onClose={onCancel}
+          wide
+          footer={
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {mode === 'edit' && onDelete && (
+                  <button className="btn danger" onClick={onDelete}>Delete</button>
+                )}
+                <div className="export-group">
+                  <span className="lbl">Export</span>
+                  <button onClick={() => exportOne('json')}>.json</button>
+                  <button onClick={() => exportOne('csv')}>.csv</button>
+                </div>
+              </div>
+              <div className="row">
+                <button className="btn ghost" onClick={onCancel}>Cancel</button>
+                <button className="btn accent" onClick={handleSave}>{mode === 'new' ? 'Publish recipe' : 'Save changes'}</button>
+              </div>
+            </>
+          }
+        >
+          <div className="field-row">
+            <div className="field">
+              <label className="field-label">Name</label>
+              <input className="field-input" value={name} onChange={e => setName(e.target.value)} placeholder="Fish Tacos, San Diego" />
+            </div>
+            <div className="field">
+              <label className="field-label">Cuisine / Category</label>
+              <input className="field-input" value={cuisine} onChange={e => setCuisine(e.target.value)} placeholder="Mexican" />
+            </div>
+          </div>
+          <div className="field-row">
+            <div className="field">
+              <label className="field-label">Time (minutes)</label>
+              <input className="field-input" type="number" value={time} onChange={e => setTime(e.target.value)} />
+            </div>
+            <div className="field">
+              <label className="field-label">Serves</label>
+              <input className="field-input" type="number" value={serves} onChange={e => setServes(e.target.value)} />
+            </div>
+          </div>
+          <div className="field">
+            <label className="field-label">Tagline</label>
+            <input className="field-input" value={tagline} onChange={e => setTagline(e.target.value)} placeholder="One sentence. Make it sting." />
+          </div>
+          <div className="field">
+            <label className="field-label">Ingredients</label>
+            <div className="ingredient-editor">
+              {ingredients.map((ing, idx) => (
+                <IngredientRow key={idx} ing={ing} idx={idx}
+                  onChange={updateIngredient} onRemove={removeIngredient}
+                  showRemove={ingredients.length > 1} />
+              ))}
+              <button type="button" className="btn ghost add-ingredient-btn" onClick={addIngredient}>+ Add ingredient</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="field-label">Method</label>
+            <RichEditor value={description} onChange={setDescription} placeholder="Method. No filler. The reader is hungry." />
+          </div>
+        </Modal>
+      );
+    }
+
+    /* ============================================================
+       IMPORT DIALOG — validates recipe format, imports from any .json
+       ============================================================ */
+    function ImportDialog({ existing, onClose, onCommit }) {
+      const toast = useToast();
+      const [stage, setStage] = useState('pick');
+      const [incoming, setIncoming] = useState([]);
+      const [decisions, setDecisions] = useState({});
+      const fileRef = useRef(null);
+
+      const existingMap = useMemo(() => {
+        const m = new Map();
+        existing.forEach(e => { m.set(e.id, e); m.set('name:' + e.name.trim().toLowerCase(), e); });
+        return m;
+      }, [existing]);
+
+      const handleFile = async f => {
+        if (!f) return;
+        try {
+          const text = await f.text();
+          let data;
+          try { data = JSON.parse(text); } catch { toast('Invalid JSON file', 'warn'); return; }
+          const arr = Array.isArray(data) ? data : [data];
+          if (arr.length === 0) { toast('File contained no entries', 'warn'); return; }
+          const invalid = arr.filter(e => {
+            if (!e || typeof e !== 'object' || Array.isArray(e)) return true;
+            if (!e.name || typeof e.name !== 'string' || !e.name.trim()) return true;
+            if (!Array.isArray(e.ingredients)) return true;
+            return false;
+          });
+          if (invalid.length > 0) {
+            toast(`Wrong format — ${invalid.length} entr${invalid.length === 1 ? 'y' : 'ies'} missing required fields (name, ingredients[])`, 'warn');
+            return;
+          }
+          setIncoming(arr);
+          const init = {};
+          arr.forEach(e => {
+            const dupById  = existing.find(x => x.id === e.id);
+            const dupByName = existing.find(x => x.name?.trim().toLowerCase() === (e.name || '').trim().toLowerCase());
+            if (dupById || dupByName) init[e.id || ('name:' + (e.name || ''))] = 'overwrite';
+          });
+          setDecisions(init);
+          setStage('review');
+        } catch { toast('Could not read file', 'warn'); }
+      };
+
+      const dupes = useMemo(() => incoming.map(e => {
+        const dupById   = existing.find(x => x.id === e.id);
+        const dupByName = existing.find(x => x.name?.trim().toLowerCase() === (e.name || '').trim().toLowerCase());
+        return { entry: e, dup: dupById || dupByName || null, key: e.id || ('name:' + (e.name || '')) };
+      }), [incoming, existing]);
+
+      const duplicates = dupes.filter(d => d.dup);
+      const fresh = dupes.filter(d => !d.dup);
+
+      const commit = () => {
+        const out = [...existing];
+        const byId = new Map(out.map(x => [x.id, x]));
+        fresh.forEach(({ entry }) => {
+          const e = { ...entry, id: entry.id || newId('rec') };
+          if (byId.has(e.id)) e.id = newId('rec');
+          byId.set(e.id, e);
+          out.push(e);
+        });
+        duplicates.forEach(({ entry, dup, key }) => {
+          if ((decisions[key] || 'overwrite') === 'overwrite') {
+            const idx = out.findIndex(x => x.id === dup.id);
+            out[idx] = { ...dup, ...entry, id: dup.id };
+          }
+        });
+        onCommit(out);
+        toast(`Imported · ${fresh.length} new · ${duplicates.length} duplicate${duplicates.length === 1 ? '' : 's'} reviewed`, 'ok');
+      };
+
+      return (
+        <Modal
+          eyebrow="Import recipes"
+          title={stage === 'pick' ? 'Choose a' : 'Review the'}
+          italicTitle={stage === 'pick' ? 'recipes.json file' : 'incoming recipes'}
+          onClose={onClose}
+          footer={
+            stage === 'pick' ? (
+              <div className="muted" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase' }}>
+                Accepts recipes.json — array of recipes or a single recipe
+              </div>
+            ) : (
+              <>
+                <div className="muted" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase' }}>
+                  {fresh.length} new · {duplicates.length} duplicate{duplicates.length === 1 ? '' : 's'}
+                </div>
+                <div className="row">
+                  <button className="btn ghost" onClick={onClose}>Cancel</button>
+                  <button className="btn accent" onClick={commit}>Commit import</button>
+                </div>
+              </>
+            )
+          }
+        >
+          {stage === 'pick' && (
+            <div style={{ padding: '12px 0' }}>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 17, color: 'var(--muted)', maxWidth: 540, marginBottom: 18 }}>
+                Drop in a <em>recipes.json</em> backup file. Each entry must have a <strong>name</strong> and an <strong>ingredients</strong> array.
+                Duplicates will be flagged so you can decide overwrite or discard, one by one.
+              </div>
+              <button className="btn primary" onClick={() => fileRef.current?.click()}>Choose recipes.json</button>
+              <input ref={fileRef} type="file" accept="application/json,.json" className="hidden-file"
+                onChange={e => handleFile(e.target.files?.[0])} />
+            </div>
+          )}
+
+          {stage === 'review' && (
+            <div>
+              {fresh.length > 0 && (
+                <div style={{ marginBottom: 22 }}>
+                  <div className="field-label" style={{ color: 'var(--marine)' }}>{fresh.length} new entr{fresh.length === 1 ? 'y' : 'ies'} — will be added</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {fresh.map(({ entry }, i) => (
+                      <div key={i} className="dup-row" style={{ borderColor: 'var(--hairline)' }}>
+                        <div>
+                          <div className="dup-name">{entry.name}</div>
+                          <div className="er-meta">{entry.cuisine || '—'}</div>
+                        </div>
+                        <div className="dup-actions">
+                          <span className="mini" style={{ background: 'var(--marine)', borderColor: 'var(--marine)', color: 'var(--paper)' }}>New</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {duplicates.length > 0 && (
+                <div>
+                  <div className="field-label" style={{ color: 'var(--terracotta)' }}>
+                    {duplicates.length} duplicate{duplicates.length === 1 ? '' : 's'} — choose overwrite or discard
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {duplicates.map(({ entry, dup, key }) => {
+                      const choice = decisions[key] || 'overwrite';
+                      return (
+                        <div key={key} className="dup-row">
+                          <div>
+                            <div className="dup-name">{entry.name}</div>
+                            <div className="er-meta">Existing: {dup.cuisine || '—'}</div>
+                          </div>
+                          <div className="dup-actions">
+                            <button className="mini"
+                              style={choice === 'overwrite' ? { background: 'var(--ink)', color: 'var(--paper)' } : {}}
+                              onClick={() => setDecisions({ ...decisions, [key]: 'overwrite' })}>Overwrite</button>
+                            <button className="mini danger"
+                              style={choice === 'discard' ? { background: 'var(--terracotta)', borderColor: 'var(--terracotta)', color: 'var(--paper)' } : {}}
+                              onClick={() => setDecisions({ ...decisions, [key]: 'discard' })}>Discard new</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </Modal>
+      );
+    }
+
+    /* ============================================================
+       ADD TO GROCERY BUTTON
+       ============================================================ */
+    function AddToGroceryBtn({ recipe, onAdd }) {
+      const [added, setAdded] = useState(false);
+      const handle = e => {
+        e.stopPropagation();
+        const ings = recipe.ingredients || [];
+        if (!ings.length) return;
+        const texts = ings.map(ing => [ing.qty, ing.unit, ing.name].filter(Boolean).join(' '));
+        onAdd(recipe, texts);
+        setAdded(true);
+        setTimeout(() => setAdded(false), 1800);
+      };
+      return (
+        <button className={`add-grocery-btn${added ? ' added' : ''}`} onClick={handle} title="Add ingredients to grocery list">
+          {added ? 'Added!' : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+              <line x1="9" y1="16" x2="13" y2="16"/>
+            </svg>
+          )}
+        </button>
+      );
+    }
+
+    /* ============================================================
+       GROCERY PANEL
+       ============================================================ */
+    function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddCustom, onClearAll }) {
+      const [checked, setChecked] = useState(() => loadGroceryChecked());
+      const [customInput, setCustomInput] = useState('');
+      const [viewMode, setViewMode] = useState('by-recipe');
+
+      const groups = [];
+      const seen = {};
+      items.forEach(item => {
+        if (!seen[item.recipeId]) {
+          seen[item.recipeId] = { recipeId: item.recipeId, recipeName: item.recipeName, items: [] };
+          groups.push(seen[item.recipeId]);
+        }
+        seen[item.recipeId].items.push({ id: item.id, text: item.text });
+      });
+
+      const totals = useMemo(() => buildTotals(items), [items]);
+
+      const toggleItem = key => {
+        setChecked(prev => {
+          const next = new Set(prev);
+          next.has(key) ? next.delete(key) : next.add(key);
+          saveGroceryChecked(next);
+          return next;
+        });
+      };
+
+      const submitCustom = () => {
+        const t = customInput.trim();
+        if (!t) return;
+        onAddCustom(t);
+        setCustomInput('');
+      };
+
+      return (
+        <div className="grocery-panel">
+          <div className="grocery-panel-head">
+            <div>
+              <div className="grocery-panel-eyebrow">Shopping</div>
+              <div className="grocery-panel-title">Grocery List</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {items.length > 0 && <button className="grocery-clear-btn" onClick={onClearAll}>Clear all</button>}
+              <button className="grocery-panel-close" onClick={onClose}>×</button>
+            </div>
+          </div>
+
+          {items.length > 0 && (
+            <div className="grocery-view-bar">
+              <button className={`grocery-view-tab${viewMode === 'by-recipe' ? ' active' : ''}`} onClick={() => setViewMode('by-recipe')}>Per Recipe</button>
+              <button className={`grocery-view-tab${viewMode === 'total' ? ' active' : ''}`} onClick={() => setViewMode('total')}>Totals</button>
+            </div>
+          )}
+
+          <div className="grocery-panel-body">
+            {items.length === 0 ? (
+              <div className="grocery-empty">
+                <div className="grocery-empty-line1">No ingredients yet.</div>
+                <div className="grocery-empty-line2">Add from a recipe or type below</div>
+              </div>
+            ) : viewMode === 'total' ? (
+              totals.map(({ key, displayText, sources }) => {
+                const checkKey = `total-${key}`;
+                return (
+                  <div key={key} className={`grocery-item${checked.has(checkKey) ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(checkKey)}>
+                    <span className="grocery-item-bullet">—</span>
+                    <div className="grocery-item-body">
+                      <span className="grocery-item-text">{displayText}</span>
+                      {sources.length > 1 && <span className="grocery-item-sources">{sources.join(', ')}</span>}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              groups.map(group => (
+                <div key={group.recipeId} className="grocery-group">
+                  <div className="grocery-group-head">
+                    <span className="grocery-group-name">{group.recipeName}</span>
+                    {group.recipeId !== '__custom__' && (
+                      <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
+                    )}
+                  </div>
+                  {group.items.map(({ id, text }, i) => {
+                    const key = `${group.recipeId}-${i}`;
+                    return (
+                      <div key={i} className={`grocery-item${checked.has(key) ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
+                        <span className="grocery-item-bullet">—</span>
+                        <span className="grocery-item-text">{text}</span>
+                        {group.recipeId === '__custom__' && (
+                          <button className="grocery-item-remove" onClick={e => { e.stopPropagation(); onRemoveItem(id); }}>×</button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="grocery-add-row">
+            <input className="grocery-add-input" type="text" placeholder="Add an ingredient…"
+              value={customInput} onChange={e => setCustomInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && submitCustom()} />
+            <button className="grocery-add-btn" onClick={submitCustom}>Add</button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       RECIPES VIEW
+       ============================================================ */
+    function RecipesView({ recipes, manageItems, onEditRecipe, onAddToGrocery }) {
+      const [q, setQ] = useState('');
+      const [selectedId, setSelectedId] = useState(null);
+      const [sidebarOpen, setSidebarOpen] = useState(true);
+      const [sort, setSort] = useState('az');
+      const [sortOpen, setSortOpen] = useState(false);
+      const [favorites, setFavorites] = useState(() => loadFavorites());
+      const [openCuisines, setOpenCuisines] = useState(() => new Set());
+      const sortWrapRef = useRef(null);
+
+      useEffect(() => {
+        if (!sortOpen) return;
+        const onDoc = e => { if (!sortWrapRef.current?.contains(e.target)) setSortOpen(false); };
+        document.addEventListener('mousedown', onDoc);
+        return () => document.removeEventListener('mousedown', onDoc);
+      }, [sortOpen]);
+
+      const toggleFavorite = (id, e) => {
+        e.stopPropagation();
+        setFavorites(prev => {
+          const next = new Set(prev);
+          next.has(id) ? next.delete(id) : next.add(id);
+          saveFavorites(next);
+          return next;
+        });
+      };
+
+      const toggleCuisine = cuisine => {
+        setOpenCuisines(prev => {
+          const next = new Set(prev);
+          next.has(cuisine) ? next.delete(cuisine) : next.add(cuisine);
+          return next;
+        });
+      };
+
+      const [struckSteps, setStruckSteps] = useState(new Set());
+      const [struckIngredients, setStruckIngredients] = useState(new Set());
+      const [scale, setScale] = useState(1);
+      const bodyRef = useRef(null);
+
+      const toggleStruckIngredient = i => setStruckIngredients(prev => {
+        const next = new Set(prev); next.has(i) ? next.delete(i) : next.add(i); return next;
+      });
+
+      useEffect(() => { setStruckSteps(new Set()); setStruckIngredients(new Set()); setScale(1); }, [selectedId]);
+
+      useEffect(() => {
+        if (!bodyRef.current) return;
+        bodyRef.current.querySelectorAll('li').forEach((li, i) => li.classList.toggle('step-struck', struckSteps.has(i)));
+      }, [struckSteps, selectedId]);
+
+      const handleBodyClick = e => {
+        const li = e.target.closest('li');
+        if (!li || !bodyRef.current) return;
+        const idx = [...bodyRef.current.querySelectorAll('li')].indexOf(li);
+        if (idx === -1) return;
+        setStruckSteps(prev => { const next = new Set(prev); next.has(idx) ? next.delete(idx) : next.add(idx); return next; });
+      };
+
+      const handleSelectRecipe = id => { setSelectedId(id); setSidebarOpen(false); };
+
+      const SORT_BTN_LABELS  = { az: 'A–Z', za: 'Z–A', time: 'Time', serves: 'Serves', cuisine: 'Cuisine', badge: 'Type' };
+      const SORT_MENU_LABELS = { az: 'Sort A → Z', za: 'Sort Z → A', time: 'By Time', serves: 'By Serving Size', cuisine: 'By Cuisine', badge: 'By Type' };
+
+      const filtered = useMemo(() => {
+        const s = q.trim().toLowerCase();
+        let list = s
+          ? recipes.filter(r => {
+              const fields = [r.name, r.cuisine, r.tagline, r.description].filter(Boolean).join(' ').toLowerCase();
+              return fields.includes(s);
+            }).sort((a, b) => {
+              const aName = (a.name || '').toLowerCase().includes(s);
+              const bName = (b.name || '').toLowerCase().includes(s);
+              return (bName ? 1 : 0) - (aName ? 1 : 0);
+            })
+          : [...recipes];
+        if (sort === 'az') list.sort((a, b) => a.name.localeCompare(b.name));
+        else if (sort === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
+        else if (sort === 'time') list.sort((a, b) => (a.time || 0) - (b.time || 0));
+        else if (sort === 'serves') list.sort((a, b) => (a.serves || 0) - (b.serves || 0));
+        return list;
+      }, [q, recipes, sort]);
+
+      const cuisineGroups = useMemo(() => {
+        if (sort !== 'cuisine') return null;
+        const groups = {};
+        filtered.forEach(r => { const c = r.cuisine || 'Other'; if (!groups[c]) groups[c] = []; groups[c].push(r); });
+        return Object.keys(groups).sort().map(c => ({ cuisine: c, recipes: groups[c] }));
+      }, [sort, filtered]);
+
+      const BADGE_ORDER = ['meat','seafood','veg','baked','dessert'];
+      const badgeGroups = useMemo(() => {
+        if (sort !== 'badge') return null;
+        const groups = {};
+        filtered.forEach(r => { const b = getRecipeBadge(r) || 'other'; if (!groups[b]) groups[b] = []; groups[b].push(r); });
+        const order = [...BADGE_ORDER.filter(b => groups[b]), ...(groups.other ? ['other'] : [])];
+        return order.map(b => ({ badge: b, label: b === 'other' ? 'Other' : BADGE_LABELS[b], recipes: groups[b] }));
+      }, [sort, filtered]);
+
+      useEffect(() => {
+        if (!filtered.find(r => r.id === selectedId)) setSelectedId(filtered[0]?.id || null);
+      }, [filtered]);
+
+      const selected = recipes.find(r => r.id === selectedId);
+
+      const renderRecipeRow = r => {
+        const badge = getRecipeBadge(r);
+        return (
+          <div key={r.id}
+            className={`recipe-row${r.id === selectedId ? ' active' : ''}${favorites.has(r.id) ? ' starred' : ''}`}
+            onClick={() => handleSelectRecipe(r.id)}
+            role="button" tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleSelectRecipe(r.id); }}
+          >
+            <div className="r-row-top">
+              <div className="r-name">{r.name}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                {badge && <span className={`recipe-badge ${badge}`}>{BADGE_LABELS[badge]}</span>}
+                <button className={`star-btn${favorites.has(r.id) ? ' on' : ''}`}
+                  onClick={e => toggleFavorite(r.id, e)}
+                  title={favorites.has(r.id) ? 'Remove from favorites' : 'Add to favorites'}
+                  tabIndex={-1}>★</button>
+              </div>
+            </div>
+            <div className="r-meta">{r.cuisine || '—'} · {r.time}m · serves {r.serves}</div>
+          </div>
+        );
+      };
+
+      const starredItems  = filtered.filter(r => favorites.has(r.id));
+      const regularItems  = filtered.filter(r => !favorites.has(r.id));
+      const isEmpty = filtered.length === 0;
+
+      return (
+        <div className="recipes-view">
+          <div className="recipes-head">
+            <div>
+              <h1 className="title">The <span className="it">Recipes</span></h1>
+              <div className="sub">Methods, marginalia, and the occasional shouting match</div>
+            </div>
+            <div className="count">
+              <strong>{recipes.length}</strong>
+              recipes on file
+            </div>
+            <ManageMenu items={manageItems} tag={isPWA ? 'PWA' : 'Browser'} />
+          </div>
+
+          <div className={`recipes-body${!sidebarOpen ? ' sidebar-closed' : ''}`}>
+            <div className="recipes-sidebar">
+              <div className="search-bar-row">
+                <div className="search-field">
+                  <span className="icon" />
+                  <input placeholder="Search Keyword" value={q} onChange={e => setQ(e.target.value)} />
+                </div>
+                <div className="sort-wrap" ref={sortWrapRef}>
+                  <button className={`sort-btn${sort ? ' active' : ''}`} onClick={() => setSortOpen(v => !v)} title="Sort recipes">
+                    {sort ? SORT_BTN_LABELS[sort] : 'Sort'}<span className="sort-chev" />
+                  </button>
+                  {sortOpen && (
+                    <div className="sort-menu">
+                      <button className={!sort ? 'active' : ''} onClick={() => { setSort(null); setSortOpen(false); }}>Default</button>
+                      {['az','za','time','serves','cuisine','badge'].map(s => (
+                        <button key={s} className={sort === s ? 'active' : ''} onClick={() => { setSort(s); setSortOpen(false); }}>
+                          {SORT_MENU_LABELS[s]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="recipe-list">
+                {isEmpty && (
+                  <div style={{ padding: '40px 8px', textAlign: 'center' }} className="muted">
+                    <div style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 18, marginBottom: 4 }}>
+                      {recipes.length === 0 ? 'No recipes yet.' : 'Nothing matches.'}
+                    </div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.22em', textTransform: 'uppercase' }}>
+                      {recipes.length === 0 ? 'Add one via Manage → New Recipe' : 'Try another word'}
+                    </div>
+                  </div>
+                )}
+
+                {!isEmpty && sort === 'cuisine' ? (
+                  cuisineGroups && cuisineGroups.map(({ cuisine, recipes: cRecipes }) => (
+                    <div key={cuisine} className="cuisine-section">
+                      <button className={`cuisine-header${openCuisines.has(cuisine) ? ' expanded' : ''}`} onClick={() => toggleCuisine(cuisine)}>
+                        <span className="cuisine-label">{cuisine}</span>
+                        <span className="cuisine-count">{cRecipes.length}</span>
+                        <span className="cuisine-chev" />
+                      </button>
+                      {openCuisines.has(cuisine) && cRecipes.map(renderRecipeRow)}
+                    </div>
+                  ))
+                ) : !isEmpty && sort === 'badge' ? (
+                  badgeGroups && badgeGroups.map(({ badge, label, recipes: bRecipes }) => (
+                    <div key={badge} className="cuisine-section">
+                      <button className={`cuisine-header${openCuisines.has(badge) ? ' expanded' : ''}`} onClick={() => toggleCuisine(badge)}>
+                        <span className="cuisine-label">{label}</span>
+                        <span className="cuisine-count">{bRecipes.length}</span>
+                        <span className="cuisine-chev" />
+                      </button>
+                      {openCuisines.has(badge) && bRecipes.map(renderRecipeRow)}
+                    </div>
+                  ))
+                ) : (
+                  !isEmpty && (
+                    <>
+                      {starredItems.length > 0 && (
+                        <>
+                          <div className="recipe-section-label">Favorites</div>
+                          {starredItems.map(renderRecipeRow)}
+                          {regularItems.length > 0 && <div className="recipe-list-divider" />}
+                        </>
+                      )}
+                      {regularItems.map(renderRecipeRow)}
+                    </>
+                  )
+                )}
+              </div>
+            </div>
+
+            <div className="recipe-detail">
+              <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>← Recipes</button>
+              {!selected ? (
+                <div className="empty">
+                  <div className="glyph">Ⓡ</div>
+                  <div className="ln1">No recipe selected.</div>
+                  <div className="ln2">Add one via Manage → New Recipe</div>
+                </div>
+              ) : (
+                <>
+                  <div className="r-eyebrow-row">
+                    <div className="r-eyebrow">
+                      {selected.cuisine || 'Recipe'} · {selected.modifiedAt ? `Updated ${selected.modifiedAt}` : `Filed ${selected.createdAt}`}
+                    </div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {onAddToGrocery && <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />}
+                      {onEditRecipe && (
+                        <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
+                      )}
+                    </div>
+                  </div>
+                  <h1>{selected.name}</h1>
+                  <p className="r-tagline">{selected.tagline}</p>
+                  <div className="r-stats">
+                    <div className="stat">
+                      <div className="k">Time</div>
+                      <div className="v">{selected.time} <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)' }}>min</span></div>
+                    </div>
+                    <div className="stat">
+                      <div className="k">Serves</div>
+                      <div className="v">{selected.serves ? selected.serves * scale : '—'}</div>
+                    </div>
+                    <div className="stat">
+                      <div className="k">Category</div>
+                      <div className="v">{selected.cuisine || '—'}</div>
+                    </div>
+                  </div>
+                  <div className="r-scaler">
+                    <span className="r-scaler-label">Scale</span>
+                    {[1,2,3].map(n => (
+                      <button key={n} className={`scaler-btn${scale === n ? ' active' : ''}`} onClick={() => setScale(n)}>×{n}</button>
+                    ))}
+                  </div>
+                  {selected.ingredients && selected.ingredients.length > 0 && (
+                    <div className="recipe-ingredients">
+                      <div className="r-ing-label">Ingredients</div>
+                      <div className="ingredient-list">
+                        {selected.ingredients.map((ing, i) => (
+                          <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}`}
+                            onClick={() => toggleStruckIngredient(i)} title="Click to cross out">
+                            <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
+                            <span className="ing-unit">{ing.unit}</span>
+                            <span className="ing-name">{ing.name}</span>
+                            {ing.notes ? <span className="ing-notes">{ing.notes}</span> : <span className="ing-notes" />}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick}
+                    dangerouslySetInnerHTML={{ __html: scaleHtml(selected.description || '', scale) }} />
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       ROOT APP
+       ============================================================ */
+    function RecipeApp() {
+      const toast = useToast();
+      const [recipes, setRecipes] = useState(() => loadRecipes());
+      const [theme, setTheme] = useState(() => {
+        try { return localStorage.getItem(THEME_KEY) || 'light'; } catch { return 'light'; }
+      });
+      const [modal, setModal] = useState(null); // 'new' | 'edit' | 'import'
+      const [editTarget, setEditTarget] = useState(null);
+      const [groceryList, setGroceryList] = useState(() => loadGroceryList());
+      const [groceryOpen, setGroceryOpen] = useState(false);
+
+      useEffect(() => { saveRecipes(recipes); }, [recipes]);
+
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        try { localStorage.setItem(THEME_KEY, theme); } catch {}
+      }, [theme]);
+
+      const saveRecipe = entry => {
+        if (modal === 'edit') {
+          setRecipes(prev => prev.map(r => r.id === entry.id
+            ? { ...entry, modifiedAt: new Date().toISOString().slice(0, 10) }
+            : r
+          ));
+          toast(`Updated · ${entry.name}`, 'ok');
+        } else {
+          setRecipes(prev => [...prev, entry]);
+          toast(`Filed · ${entry.name}`, 'ok');
+        }
+        setModal(null);
+        setEditTarget(null);
+      };
+
+      const deleteRecipe = id => {
+        if (!confirm('Delete this recipe?')) return;
+        setRecipes(prev => prev.filter(r => r.id !== id));
+        setModal(null);
+        setEditTarget(null);
+        toast('Deleted', 'ok');
+      };
+
+      const addToGrocery = (recipe, ingredients) => {
+        const newItems = ingredients.map(text => ({
+          id: newId('gi'),
+          text,
+          recipeId: recipe.id,
+          recipeName: recipe.name,
+        }));
+        setGroceryList(prev => {
+          const next = [...prev.filter(item => item.recipeId !== recipe.id), ...newItems];
+          saveGroceryList(next);
+          return next;
+        });
+      };
+
+      const doBackup = () => {
+        download('recipes.json', JSON.stringify(recipes, null, 2));
+        toast('Backed up · recipes.json', 'ok');
+      };
+
+      const manageItems = [
+        { label: 'New Recipe', onClick: () => setModal('new') },
+        { label: 'Import', onClick: () => setModal('import') },
+        { label: 'Export', onClick: doBackup },
+        ...(isPWA ? [{ label: 'Resync data', hint: 'reset', onClick: () => setModal('resync') }] : []),
+      ];
+
+      return (
+        <>
+          <RecipesView
+            recipes={recipes}
+            manageItems={manageItems}
+            onEditRecipe={r => { setEditTarget(r); setModal('edit'); }}
+            onAddToGrocery={addToGrocery}
+          />
+
+          {modal === 'new' && (
+            <RecipeForm mode="new" onSave={saveRecipe} onCancel={() => setModal(null)} />
+          )}
+          {modal === 'edit' && editTarget && (
+            <RecipeForm mode="edit" initial={editTarget}
+              onSave={saveRecipe}
+              onCancel={() => { setModal(null); setEditTarget(null); }}
+              onDelete={() => deleteRecipe(editTarget.id)} />
+          )}
+          {modal === 'import' && (
+            <ImportDialog existing={recipes} onClose={() => setModal(null)}
+              onCommit={newList => { setRecipes(newList); setModal(null); }} />
+          )}
+
+          {modal === 'resync' && (
+            <Modal eyebrow="Warning" title="Resync" italicTitle="Data" onClose={() => setModal(null)}
+              footer={
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                  <button className="btn ghost" onClick={() => setModal(null)}>Cancel</button>
+                  <button className="btn danger" onClick={() => {
+                    [RECIPES_KEY, FAVS_KEY, GROCERY_KEY, GROCERY_CHECKED_KEY].forEach(k => {
+                      try { localStorage.removeItem(k); } catch {}
+                    });
+                    window.location.reload();
+                  }}>Resync &amp; Reload</button>
+                </div>
+              }
+            >
+              <p style={{ fontFamily: 'var(--serif)', fontSize: 16, lineHeight: 1.65, marginBottom: 14 }}>
+                This will <strong>delete all locally saved data</strong> — every recipe and grocery list item, including anything you've added or edited.
+              </p>
+              <p style={{ fontFamily: 'var(--serif)', fontSize: 16, lineHeight: 1.65, marginBottom: 20 }}>
+                The app will reload with a clean slate. This cannot be undone.
+              </p>
+              <p style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+                Back up your recipes first via Manage → Export
+              </p>
+            </Modal>
+          )}
+
+          {groceryOpen && (
+            <GroceryListPanel
+              items={groceryList}
+              onClose={() => setGroceryOpen(false)}
+              onRemoveRecipe={rid => {
+                setGroceryList(prev => { const next = prev.filter(i => i.recipeId !== rid); saveGroceryList(next); return next; });
+              }}
+              onRemoveItem={id => {
+                setGroceryList(prev => { const next = prev.filter(i => i.id !== id); saveGroceryList(next); return next; });
+              }}
+              onAddCustom={text => {
+                const item = { id: newId('gi'), text, recipeId: '__custom__', recipeName: 'Custom' };
+                setGroceryList(prev => { const next = [...prev, item]; saveGroceryList(next); return next; });
+              }}
+              onClearAll={() => {
+                setGroceryList([]);
+                saveGroceryList([]);
+                saveGroceryChecked(new Set());
+              }}
+            />
+          )}
+
+          {/* Grocery toggle */}
+          <button className={`grocery-toggle${groceryOpen ? ' active' : ''}`}
+            onClick={() => setGroceryOpen(v => !v)} title="Grocery list">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+              <line x1="9" y1="16" x2="13" y2="16"/>
+            </svg>
+          </button>
+
+          {/* Theme toggle */}
+          <button className="theme-toggle" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
+            {theme === 'light' ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                <circle cx="12" cy="12" r="5"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            )}
+          </button>
+        </>
+      );
+    }
+
+    /* ============================================================
+       MOUNT
+       ============================================================ */
+    function App() {
+      return (
+        <ToastProvider>
+          <RecipeApp />
+        </ToastProvider>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
