@@ -876,7 +876,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
-  const [sort, setSort] = useStateV("az");
+  const [sort, setSort] = useStateV(null);
   const [sortOpen, setSortOpen] = useStateV(false);
   const [favorites, setFavorites] = useStateV(() => SDStore.loadFavorites());
   const [openCuisines, setOpenCuisines] = useStateV(() => new Set());
@@ -1179,6 +1179,10 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                 <div className="stat">
                   <div className="k">Category</div>
                   <div className="v">{selected.cuisine || "—"}</div>
+                </div>
+                <div className="stat">
+                  <div className="k">Cost</div>
+                  <div className="v">{selected.cost != null ? `$${selected.cost.toFixed(2)}` : "—"}</div>
                 </div>
               </div>
               <div className="r-scaler">
