@@ -1198,11 +1198,15 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                         onClick={() => toggleStruckIngredient(i)}
                         title="Click to cross out"
                       >
-                        <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
-                        <span className="ing-unit">{ing.unit}</span>
+                        <span className="ing-meta">
+                          <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
+                          <span className="ing-unit">{ing.unit}</span>
+                        </span>
                         <span className="ing-name">{ing.name}</span>
-                        <span className="ing-notes">{ing.notes || ''}</span>
-                        <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
+                        <span className="ing-bottom">
+                          <span className="ing-notes">{ing.notes || ''}</span>
+                          <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
+                        </span>
                       </div>
                     ))}
                   </div>

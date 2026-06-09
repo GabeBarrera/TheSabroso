@@ -2528,6 +2528,9 @@ a { color: inherit; }
   text-align: right;
   white-space: nowrap;
 }
+/* Desktop: unwrap the meta/bottom wrappers so the 5-column grid sees flat children */
+.ing-meta { display: contents; }
+.ing-bottom { display: contents; }
 .ingredient-item.struck .ing-qty,
 .ingredient-item.struck .ing-unit,
 .ingredient-item.struck .ing-name,
@@ -3246,20 +3249,82 @@ a { color: inherit; }
   .ing-name-input { width: 100% !important; flex-basis: 100%; }
   .ing-cost-input { width: 84px !important; flex-shrink: 0; }
 
-  /* Ingredient display — stacked layout on mobile */
+  /* Ingredient display — columnar layout on mobile */
   .ingredient-list { gap: 0; }
   .ingredient-item {
     display: grid;
-    grid-template-areas: "qty unit" "name name" "notes cost";
-    grid-template-columns: auto 1fr;
-    gap: 2px 8px;
+    grid-template-columns: 80px 1fr auto auto;
+    column-gap: 12px;
+    align-items: baseline;
     padding: 10px 0;
   }
-  .ingredient-item .ing-qty  { grid-area: qty; text-align: left; }
-  .ingredient-item .ing-unit { grid-area: unit; }
-  .ingredient-item .ing-name { grid-area: name; font-size: 15px; }
-  .ingredient-item .ing-notes { grid-area: notes; padding-top: 0; }
-  .ingredient-item .ing-cost  { grid-area: cost; text-align: right; padding-top: 0; }
+  /* qty+unit together in fixed-width left column */
+  .ing-meta {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    grid-column: 1;
+    grid-row: 1;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .ingredient-item .ing-name { grid-column: 2; grid-row: 1; font-size: 15px; padding-top: 0; }
+  /* expose notes and cost as grid items in columns 3 and 4 */
+  .ing-bottom { display: contents; }
+  .ingredient-item .ing-notes { grid-column: 3; grid-row: 1; padding-top: 0; font-size: 11px; }
+  .ingredient-item .ing-cost  { grid-column: 4; grid-row: 1; padding-top: 0; }
+  /* Pencil crossout — smudgy scribble line across full row */
+  .ingredient-item.struck::after,
+  .ingredient-item.struck.has-notes::after,
+  .ingredient-item.struck.has-cost::after {
+    background-image: linear-gradient(
+      transparent 0%,
+      transparent calc(50% - 1.5px),
+      var(--ink) calc(50% - 1.5px),
+      var(--ink) calc(50% + 1.5px),
+      transparent calc(50% + 1.5px),
+      transparent 100%
+    );
+    background-size: 100% 100%;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: auto;
+    transform: none;
+    opacity: 0.6;
+    filter: url(#scribble-a);
+  }
+  .ingredient-item.struck::before,
+  .ingredient-item.struck.has-notes::before,
+  .ingredient-item.struck.has-cost::before {
+    display: block;
+    background-image: linear-gradient(
+      transparent 0%,
+      transparent calc(50% + 1px),
+      var(--ink) calc(50% + 1px),
+      var(--ink) calc(50% + 3px),
+      transparent calc(50% + 3px),
+      transparent 100%
+    );
+    background-size: 100% 100%;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: auto;
+    transform: none;
+    opacity: 0.4;
+    filter: url(#scribble-b);
+  }
 
   /* ---- PROFILE ---- */
 

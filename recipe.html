@@ -218,6 +218,8 @@
     .ingredient-item.struck.has-notes::before,
     .ingredient-item.struck.has-cost::after,
     .ingredient-item.struck.has-cost::before { right: 0; }
+    .ing-meta { display: contents; }
+    .ing-bottom { display: contents; }
 
     /* ============================================================
        INGREDIENT EDITOR (form)
@@ -293,7 +295,11 @@
     .grocery-item { display: flex; align-items: baseline; gap: 10px; padding: 9px 20px; border-bottom: 1px solid var(--hairline); cursor: pointer; }
     .grocery-item:last-child { border-bottom: none; }
     .grocery-item:hover { background: var(--hairline); }
-    .grocery-item--checked .grocery-item-text { text-decoration: line-through; color: var(--muted-2); }
+    .grocery-item--checked .grocery-item-text { position: relative; display: inline-block; color: var(--muted-2); }
+    .grocery-item--checked .grocery-item-text::after,
+    .grocery-item--checked .grocery-item-text::before { content: ''; position: absolute; top: 0; bottom: 0; left: 0; right: 0; pointer-events: none; }
+    .grocery-item--checked .grocery-item-text::after { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh); opacity: .55; filter: url(#scribble-a); }
+    .grocery-item--checked .grocery-item-text::before { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh); opacity: .4; filter: url(#scribble-b); }
     .grocery-item--checked .grocery-item-bullet { opacity: 0.4; }
     .grocery-item-remove { margin-left: auto; flex-shrink: 0; background: none; border: none; cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted-2); padding: 0 2px; opacity: 0; transition: opacity 150ms, color 150ms; }
     .grocery-item:hover .grocery-item-remove { opacity: 1; }
@@ -508,12 +514,14 @@
       .ing-cost-input { width: 84px !important; flex-shrink: 0; }
 
       .ingredient-list { gap: 0; }
-      .ingredient-item { display: grid; grid-template-areas: "qty unit" "name name" "notes cost"; grid-template-columns: auto 1fr; gap: 2px 8px; padding: 10px 0; }
-      .ingredient-item .ing-qty  { grid-area: qty; text-align: left; }
-      .ingredient-item .ing-unit { grid-area: unit; }
-      .ingredient-item .ing-name { grid-area: name; font-size: 15px; }
-      .ingredient-item .ing-notes { grid-area: notes; padding-top: 0; }
-      .ingredient-item .ing-cost  { grid-area: cost; text-align: right; padding-top: 0; }
+      .ingredient-item { display: grid; grid-template-columns: 80px 1fr auto auto; column-gap: 12px; align-items: baseline; padding: 10px 0; }
+      .ing-meta { display: inline-flex; align-items: baseline; gap: 3px; grid-column: 1; grid-row: 1; white-space: nowrap; overflow: hidden; }
+      .ingredient-item .ing-name { grid-column: 2; grid-row: 1; font-size: 15px; padding-top: 0; }
+      .ing-bottom { display: contents; }
+      .ingredient-item .ing-notes { grid-column: 3; grid-row: 1; padding-top: 0; font-size: 11px; }
+      .ingredient-item .ing-cost { grid-column: 4; grid-row: 1; padding-top: 0; }
+      .ingredient-item.struck::after, .ingredient-item.struck.has-notes::after, .ingredient-item.struck.has-cost::after { background-image: linear-gradient(transparent 0%, transparent calc(50% - 1.5px), var(--ink) calc(50% - 1.5px), var(--ink) calc(50% + 1.5px), transparent calc(50% + 1.5px), transparent 100%); background-size: 100% 100%; background-position: 0 0; background-repeat: no-repeat; background-color: transparent; width: auto; left: 0; right: 0; top: 0; bottom: 0; height: auto; transform: none; opacity: 0.6; filter: url(#scribble-a); }
+      .ingredient-item.struck::before, .ingredient-item.struck.has-notes::before, .ingredient-item.struck.has-cost::before { display: block; background-image: linear-gradient(transparent 0%, transparent calc(50% + 1px), var(--ink) calc(50% + 1px), var(--ink) calc(50% + 3px), transparent calc(50% + 3px), transparent 100%); background-size: 100% 100%; background-position: 0 0; background-repeat: no-repeat; background-color: transparent; width: auto; left: 0; right: 0; top: 0; bottom: 0; height: auto; transform: none; opacity: 0.4; filter: url(#scribble-b); }
       .grocery-panel { width: 100%; }
       .toast-stack { right: 12px; bottom: 70px; }
       .grocery-toggle { right: 76px; }
@@ -1689,11 +1697,15 @@
                         {selected.ingredients.map((ing, i) => (
                           <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}${ing.notes ? ' has-notes' : ''}${ing.cost ? ' has-cost' : ''}`}
                             onClick={() => toggleStruckIngredient(i)} title="Click to cross out">
-                            <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
-                            <span className="ing-unit">{ing.unit}</span>
+                            <span className="ing-meta">
+                              <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
+                              <span className="ing-unit">{ing.unit}</span>
+                            </span>
                             <span className="ing-name">{ing.name}</span>
-                            <span className="ing-notes">{ing.notes || ''}</span>
-                            <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
+                            <span className="ing-bottom">
+                              <span className="ing-notes">{ing.notes || ''}</span>
+                              <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
+                            </span>
                           </div>
                         ))}
                       </div>
