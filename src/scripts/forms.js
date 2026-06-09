@@ -257,7 +257,7 @@ function IngredientRow({ ing, idx, onChange, onRemove, showRemove }) {
         step="0.01"
         value={ing.cost || ''}
         onChange={(e) => onChange(idx, { ...ing, cost: e.target.value })}
-        placeholder="$ cost"
+        placeholder="$"
       />
       {showRemove && (
         <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>

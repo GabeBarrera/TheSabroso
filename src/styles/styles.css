@@ -3249,30 +3249,24 @@ a { color: inherit; }
   .ing-name-input { width: 100% !important; flex-basis: 100%; }
   .ing-cost-input { width: 84px !important; flex-shrink: 0; }
 
-  /* Ingredient display — columnar layout on mobile */
+  /* Ingredient display — 5-column grid on mobile, one column per field */
   .ingredient-list { gap: 0; }
   .ingredient-item {
     display: grid;
-    grid-template-columns: 80px 1fr auto auto;
-    column-gap: 12px;
-    align-items: baseline;
+    grid-template-columns: 40px 52px 1fr 1.5fr 48px;
+    column-gap: 8px;
+    align-items: start;
     padding: 10px 0;
   }
-  /* qty+unit together in fixed-width left column */
-  .ing-meta {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 3px;
-    grid-column: 1;
-    grid-row: 1;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  .ingredient-item .ing-name { grid-column: 2; grid-row: 1; font-size: 15px; padding-top: 0; }
-  /* expose notes and cost as grid items in columns 3 and 4 */
+  /* qty and unit each in their own column */
+  .ing-meta { display: contents; }
+  .ingredient-item .ing-qty  { grid-column: 1; grid-row: 1; white-space: nowrap; }
+  .ingredient-item .ing-unit { grid-column: 2; grid-row: 1; padding-top: 0; white-space: nowrap; }
+  .ingredient-item .ing-name { grid-column: 3; grid-row: 1; font-size: 15px; padding-top: 0; }
+  /* notes and cost as grid items */
   .ing-bottom { display: contents; }
-  .ingredient-item .ing-notes { grid-column: 3; grid-row: 1; padding-top: 0; font-size: 11px; }
-  .ingredient-item .ing-cost  { grid-column: 4; grid-row: 1; padding-top: 0; }
+  .ingredient-item .ing-notes { grid-column: 4; grid-row: 1; padding-top: 0; font-size: 11px; white-space: normal; word-break: break-word; overflow-wrap: break-word; }
+  .ingredient-item .ing-cost  { grid-column: 5; grid-row: 1; padding-top: 0; }
   /* Pencil crossout — smudgy scribble line across full row */
   .ingredient-item.struck::after,
   .ingredient-item.struck.has-notes::after,

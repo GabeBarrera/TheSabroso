@@ -137,7 +137,7 @@ function RichEditor({ value, onChange, placeholder = "Write…" }) {
 
   const insertNote = () => {
     editorRef.current?.focus();
-    document.execCommand("insertHTML", false, '<p style="margin-top:16px;font-size:14px;color:var(--muted)"><strong>Notes:</strong> </p>');
+    document.execCommand("insertHTML", false, '<p style="margin-top:16px;font-size:14px;color:var(--muted)"><strong>Note:</strong> </p>');
     onChange(editorRef.current.innerHTML);
   };
 
