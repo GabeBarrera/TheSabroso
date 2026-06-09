@@ -604,8 +604,11 @@ function AddToGroceryBtn({ recipe, onAdd }) {
     e.stopPropagation();
     const ings = recipe.ingredients || [];
     if (!ings.length) return;
-    const texts = ings.map(ing => [ing.qty, ing.unit, ing.name].filter(Boolean).join(' '));
-    onAdd(recipe, texts);
+    const ingData = ings.map(ing => ({
+      text: [ing.qty, ing.unit, ing.name].filter(Boolean).join(' '),
+      cost: (ing.cost != null && ing.cost !== '') ? parseFloat(String(ing.cost)) : null,
+    }));
+    onAdd(recipe, ingData);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   };
@@ -670,10 +673,11 @@ function buildTotals(items) {
   const map = new Map();
   items.forEach(item => {
     const { qty, key } = parseIngredient(item.text);
-    if (!map.has(key)) map.set(key, { key, firstText: item.text, totalQty: 0, hasNumeric: false, sources: new Set() });
+    if (!map.has(key)) map.set(key, { key, firstText: item.text, totalQty: 0, hasNumeric: false, sources: new Set(), totalCost: 0, hasCost: false });
     const e = map.get(key);
     e.sources.add(item.recipeName || 'Custom');
     if (qty !== null) { e.totalQty += qty; e.hasNumeric = true; }
+    if (item.cost != null && !isNaN(item.cost)) { e.totalCost += item.cost; e.hasCost = true; }
   });
   return [...map.values()]
     .sort((a, b) => a.key.localeCompare(b.key))
@@ -681,6 +685,7 @@ function buildTotals(items) {
       key: e.key,
       displayText: e.hasNumeric ? `${formatQty(e.totalQty)} ${e.key}` : e.firstText,
       sources: [...e.sources],
+      cost: e.hasCost ? e.totalCost : null,
     }));
 }
 
@@ -696,10 +701,16 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
       seen[item.recipeId] = { recipeId: item.recipeId, recipeName: item.recipeName, items: [] };
       groups.push(seen[item.recipeId]);
     }
-    seen[item.recipeId].items.push({ id: item.id, text: item.text });
+    seen[item.recipeId].items.push({ id: item.id, text: item.text, cost: item.cost });
   });
 
   const totals = useMemoV(() => buildTotals(items), [items]);
+
+  const totalCost = useMemoV(() => {
+    const costItems = items.filter(item => item.cost != null && !isNaN(item.cost));
+    if (!costItems.length) return null;
+    return costItems.reduce((acc, item) => acc + item.cost, 0);
+  }, [items]);
 
   const toggleItem = (key) => {
     setChecked(prev => {
@@ -752,7 +763,7 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
             <div className="grocery-empty-line2">Add from a recipe or type below</div>
           </div>
         ) : viewMode === 'total' ? (
-          totals.map(({ key, displayText, sources }) => {
+          totals.map(({ key, displayText, sources, cost }) => {
             const checkKey = `total-${key}`;
             const isChecked = checked.has(checkKey);
             return (
@@ -768,6 +779,9 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
                     <span className="grocery-item-sources">{sources.join(', ')}</span>
                   )}
                 </div>
+                {cost != null && (
+                  <span className="grocery-item-cost">${cost.toFixed(2)}</span>
+                )}
               </div>
             );
           })
@@ -780,13 +794,16 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
                   <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
                 )}
               </div>
-              {group.items.map(({ id, text }, i) => {
+              {group.items.map(({ id, text, cost }, i) => {
                 const key = `${group.recipeId}-${i}`;
                 const isChecked = checked.has(key);
                 return (
                   <div key={i} className={`grocery-item${isChecked ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
                     <span className="grocery-item-bullet">—</span>
                     <span className="grocery-item-text">{text}</span>
+                    {cost != null && !isNaN(cost) && (
+                      <span className="grocery-item-cost">${cost.toFixed(2)}</span>
+                    )}
                     {group.recipeId === '__custom__' && (
                       <button className="grocery-item-remove" onClick={(e) => { e.stopPropagation(); onRemoveItem(id); }}>×</button>
                     )}
@@ -797,6 +814,12 @@ function GroceryListPanel({ items, onClose, onRemoveRecipe, onRemoveItem, onAddC
           ))
         )}
       </div>
+      {totalCost !== null && (
+        <div className="grocery-total-cost-row">
+          <span className="grocery-total-cost-label">Total Cost</span>
+          <span className="grocery-total-cost-value">${totalCost.toFixed(2)}</span>
+        </div>
+      )}
       <div className="grocery-add-row">
         <input
           className="grocery-add-input"
@@ -1171,14 +1194,15 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                     {selected.ingredients.map((ing, i) => (
                       <div
                         key={i}
-                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}${ing.notes ? " has-notes" : ""}`}
+                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}${ing.notes ? " has-notes" : ""}${ing.cost ? " has-cost" : ""}`}
                         onClick={() => toggleStruckIngredient(i)}
                         title="Click to cross out"
                       >
                         <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
                         <span className="ing-unit">{ing.unit}</span>
                         <span className="ing-name">{ing.name}</span>
-                        {ing.notes && <span className="ing-notes">{ing.notes}</span>}
+                        <span className="ing-notes">{ing.notes || ''}</span>
+                        <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
                       </div>
                     ))}
                   </div>

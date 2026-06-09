@@ -517,12 +517,16 @@ function AppInner(props) {
   useEffect(() => { SDStore.saveGroceryList(groceryList); }, [groceryList]);
 
   const addToGrocery = useCallback((recipe, ingredients) => {
-    const newItems = ingredients.map(text => ({
-      id: SDStore.newId('gi'),
-      text,
-      recipeId: recipe.id,
-      recipeName: recipe.name,
-    }));
+    const newItems = ingredients.map(item => {
+      const isStr = typeof item === 'string';
+      return {
+        id: SDStore.newId('gi'),
+        text: isStr ? item : item.text,
+        cost: isStr ? null : (item.cost != null && !isNaN(item.cost) ? item.cost : null),
+        recipeId: recipe.id,
+        recipeName: recipe.name,
+      };
+    });
     setGroceryList(prev => [...prev.filter(item => item.recipeId !== recipe.id), ...newItems]);
   }, []);
 

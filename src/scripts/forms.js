@@ -250,6 +250,15 @@ function IngredientRow({ ing, idx, onChange, onRemove, showRemove }) {
         onChange={(e) => onChange(idx, { ...ing, notes: e.target.value })}
         placeholder="notes (optional)"
       />
+      <input
+        className="field-input ing-cost-input"
+        type="number"
+        min="0"
+        step="0.01"
+        value={ing.cost || ''}
+        onChange={(e) => onChange(idx, { ...ing, cost: e.target.value })}
+        placeholder="$ cost"
+      />
       {showRemove && (
         <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>
       )}
@@ -270,7 +279,7 @@ function RecipeForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
     return [{ qty: '', unit: '', name: '' }];
   });
 
-  const addIngredient = () => setIngredients(prev => [...prev, { qty: '', unit: '', name: '' }]);
+  const addIngredient = () => setIngredients(prev => [...prev, { qty: '', unit: '', name: '', cost: '' }]);
   const removeIngredient = (idx) => setIngredients(prev => prev.filter((_, i) => i !== idx));
   const updateIngredient = (idx, updated) => setIngredients(prev => prev.map((ing, i) => i === idx ? updated : ing));
 

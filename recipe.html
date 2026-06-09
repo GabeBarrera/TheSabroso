@@ -197,23 +197,27 @@
     .recipe-ingredients { margin-bottom: 28px; max-width: 640px; }
     .r-ing-label { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
     .ingredient-list { display: flex; flex-direction: column; gap: 0; }
-    .ingredient-item { display: grid; grid-template-columns: 52px 68px 1fr 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--hairline); font-family: var(--serif); font-size: 16px; line-height: 1.4; cursor: pointer; user-select: none; transition: opacity .15s; position: relative; will-change: opacity; }
+    .ingredient-item { display: grid; grid-template-columns: 52px 68px 1fr 1fr 68px; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--hairline); font-family: var(--serif); font-size: 16px; line-height: 1.4; cursor: pointer; user-select: none; transition: opacity .15s; position: relative; will-change: opacity; }
     .ingredient-item:hover { opacity: .75; }
     .ingredient-item:first-child { border-top: 1px solid var(--hairline); }
     .ingredient-item .ing-qty { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); font-weight: 600; }
     .ingredient-item .ing-unit { color: var(--muted); font-family: var(--mono); font-size: 12px; letter-spacing: .04em; padding-top: 2px; }
     .ingredient-item .ing-name { color: var(--ink-2); }
     .ingredient-item .ing-notes { color: var(--muted); font-family: var(--mono); font-size: 12px; font-style: italic; padding-top: 2px; align-self: center; }
+    .ingredient-item .ing-cost { color: var(--marine); font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .02em; padding-top: 2px; align-self: center; text-align: right; white-space: nowrap; }
     .ingredient-item.struck .ing-qty,
     .ingredient-item.struck .ing-unit,
     .ingredient-item.struck .ing-name,
-    .ingredient-item.struck .ing-notes { opacity: .45; }
+    .ingredient-item.struck .ing-notes,
+    .ingredient-item.struck .ing-cost { opacity: .45; }
     .ingredient-item.struck::after,
     .ingredient-item.struck::before { content: ''; position: absolute; top: 0; bottom: 0; left: 0; right: calc(50% - 64px); pointer-events: none; background-position: 0 5px; }
     .ingredient-item.struck::after { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh); opacity: .55; filter: url(#scribble-a); }
     .ingredient-item.struck::before { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh); opacity: .4; filter: url(#scribble-b); }
     .ingredient-item.struck.has-notes::after,
-    .ingredient-item.struck.has-notes::before { right: 0; }
+    .ingredient-item.struck.has-notes::before,
+    .ingredient-item.struck.has-cost::after,
+    .ingredient-item.struck.has-cost::before { right: 0; }
 
     /* ============================================================
        INGREDIENT EDITOR (form)
@@ -225,6 +229,7 @@
     .ing-unit-custom { width: 84px !important; flex-shrink: 0; }
     .ing-name-input { flex: 1; min-width: 0; }
     .ing-notes-input { flex: 1; min-width: 0; }
+    .ing-cost-input { width: 84px !important; flex-shrink: 0; }
     .ing-del-btn { flex-shrink: 0; padding: 0 10px !important; font-size: 14px !important; line-height: 1; color: var(--muted) !important; border-color: var(--hairline) !important; }
     .ing-del-btn:hover { color: var(--terracotta) !important; border-color: var(--terracotta) !important; }
     .add-ingredient-btn { align-self: flex-start; margin-top: 4px; font-size: 11px !important; padding: 8px 14px !important; }
@@ -300,6 +305,10 @@
     .grocery-view-tab:not(.active):hover { background: var(--cream); color: var(--ink); }
     .grocery-item-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .grocery-item-sources { font-family: var(--mono); font-size: 9px; letter-spacing: .12em; color: var(--muted-2); text-transform: uppercase; }
+    .grocery-item-cost { margin-left: auto; flex-shrink: 0; font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+    .grocery-total-cost-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid var(--ink); background: var(--cream); flex-shrink: 0; }
+    .grocery-total-cost-label { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .grocery-total-cost-value { font-family: var(--serif); font-weight: 700; font-size: 18px; color: var(--ink); }
     .grocery-add-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--hairline); background: var(--paper); flex-shrink: 0; }
     .grocery-add-input { flex: 1; font-family: var(--serif); font-size: 14px; padding: 7px 10px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); outline: none; border-radius: 0; }
     .grocery-add-input:focus { border-color: var(--marine); }
@@ -491,11 +500,20 @@
       .modal-body { padding: 20px 18px; }
       .modal-foot { padding: 14px 18px; flex-wrap: wrap; gap: 10px; }
       .field-row { grid-template-columns: 1fr; }
-      .ingredient-row { flex-wrap: wrap; }
+      .ingredient-row { flex-wrap: wrap; gap: 5px; }
       .ing-qty-input  { width: 64px !important; }
       .ing-unit-select { width: calc(50% - 35px) !important; }
       .ing-unit-custom { width: calc(50% - 35px) !important; }
       .ing-name-input { width: 100% !important; flex-basis: 100%; }
+      .ing-cost-input { width: 84px !important; flex-shrink: 0; }
+
+      .ingredient-list { gap: 0; }
+      .ingredient-item { display: grid; grid-template-areas: "qty unit" "name name" "notes cost"; grid-template-columns: auto 1fr; gap: 2px 8px; padding: 10px 0; }
+      .ingredient-item .ing-qty  { grid-area: qty; text-align: left; }
+      .ingredient-item .ing-unit { grid-area: unit; }
+      .ingredient-item .ing-name { grid-area: name; font-size: 15px; }
+      .ingredient-item .ing-notes { grid-area: notes; padding-top: 0; }
+      .ingredient-item .ing-cost  { grid-area: cost; text-align: right; padding-top: 0; }
       .grocery-panel { width: 100%; }
       .toast-stack { right: 12px; bottom: 70px; }
       .grocery-toggle { right: 76px; }
@@ -662,15 +680,17 @@
       const map = new Map();
       items.forEach(item => {
         const { qty, key } = parseIngredient(item.text);
-        if (!map.has(key)) map.set(key, { key, firstText: item.text, totalQty: 0, hasNumeric: false, sources: new Set() });
+        if (!map.has(key)) map.set(key, { key, firstText: item.text, totalQty: 0, hasNumeric: false, sources: new Set(), totalCost: 0, hasCost: false });
         const e = map.get(key);
         e.sources.add(item.recipeName || 'Custom');
         if (qty !== null) { e.totalQty += qty; e.hasNumeric = true; }
+        if (item.cost != null && !isNaN(item.cost)) { e.totalCost += item.cost; e.hasCost = true; }
       });
       return [...map.values()].sort((a, b) => a.key.localeCompare(b.key)).map(e => ({
         key: e.key,
         displayText: e.hasNumeric ? `${formatQty(e.totalQty)} ${e.key}` : e.firstText,
         sources: [...e.sources],
+        cost: e.hasCost ? e.totalCost : null,
       }));
     }
 
@@ -941,6 +961,9 @@
             onChange={e => onChange(idx, { ...ing, name: e.target.value })} placeholder="ingredient" />
           <input className="field-input ing-notes-input" type="text" value={ing.notes || ''}
             onChange={e => onChange(idx, { ...ing, notes: e.target.value })} placeholder="notes (optional)" />
+          <input className="field-input ing-cost-input" type="number" min="0" step="0.01"
+            value={ing.cost || ''}
+            onChange={e => onChange(idx, { ...ing, cost: e.target.value })} placeholder="$ cost" />
           {showRemove && (
             <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>
           )}
@@ -964,7 +987,7 @@
         return [{ qty: '', unit: '', name: '' }];
       });
 
-      const addIngredient = () => setIngredients(prev => [...prev, { qty: '', unit: '', name: '' }]);
+      const addIngredient = () => setIngredients(prev => [...prev, { qty: '', unit: '', name: '', cost: '' }]);
       const removeIngredient = idx => setIngredients(prev => prev.filter((_, i) => i !== idx));
       const updateIngredient = (idx, updated) => setIngredients(prev => prev.map((ing, i) => i === idx ? updated : ing));
 
@@ -1240,8 +1263,11 @@
         e.stopPropagation();
         const ings = recipe.ingredients || [];
         if (!ings.length) return;
-        const texts = ings.map(ing => [ing.qty, ing.unit, ing.name].filter(Boolean).join(' '));
-        onAdd(recipe, texts);
+        const ingData = ings.map(ing => ({
+          text: [ing.qty, ing.unit, ing.name].filter(Boolean).join(' '),
+          cost: (ing.cost != null && ing.cost !== '') ? parseFloat(String(ing.cost)) : null,
+        }));
+        onAdd(recipe, ingData);
         setAdded(true);
         setTimeout(() => setAdded(false), 1800);
       };
@@ -1274,10 +1300,16 @@
           seen[item.recipeId] = { recipeId: item.recipeId, recipeName: item.recipeName, items: [] };
           groups.push(seen[item.recipeId]);
         }
-        seen[item.recipeId].items.push({ id: item.id, text: item.text });
+        seen[item.recipeId].items.push({ id: item.id, text: item.text, cost: item.cost });
       });
 
       const totals = useMemo(() => buildTotals(items), [items]);
+
+      const totalCost = useMemo(() => {
+        const costItems = items.filter(item => item.cost != null && !isNaN(item.cost));
+        if (!costItems.length) return null;
+        return costItems.reduce((acc, item) => acc + item.cost, 0);
+      }, [items]);
 
       const toggleItem = key => {
         setChecked(prev => {
@@ -1322,7 +1354,7 @@
                 <div className="grocery-empty-line2">Add from a recipe or type below</div>
               </div>
             ) : viewMode === 'total' ? (
-              totals.map(({ key, displayText, sources }) => {
+              totals.map(({ key, displayText, sources, cost }) => {
                 const checkKey = `total-${key}`;
                 return (
                   <div key={key} className={`grocery-item${checked.has(checkKey) ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(checkKey)}>
@@ -1331,6 +1363,9 @@
                       <span className="grocery-item-text">{displayText}</span>
                       {sources.length > 1 && <span className="grocery-item-sources">{sources.join(', ')}</span>}
                     </div>
+                    {cost != null && (
+                      <span className="grocery-item-cost">${cost.toFixed(2)}</span>
+                    )}
                   </div>
                 );
               })
@@ -1343,12 +1378,15 @@
                       <button className="grocery-group-remove" onClick={() => onRemoveRecipe(group.recipeId)}>Remove</button>
                     )}
                   </div>
-                  {group.items.map(({ id, text }, i) => {
+                  {group.items.map(({ id, text, cost }, i) => {
                     const key = `${group.recipeId}-${i}`;
                     return (
                       <div key={i} className={`grocery-item${checked.has(key) ? ' grocery-item--checked' : ''}`} onClick={() => toggleItem(key)}>
                         <span className="grocery-item-bullet">—</span>
                         <span className="grocery-item-text">{text}</span>
+                        {cost != null && !isNaN(cost) && (
+                          <span className="grocery-item-cost">${cost.toFixed(2)}</span>
+                        )}
                         {group.recipeId === '__custom__' && (
                           <button className="grocery-item-remove" onClick={e => { e.stopPropagation(); onRemoveItem(id); }}>×</button>
                         )}
@@ -1360,6 +1398,12 @@
             )}
           </div>
 
+          {totalCost !== null && (
+            <div className="grocery-total-cost-row">
+              <span className="grocery-total-cost-label">Total Cost</span>
+              <span className="grocery-total-cost-value">${totalCost.toFixed(2)}</span>
+            </div>
+          )}
           <div className="grocery-add-row">
             <input className="grocery-add-input" type="text" placeholder="Add an ingredient…"
               value={customInput} onChange={e => setCustomInput(e.target.value)}
@@ -1643,12 +1687,13 @@
                       <div className="r-ing-label">Ingredients</div>
                       <div className="ingredient-list">
                         {selected.ingredients.map((ing, i) => (
-                          <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}${ing.notes ? ' has-notes' : ''}`}
+                          <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}${ing.notes ? ' has-notes' : ''}${ing.cost ? ' has-cost' : ''}`}
                             onClick={() => toggleStruckIngredient(i)} title="Click to cross out">
                             <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
                             <span className="ing-unit">{ing.unit}</span>
                             <span className="ing-name">{ing.name}</span>
-                            {ing.notes && <span className="ing-notes">{ing.notes}</span>}
+                            <span className="ing-notes">{ing.notes || ''}</span>
+                            <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
                           </div>
                         ))}
                       </div>
@@ -1777,12 +1822,16 @@
       };
 
       const addToGrocery = (recipe, ingredients) => {
-        const newItems = ingredients.map(text => ({
-          id: newId('gi'),
-          text,
-          recipeId: recipe.id,
-          recipeName: recipe.name,
-        }));
+        const newItems = ingredients.map(item => {
+          const isStr = typeof item === 'string';
+          return {
+            id: newId('gi'),
+            text: isStr ? item : item.text,
+            cost: isStr ? null : (item.cost != null && !isNaN(item.cost) ? item.cost : null),
+            recipeId: recipe.id,
+            recipeName: recipe.name,
+          };
+        });
         setGroceryList(prev => {
           const next = [...prev.filter(item => item.recipeId !== recipe.id), ...newItems];
           saveGroceryList(next);

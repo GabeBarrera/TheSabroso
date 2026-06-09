@@ -1551,6 +1551,36 @@ a { color: inherit; }
   text-transform: uppercase;
 }
 
+.grocery-item-cost {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+.grocery-total-cost-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--ink);
+  background: var(--cream);
+  flex-shrink: 0;
+}
+.grocery-total-cost-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.grocery-total-cost-value {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ink);
+}
 .grocery-add-row {
   display: flex;
   gap: 8px;
@@ -2450,7 +2480,7 @@ a { color: inherit; }
 }
 .ingredient-item {
   display: grid;
-  grid-template-columns: 52px 68px 1fr 1fr;
+  grid-template-columns: 52px 68px 1fr 1fr 68px;
   gap: 8px;
   padding: 5px 0;
   border-bottom: 1px solid var(--hairline);
@@ -2487,10 +2517,22 @@ a { color: inherit; }
   padding-top: 2px;
   align-self: center;
 }
+.ingredient-item .ing-cost {
+  color: var(--marine);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  padding-top: 2px;
+  align-self: center;
+  text-align: right;
+  white-space: nowrap;
+}
 .ingredient-item.struck .ing-qty,
 .ingredient-item.struck .ing-unit,
 .ingredient-item.struck .ing-name,
-.ingredient-item.struck .ing-notes {
+.ingredient-item.struck .ing-notes,
+.ingredient-item.struck .ing-cost {
   opacity: .45;
 }
 /* Two-stroke scribble crossout — strokes use different turbulence seeds so they
@@ -2516,7 +2558,9 @@ a { color: inherit; }
   filter: url(#scribble-b);
 }
 .ingredient-item.struck.has-notes::after,
-.ingredient-item.struck.has-notes::before {
+.ingredient-item.struck.has-notes::before,
+.ingredient-item.struck.has-cost::after,
+.ingredient-item.struck.has-cost::before {
   right: 0;
 }
 
@@ -2536,6 +2580,7 @@ a { color: inherit; }
 .ing-unit-custom { width: 84px !important; flex-shrink: 0; }
 .ing-name-input { flex: 1; min-width: 0; }
 .ing-notes-input { flex: 1; min-width: 0; }
+.ing-cost-input { width: 84px !important; flex-shrink: 0; }
 .ing-del-btn {
   flex-shrink: 0;
   padding: 0 10px !important;
@@ -3194,11 +3239,27 @@ a { color: inherit; }
   .modal-body { padding: 20px 18px; }
   .modal-foot { padding: 14px 18px; flex-wrap: wrap; gap: 10px; }
   .field-row { grid-template-columns: 1fr; }
-  .ingredient-row { flex-wrap: wrap; }
+  .ingredient-row { flex-wrap: wrap; gap: 5px; }
   .ing-qty-input  { width: 64px !important; }
   .ing-unit-select { width: calc(50% - 35px) !important; }
   .ing-unit-custom { width: calc(50% - 35px) !important; }
   .ing-name-input { width: 100% !important; flex-basis: 100%; }
+  .ing-cost-input { width: 84px !important; flex-shrink: 0; }
+
+  /* Ingredient display — stacked layout on mobile */
+  .ingredient-list { gap: 0; }
+  .ingredient-item {
+    display: grid;
+    grid-template-areas: "qty unit" "name name" "notes cost";
+    grid-template-columns: auto 1fr;
+    gap: 2px 8px;
+    padding: 10px 0;
+  }
+  .ingredient-item .ing-qty  { grid-area: qty; text-align: left; }
+  .ingredient-item .ing-unit { grid-area: unit; }
+  .ingredient-item .ing-name { grid-area: name; font-size: 15px; }
+  .ingredient-item .ing-notes { grid-area: notes; padding-top: 0; }
+  .ingredient-item .ing-cost  { grid-area: cost; text-align: right; padding-top: 0; }
 
   /* ---- PROFILE ---- */
 
