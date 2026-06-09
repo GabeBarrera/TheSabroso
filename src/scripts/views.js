@@ -31,7 +31,7 @@ function CopyLinkBtn({ url, className }) {
    ABOUT VIEW — the masthead, intro, and side arrows
    ============================================================ */
 
-function AboutView({ goLeft, goRight }) {
+function AboutView({ goLeft, goRight, isPWA }) {
   return (
     <div className="about" data-screen-label="01 About">
       <div className="chrome">
@@ -73,7 +73,7 @@ function AboutView({ goLeft, goRight }) {
         <p className="about-intro">
           <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the classroom; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. <br></br><br></br>Welcome to the place where<br></br>you either find delicious food or make it.<br></br><br></br><i>Buen provecho, bon appétit, and just eat gud y'all!</i><br></br><b>~ G</b>
         </p>
-        <a href="recipe.html" className="about-demo-btn">Download RECIPE Demo</a>
+        {!isPWA && <a href="recipe.html" className="about-demo-btn">Download RECIPE Demo</a>}
       </div>
 
       <div className="about-meta">

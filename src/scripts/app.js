@@ -674,7 +674,7 @@ function AppInner(props) {
           />
         </div>
         <div className="panel panel-about" data-screen-label="01 About">
-          <AboutView goLeft={goLeft} goRight={goRight} />
+          <AboutView goLeft={goLeft} goRight={goRight} isPWA={isPWA} />
         </div>
         <div className="panel" data-screen-label="03 Recipes">
           <RecipesView

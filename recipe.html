@@ -514,12 +514,14 @@
       .ing-cost-input { width: 84px !important; flex-shrink: 0; }
 
       .ingredient-list { gap: 0; }
-      .ingredient-item { display: grid; grid-template-columns: 80px 1fr auto auto; column-gap: 12px; align-items: baseline; padding: 10px 0; }
-      .ing-meta { display: inline-flex; align-items: baseline; gap: 3px; grid-column: 1; grid-row: 1; white-space: nowrap; overflow: hidden; }
-      .ingredient-item .ing-name { grid-column: 2; grid-row: 1; font-size: 15px; padding-top: 0; }
+      .ingredient-item { display: grid; grid-template-columns: 40px 52px 1fr 1.5fr 48px; column-gap: 8px; align-items: start; padding: 10px 0; }
+      .ing-meta { display: contents; }
+      .ingredient-item .ing-qty { grid-column: 1; grid-row: 1; white-space: nowrap; }
+      .ingredient-item .ing-unit { grid-column: 2; grid-row: 1; padding-top: 0; white-space: nowrap; }
+      .ingredient-item .ing-name { grid-column: 3; grid-row: 1; font-size: 15px; padding-top: 0; }
       .ing-bottom { display: contents; }
-      .ingredient-item .ing-notes { grid-column: 3; grid-row: 1; padding-top: 0; font-size: 11px; }
-      .ingredient-item .ing-cost { grid-column: 4; grid-row: 1; padding-top: 0; }
+      .ingredient-item .ing-notes { grid-column: 4; grid-row: 1; padding-top: 0; font-size: 11px; white-space: normal; word-break: break-word; overflow-wrap: break-word; }
+      .ingredient-item .ing-cost { grid-column: 5; grid-row: 1; padding-top: 0; }
       .ingredient-item.struck::after, .ingredient-item.struck.has-notes::after, .ingredient-item.struck.has-cost::after { background-image: linear-gradient(transparent 0%, transparent calc(50% - 1.5px), var(--ink) calc(50% - 1.5px), var(--ink) calc(50% + 1.5px), transparent calc(50% + 1.5px), transparent 100%); background-size: 100% 100%; background-position: 0 0; background-repeat: no-repeat; background-color: transparent; width: auto; left: 0; right: 0; top: 0; bottom: 0; height: auto; transform: none; opacity: 0.6; filter: url(#scribble-a); }
       .ingredient-item.struck::before, .ingredient-item.struck.has-notes::before, .ingredient-item.struck.has-cost::before { display: block; background-image: linear-gradient(transparent 0%, transparent calc(50% + 1px), var(--ink) calc(50% + 1px), var(--ink) calc(50% + 3px), transparent calc(50% + 3px), transparent 100%); background-size: 100% 100%; background-position: 0 0; background-repeat: no-repeat; background-color: transparent; width: auto; left: 0; right: 0; top: 0; bottom: 0; height: auto; transform: none; opacity: 0.4; filter: url(#scribble-b); }
       .grocery-panel { width: 100%; }
@@ -825,6 +827,12 @@
         onChange(editorRef.current.innerHTML);
       };
 
+      const insertNote = () => {
+        editorRef.current?.focus();
+        document.execCommand('insertHTML', false, '<p style="margin-top:16px;font-size:14px;color:var(--muted)"><strong>Note:</strong> </p>');
+        onChange(editorRef.current.innerHTML);
+      };
+
       const clearFormat = () => {
         editorRef.current?.focus();
         const sel = window.getSelection();
@@ -896,6 +904,8 @@
             <button type="button" className={`rt-tool${imgOpen ? ' active' : ''}`}
               onMouseDown={e => { e.preventDefault(); saveRange(); }}
               onClick={() => setImgOpen(!imgOpen)} title="Insert photo">▢ Photo</button>
+            <div className="rt-divider" />
+            <button type="button" className="rt-tool" onClick={insertNote} title="Insert a muted note paragraph">Note</button>
             <div className="rt-divider" />
             <button type="button" className="rt-tool" onClick={clearFormat} title="Clear formatting">⌫</button>
           </div>
@@ -971,7 +981,7 @@
             onChange={e => onChange(idx, { ...ing, notes: e.target.value })} placeholder="notes (optional)" />
           <input className="field-input ing-cost-input" type="number" min="0" step="0.01"
             value={ing.cost || ''}
-            onChange={e => onChange(idx, { ...ing, cost: e.target.value })} placeholder="$ cost" />
+            onChange={e => onChange(idx, { ...ing, cost: e.target.value })} placeholder="$" />
           {showRemove && (
             <button type="button" className="btn ghost ing-del-btn" onClick={() => onRemove(idx)}>✕</button>
           )}
