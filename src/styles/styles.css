@@ -2425,6 +2425,8 @@ a { color: inherit; }
   cursor: pointer;
   user-select: none;
   transition: opacity .15s;
+  position: relative;
+  will-change: opacity;
 }
 .ingredient-item:hover { opacity: .75; }
 .ingredient-item:first-child { border-top: 1px solid var(--hairline); }
@@ -2454,8 +2456,33 @@ a { color: inherit; }
 .ingredient-item.struck .ing-unit,
 .ingredient-item.struck .ing-name,
 .ingredient-item.struck .ing-notes {
-  text-decoration: line-through;
   opacity: .45;
+}
+/* Two-stroke scribble crossout — strokes use different turbulence seeds so they
+   take independent paths and visually cross each other. */
+.ingredient-item.struck::after,
+.ingredient-item.struck::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: calc(50% - 64px);
+  height: 2px;
+  pointer-events: none;
+  background: var(--ink);
+}
+.ingredient-item.struck::after {
+  top: calc(50% - 1px);
+  opacity: .55;
+  filter: url(#scribble-a);
+}
+.ingredient-item.struck::before {
+  top: calc(50% + 3px);
+  opacity: .4;
+  filter: url(#scribble-b);
+}
+.ingredient-item.struck.has-notes::after,
+.ingredient-item.struck.has-notes::before {
+  right: 0;
 }
 
 /* ---- Ingredient editor (recipe form) ---- */

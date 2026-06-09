@@ -1171,14 +1171,14 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                     {selected.ingredients.map((ing, i) => (
                       <div
                         key={i}
-                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}`}
+                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}${ing.notes ? " has-notes" : ""}`}
                         onClick={() => toggleStruckIngredient(i)}
                         title="Click to cross out"
                       >
                         <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
                         <span className="ing-unit">{ing.unit}</span>
                         <span className="ing-name">{ing.name}</span>
-                        {ing.notes ? <span className="ing-notes">{ing.notes}</span> : <span className="ing-notes" />}
+                        {ing.notes && <span className="ing-notes">{ing.notes}</span>}
                       </div>
                     ))}
                   </div>

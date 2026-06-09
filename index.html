@@ -19,6 +19,22 @@
   <link rel="stylesheet" href="src/styles/styles.css?v=1780895876" />
 </head>
 <body>
+  <!-- SVG filter definitions (hidden) -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <defs>
+      <!-- Two strokes with different seeds so they take independent paths and cross each other -->
+      <filter id="scribble-a" x="-2%" y="-500%" width="104%" height="1100%">
+        <feTurbulence type="turbulence" baseFrequency="0.02 0.9" numOctaves="4" seed="3" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="0.35"/>
+      </filter>
+      <filter id="scribble-b" x="-2%" y="-500%" width="104%" height="1100%">
+        <feTurbulence type="turbulence" baseFrequency="0.022 0.85" numOctaves="4" seed="11" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="0.35"/>
+      </filter>
+    </defs>
+  </svg>
   <div id="root"></div>
 
   <!-- React + Babel -->
