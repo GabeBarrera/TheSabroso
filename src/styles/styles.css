@@ -1136,8 +1136,25 @@ a { color: inherit; }
 .recipe-body ul { list-style: disc; padding-left: 20px; }
 .recipe-body ul input[type="checkbox"],
 .rt-editor ul input[type="checkbox"] { display: none; }
-.recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; }
-.recipe-body li.step-struck { text-decoration: line-through; color: var(--muted); }
+.recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; position: relative; }
+.recipe-body li.step-struck { color: var(--muted); }
+.recipe-body li.step-struck::after,
+.recipe-body li.step-struck::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  pointer-events: none;
+}
+.recipe-body li.step-struck::after {
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh);
+  opacity: .55;
+  filter: url(#scribble-a);
+}
+.recipe-body li.step-struck::before {
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh);
+  opacity: .4;
+  filter: url(#scribble-b);
+}
 .recipe-body strong { font-weight: 800; }
 .recipe-body em { font-style: italic; }
 
@@ -1458,8 +1475,26 @@ a { color: inherit; }
 .grocery-item { cursor: pointer; }
 .grocery-item:hover { background: var(--hairline); }
 .grocery-item--checked .grocery-item-text {
-  text-decoration: line-through;
+  position: relative;
+  display: inline-block;
   color: var(--ink-3, #aaa);
+}
+.grocery-item--checked .grocery-item-text::after,
+.grocery-item--checked .grocery-item-text::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  pointer-events: none;
+}
+.grocery-item--checked .grocery-item-text::after {
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh);
+  opacity: .55;
+  filter: url(#scribble-a);
+}
+.grocery-item--checked .grocery-item-text::before {
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh);
+  opacity: .4;
+  filter: url(#scribble-b);
 }
 .grocery-item--checked .grocery-item-bullet { opacity: 0.4; }
 .grocery-item-remove {
@@ -2464,19 +2499,19 @@ a { color: inherit; }
 .ingredient-item.struck::before {
   content: '';
   position: absolute;
+  top: 0; bottom: 0;
   left: 0;
   right: calc(50% - 64px);
-  height: 2px;
   pointer-events: none;
-  background: var(--ink);
+  background-position: 0 5px; /* offset for ingredient-item's 5px top padding */
 }
 .ingredient-item.struck::after {
-  top: calc(50% - 1px);
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh);
   opacity: .55;
   filter: url(#scribble-a);
 }
 .ingredient-item.struck::before {
-  top: calc(50% + 3px);
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh);
   opacity: .4;
   filter: url(#scribble-b);
 }

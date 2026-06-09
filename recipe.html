@@ -179,8 +179,12 @@
     .recipe-body ol { padding-left: 22px; }
     .recipe-body ul { list-style: disc; padding-left: 20px; }
     .recipe-body ul input[type="checkbox"] { display: none; }
-    .recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; }
-    .recipe-body li.step-struck { text-decoration: line-through; color: var(--muted); }
+    .recipe-body li { margin-bottom: 6px; cursor: pointer; user-select: none; position: relative; }
+    .recipe-body li.step-struck { color: var(--muted); }
+    .recipe-body li.step-struck::after,
+    .recipe-body li.step-struck::before { content: ''; position: absolute; top: 0; bottom: 0; left: 0; right: 0; pointer-events: none; }
+    .recipe-body li.step-struck::after { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh); opacity: .55; filter: url(#scribble-a); }
+    .recipe-body li.step-struck::before { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh); opacity: .4; filter: url(#scribble-b); }
     .recipe-body strong { font-weight: 800; }
     .recipe-body em { font-style: italic; }
     .recipe-body figure.rt-fig { margin: 18px 0; border: 1px solid var(--ink); background: var(--cream); }
@@ -193,7 +197,7 @@
     .recipe-ingredients { margin-bottom: 28px; max-width: 640px; }
     .r-ing-label { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
     .ingredient-list { display: flex; flex-direction: column; gap: 0; }
-    .ingredient-item { display: grid; grid-template-columns: 52px 68px 1fr 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--hairline); font-family: var(--serif); font-size: 16px; line-height: 1.4; cursor: pointer; user-select: none; transition: opacity .15s; }
+    .ingredient-item { display: grid; grid-template-columns: 52px 68px 1fr 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--hairline); font-family: var(--serif); font-size: 16px; line-height: 1.4; cursor: pointer; user-select: none; transition: opacity .15s; position: relative; will-change: opacity; }
     .ingredient-item:hover { opacity: .75; }
     .ingredient-item:first-child { border-top: 1px solid var(--hairline); }
     .ingredient-item .ing-qty { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); font-weight: 600; }
@@ -203,7 +207,13 @@
     .ingredient-item.struck .ing-qty,
     .ingredient-item.struck .ing-unit,
     .ingredient-item.struck .ing-name,
-    .ingredient-item.struck .ing-notes { text-decoration: line-through; opacity: .45; }
+    .ingredient-item.struck .ing-notes { opacity: .45; }
+    .ingredient-item.struck::after,
+    .ingredient-item.struck::before { content: ''; position: absolute; top: 0; bottom: 0; left: 0; right: calc(50% - 64px); pointer-events: none; background-position: 0 5px; }
+    .ingredient-item.struck::after { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh - 2px), var(--ink) calc(0.5lh - 2px), var(--ink) calc(0.5lh), transparent calc(0.5lh), transparent 1lh); opacity: .55; filter: url(#scribble-a); }
+    .ingredient-item.struck::before { background-image: repeating-linear-gradient(transparent 0, transparent calc(0.5lh + 2px), var(--ink) calc(0.5lh + 2px), var(--ink) calc(0.5lh + 4px), transparent calc(0.5lh + 4px), transparent 1lh); opacity: .4; filter: url(#scribble-b); }
+    .ingredient-item.struck.has-notes::after,
+    .ingredient-item.struck.has-notes::before { right: 0; }
 
     /* ============================================================
        INGREDIENT EDITOR (form)
@@ -495,6 +505,21 @@
   </style>
 </head>
 <body>
+  <!-- SVG filter definitions (hidden) -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <defs>
+      <filter id="scribble-a" x="-2%" y="-500%" width="104%" height="1100%">
+        <feTurbulence type="turbulence" baseFrequency="0.02 0.9" numOctaves="4" seed="3" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="0.35"/>
+      </filter>
+      <filter id="scribble-b" x="-2%" y="-500%" width="104%" height="1100%">
+        <feTurbulence type="turbulence" baseFrequency="0.022 0.85" numOctaves="4" seed="11" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="0.35"/>
+      </filter>
+    </defs>
+  </svg>
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback, useMemo } = React;
@@ -1618,12 +1643,12 @@
                       <div className="r-ing-label">Ingredients</div>
                       <div className="ingredient-list">
                         {selected.ingredients.map((ing, i) => (
-                          <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}`}
+                          <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}${ing.notes ? ' has-notes' : ''}`}
                             onClick={() => toggleStruckIngredient(i)} title="Click to cross out">
                             <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
                             <span className="ing-unit">{ing.unit}</span>
                             <span className="ing-name">{ing.name}</span>
-                            {ing.notes ? <span className="ing-notes">{ing.notes}</span> : <span className="ing-notes" />}
+                            {ing.notes && <span className="ing-notes">{ing.notes}</span>}
                           </div>
                         ))}
                       </div>
