@@ -854,6 +854,18 @@ function getRecipeBadge(recipe) {
 
 const BADGE_LABELS = { meat: "Meat", seafood: "Seafood", veg: "Veg", baked: "Baked", dessert: "Sweet" };
 
+function getRecipeCost(recipe) {
+  if (!recipe.ingredients?.length) return null;
+  let total = 0, hasCost = false;
+  for (const ing of recipe.ingredients) {
+    if (ing.cost != null && ing.cost !== '') {
+      const c = parseFloat(String(ing.cost));
+      if (!isNaN(c)) { total += c; hasCost = true; }
+    }
+  }
+  return hasCost ? total : null;
+}
+
 function scaleHtml(html, factor) {
   if (factor === 1) return html;
   // Order matters: try mixed fraction ("1 1/2"), then simple fraction ("1/2"), then decimal/integer
@@ -950,8 +962,8 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
     setSidebarOpen(false);
   };
 
-  const SORT_BTN_LABELS = { az: "A–Z", za: "Z–A", time: "Time", serves: "Serves", cuisine: "Cuisine", badge: "Type" };
-  const SORT_MENU_LABELS = { az: "Sort A → Z", za: "Sort Z → A", time: "By Time", serves: "By Serving Size", cuisine: "By Cuisine", badge: "By Type" };
+  const SORT_BTN_LABELS = { az: "A–Z", za: "Z–A", time: "Time", serves: "Serves", cuisine: "Cuisine", badge: "Type", cost: "Cost" };
+  const SORT_MENU_LABELS = { az: "Sort A → Z", za: "Sort Z → A", time: "By Time", serves: "By Serving Size", cuisine: "By Cuisine", badge: "By Type", cost: "By Cost (Low→High)" };
 
   const filtered = useMemoV(() => {
     const s = q.trim().toLowerCase();
@@ -972,6 +984,13 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
     else if (sort === "za") list.sort((a, b) => b.name.localeCompare(a.name));
     else if (sort === "time") list.sort((a, b) => (a.time || 0) - (b.time || 0));
     else if (sort === "serves") list.sort((a, b) => (a.serves || 0) - (b.serves || 0));
+    else if (sort === "cost") list.sort((a, b) => {
+      const ac = getRecipeCost(a), bc = getRecipeCost(b);
+      if (ac === null && bc === null) return 0;
+      if (ac === null) return 1;
+      if (bc === null) return -1;
+      return ac - bc;
+    });
     return list;
   }, [q, recipes, sort]);
 
@@ -1080,7 +1099,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
               {sortOpen && (
                 <div className="sort-menu">
                   <button className={!sort ? "active" : ""} onClick={() => { setSort(null); setSortOpen(false); }}>Default</button>
-                  {["az", "za", "time", "serves", "cuisine", "badge"].map((s) => (
+                  {["az", "za", "time", "serves", "cuisine", "badge", "cost"].map((s) => (
                     <button key={s} className={sort === s ? "active" : ""} onClick={() => { setSort(s); setSortOpen(false); }}>
                       {SORT_MENU_LABELS[s]}
                     </button>
@@ -1182,7 +1201,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
                 </div>
                 <div className="stat">
                   <div className="k">Cost</div>
-                  <div className="v">{selected.cost != null ? `$${selected.cost.toFixed(2)}` : "—"}</div>
+                  <div className="v">{(() => { const c = getRecipeCost(selected); return c != null ? `$${c.toFixed(2)}` : "—"; })()}</div>
                 </div>
               </div>
               <div className="r-scaler">

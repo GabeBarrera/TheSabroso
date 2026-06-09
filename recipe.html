@@ -675,6 +675,18 @@
 
     const BADGE_LABELS = { meat: 'Meat', seafood: 'Seafood', veg: 'Veg', baked: 'Baked', dessert: 'Sweet' };
 
+    function getRecipeCost(recipe) {
+      if (!recipe.ingredients?.length) return null;
+      let total = 0, hasCost = false;
+      for (const ing of recipe.ingredients) {
+        if (ing.cost != null && ing.cost !== '') {
+          const c = parseFloat(String(ing.cost));
+          if (!isNaN(c)) { total += c; hasCost = true; }
+        }
+      }
+      return hasCost ? total : null;
+    }
+
     function parseIngredient(text) {
       const s = text.trim();
       const mixed = s.match(/^(\d+)\s+(\d+)\/(\d+)\s+(.*)/);
@@ -1273,6 +1285,34 @@
     }
 
     /* ============================================================
+       COPY LINK BUTTON
+       ============================================================ */
+    function CopyLinkBtn({ url, className }) {
+      const [copied, setCopied] = useState(false);
+      const copy = e => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(url).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1800);
+        }).catch(() => {});
+      };
+      return (
+        <button
+          className={`copy-link-btn${copied ? ' copied' : ''}${className ? ' ' + className : ''}`}
+          onClick={copy}
+          title="Copy link"
+        >
+          {copied ? 'Copied!' : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          )}
+        </button>
+      );
+    }
+
+    /* ============================================================
        ADD TO GROCERY BUTTON
        ============================================================ */
     function AddToGroceryBtn({ recipe, onAdd }) {
@@ -1496,8 +1536,8 @@
 
       const handleSelectRecipe = id => { setSelectedId(id); setSidebarOpen(false); };
 
-      const SORT_BTN_LABELS  = { az: 'A–Z', za: 'Z–A', time: 'Time', serves: 'Serves', cuisine: 'Cuisine', badge: 'Type' };
-      const SORT_MENU_LABELS = { az: 'Sort A → Z', za: 'Sort Z → A', time: 'By Time', serves: 'By Serving Size', cuisine: 'By Cuisine', badge: 'By Type' };
+      const SORT_BTN_LABELS  = { az: 'A–Z', za: 'Z–A', time: 'Time', serves: 'Serves', cuisine: 'Cuisine', badge: 'Type', cost: 'Cost' };
+      const SORT_MENU_LABELS = { az: 'Sort A → Z', za: 'Sort Z → A', time: 'By Time', serves: 'By Serving Size', cuisine: 'By Cuisine', badge: 'By Type', cost: 'By Cost (Low→High)' };
 
       const filtered = useMemo(() => {
         const s = q.trim().toLowerCase();
@@ -1515,6 +1555,13 @@
         else if (sort === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
         else if (sort === 'time') list.sort((a, b) => (a.time || 0) - (b.time || 0));
         else if (sort === 'serves') list.sort((a, b) => (a.serves || 0) - (b.serves || 0));
+        else if (sort === 'cost') list.sort((a, b) => {
+          const ac = getRecipeCost(a), bc = getRecipeCost(b);
+          if (ac === null && bc === null) return 0;
+          if (ac === null) return 1;
+          if (bc === null) return -1;
+          return ac - bc;
+        });
         return list;
       }, [q, recipes, sort]);
 
@@ -1596,7 +1643,7 @@
                   {sortOpen && (
                     <div className="sort-menu">
                       <button className={!sort ? 'active' : ''} onClick={() => { setSort(null); setSortOpen(false); }}>Default</button>
-                      {['az','za','time','serves','cuisine','badge'].map(s => (
+                      {['az','za','time','serves','cuisine','badge','cost'].map(s => (
                         <button key={s} className={sort === s ? 'active' : ''} onClick={() => { setSort(s); setSortOpen(false); }}>
                           {SORT_MENU_LABELS[s]}
                         </button>
@@ -1673,6 +1720,7 @@
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>
                       {onAddToGrocery && <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />}
+                      <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
                       {onEditRecipe && (
                         <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
                       )}
@@ -1692,6 +1740,10 @@
                     <div className="stat">
                       <div className="k">Category</div>
                       <div className="v">{selected.cuisine || '—'}</div>
+                    </div>
+                    <div className="stat">
+                      <div className="k">Cost</div>
+                      <div className="v">{(() => { const c = getRecipeCost(selected); return c != null ? `$${c.toFixed(2)}` : '—'; })()}</div>
                     </div>
                   </div>
                   <div className="r-scaler">
