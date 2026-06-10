@@ -3491,3 +3491,57 @@ a { color: inherit; }
   .map-header-left .nav-btn,
   .map-header-right .nav-btn { font-size: 10px; padding: 7px 10px; }
 }
+
+/* ============================================================
+   APPLE WATCH — max-width 210px
+   ============================================================ */
+
+@media (max-width: 210px) {
+
+  /* Map canvas fills full view when header/cmd-bar are hidden */
+  .map-view--watch .map-canvas { inset: 0; }
+
+  /* About watch: center the masthead vertically */
+  .about--watch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+  }
+
+  .watch-masthead {
+    font-family: var(--serif);
+    font-size: clamp(22px, 14vw, 36px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .watch-masthead .the {
+    display: block;
+    font-size: 0.55em;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  /* Compact nav tabs to fit 3 buttons on a watch-width screen */
+  .nav-dots {
+    bottom: 6px;
+  }
+  .nav-dots button {
+    width: 44px;
+    padding: 5px 2px;
+    font-size: 7px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Hide the floating dock (theme/admin/etc) — not useful on watch */
+  .btn-dock { display: none; }
+}

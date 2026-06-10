@@ -31,7 +31,18 @@ function CopyLinkBtn({ url, className }) {
    ABOUT VIEW — the masthead, intro, and side arrows
    ============================================================ */
 
-function AboutView({ goLeft, goRight, isPWA }) {
+function AboutView({ goLeft, goRight, isPWA, isWatch }) {
+  if (isWatch) {
+    return (
+      <div className="about about--watch" data-screen-label="01 About">
+        <h1 className="masthead watch-masthead">
+          <span className="the">The</span>
+          Sabroso
+        </h1>
+      </div>
+    );
+  }
+
   return (
     <div className="about" data-screen-label="01 About">
       <div className="chrome">
@@ -168,7 +179,7 @@ let _locDecision = null;
 
 function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef,
                    cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive, widgetsVisible,
-                   notes, openNoteProfile, onPinDrop }) {
+                   notes, openNoteProfile, onPinDrop, isWatch }) {
   const mapDiv = useRefV(null);
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
@@ -502,17 +513,19 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   };
 
   return (
-    <div className="map-view" data-screen-label="02 Map">
-      <div className="map-header">
-        <div className="map-header-left" />
-        <div className="title">The Map<span className="title-city"> · <span className="it">{cityName}</span></span></div>
-        <div className="map-header-right">
-          <ManageMenu items={openManage("note")} label="Notes" />
-          <ManageMenu items={openManage("restaurant")} label="Restaurants" />
+    <div className={`map-view${isWatch ? ' map-view--watch' : ''}`} data-screen-label="02 Map">
+      {!isWatch && (
+        <div className="map-header">
+          <div className="map-header-left" />
+          <div className="title">The Map<span className="title-city"> · <span className="it">{cityName}</span></span></div>
+          <div className="map-header-right">
+            <ManageMenu items={openManage("note")} label="Notes" />
+            <ManageMenu items={openManage("restaurant")} label="Restaurants" />
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="map-cmd-bar">
+      {!isWatch && <div className="map-cmd-bar">
         <button
           className={`map-cmd-voice${chatActive ? " active" : ""}`}
           onClick={() => setChatActive((v) => !v)}
@@ -539,7 +552,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           spellCheck={false}
         />
         <button className="map-cmd-submit" onClick={onCmdSubmit} title="Run command">↵</button>
-      </div>
+      </div>}
 
       <div ref={mapDiv} className="map-canvas" />
       <div className="map-city-tag">{cityName}</div>
@@ -884,7 +897,7 @@ function scaleHtml(html, factor) {
   });
 }
 
-function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery, onEditRecipe, isAdmin, isPWA, onResync }) {
+function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGrocery, onEditRecipe, isAdmin, isPWA, onResync, isWatch }) {
   const [q, setQ] = useStateV("");
   const [selectedId, setSelectedId] = useStateV(recipes[0]?.id || null);
   const [sidebarOpen, setSidebarOpen] = useStateV(true);
@@ -1060,21 +1073,23 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
 
   return (
     <div className="recipes-view" data-screen-label="03 Recipes">
-      <div className="recipes-head">
-        <div>
-          <h1 className="title">The <span className="it">Recipes</span></h1>
-          <div className="sub">Methods, marginalia, and the occasional shouting match</div>
+      {!isWatch && (
+        <div className="recipes-head">
+          <div>
+            <h1 className="title">The <span className="it">Recipes</span></h1>
+            <div className="sub">Methods, marginalia, and the occasional shouting match</div>
+          </div>
+          <div className="count">
+            <strong>{recipes.length}</strong>
+            recipes on file
+          </div>
+          {isAdmin ? (
+            <ManageMenu items={openManage("recipe")} />
+          ) : isPWA ? (
+            <button className="manage-btn" onClick={onResync}>Resync</button>
+          ) : null}
         </div>
-        <div className="count">
-          <strong>{recipes.length}</strong>
-          recipes on file
-        </div>
-        {isAdmin ? (
-          <ManageMenu items={openManage("recipe")} />
-        ) : isPWA ? (
-          <button className="manage-btn" onClick={onResync}>Resync</button>
-        ) : null}
-      </div>
+      )}
 
       <div className={`recipes-body${!sidebarOpen ? " sidebar-closed" : ""}`}>
         <div className="recipes-sidebar">

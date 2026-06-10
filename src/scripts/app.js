@@ -11,6 +11,7 @@ const VIEW_ABOUT = 1;
 const VIEW_RECIPES = 2;
 
 const isPWA = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
+const isWatch = window.matchMedia('(max-width: 210px)').matches;
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 3959;
@@ -671,10 +672,11 @@ function AppInner(props) {
             notes={notes}
             openNoteProfile={setNoteProfile}
             onPinDrop={handlePinDrop}
+            isWatch={isWatch}
           />
         </div>
         <div className="panel panel-about" data-screen-label="01 About">
-          <AboutView goLeft={goLeft} goRight={goRight} isPWA={isPWA} />
+          <AboutView goLeft={goLeft} goRight={goRight} isPWA={isPWA} isWatch={isWatch} />
         </div>
         <div className="panel" data-screen-label="03 Recipes">
           <RecipesView
@@ -687,6 +689,7 @@ function AppInner(props) {
             isPWA={isPWA}
             onResync={() => setModal({ kind: "resync" })}
             onEditRecipe={isAdmin ? (recipe) => setModal({ kind: "edit", target: "recipe", initial: recipe }) : null}
+            isWatch={isWatch}
           />
         </div>
       </div>
