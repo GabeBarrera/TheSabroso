@@ -11,7 +11,7 @@ const VIEW_ABOUT = 1;
 const VIEW_RECIPES = 2;
 
 const isPWA = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
-const isWatch = window.matchMedia('(max-width: 210px)').matches;
+const isWatch = window.matchMedia('(max-width: 220px)').matches;
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 3959;

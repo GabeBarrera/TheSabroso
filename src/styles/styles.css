@@ -3496,7 +3496,7 @@ a { color: inherit; }
    APPLE WATCH — max-width 210px
    ============================================================ */
 
-@media (max-width: 210px) {
+@media (max-width: 220px) {
 
   /* Map canvas fills full view when header/cmd-bar are hidden */
   .map-view--watch .map-canvas { inset: 0; }
