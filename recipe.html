@@ -667,19 +667,20 @@
     }
     .r-method-body ol > li {
       counter-increment: rstep;
-      display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: baseline;
+      padding-left: 58px; position: relative;
       font-family: var(--serif); font-size: 17px; line-height: 1.6;
-      margin: 0; cursor: pointer; user-select: none; position: relative;
+      margin: 0; cursor: pointer; user-select: none;
       color: var(--ink-2); transition: opacity 160ms ease;
     }
     .r-method-body ol > li::marker { content: none; }
     .r-method-body ol > li::before {
       content: counter(rstep, decimal-leading-zero);
+      position: absolute; left: 0; top: -1px; z-index: 1;
       width: 34px; height: 34px; border-radius: 50%;
       border: 1.5px solid var(--ink); background: var(--paper);
       font-family: var(--serif); font-weight: 700; font-size: 13px; color: var(--ink);
       display: inline-flex; align-items: center; justify-content: center;
-      box-sizing: border-box; position: relative; z-index: 1;
+      box-sizing: border-box;
       transition: background 160ms, border-color 160ms, color 160ms;
     }
     .r-method-body ol > li.step-struck {
@@ -688,7 +689,6 @@
     }
     .r-method-body ol > li.step-struck::before {
       content: '✓'; background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); font-size: 15px;
-      position: relative; inset: auto;
     }
     .r-method-body ol > li.step-struck::after { content: none; display: none; }
 
