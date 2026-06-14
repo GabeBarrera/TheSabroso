@@ -1,5 +1,5 @@
 (function () {
-/* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile,
+/* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile, GlobalSearch,
           RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal,
           ContactsImportDialog, BothImportDialog,
           ToastProvider, useToast, SDStore, GroceryListPanel */
@@ -214,6 +214,7 @@ function App() {
   const [cmdError, setCmdError] = useState(null);
   const [cmdErrorKey, setCmdErrorKey] = useState(0);
   const [focusRecipeId, setFocusRecipeId] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const cmdErrorTimerRef = useRef(null);
   const showCmdError = useCallback((msg) => {
     if (cmdErrorTimerRef.current) clearTimeout(cmdErrorTimerRef.current);
@@ -309,6 +310,9 @@ function App() {
       // ignore when typing
       const t = e.target;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      // Global search shortcuts work even with profiles/modals open
+      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) { e.preventDefault(); setSearchOpen((v) => !v); return; }
+      if (e.key === "/" && !searchOpen) { e.preventDefault(); setSearchOpen(true); return; }
       if (modal || profile) return;
       if (e.key === "ArrowLeft") setView((v) => Math.max(0, v - 1));
       else if (e.key === "ArrowRight") setView((v) => Math.min(2, v + 1));
@@ -316,7 +320,7 @@ function App() {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [modal, profile]);
+  }, [modal, profile, searchOpen]);
 
   // swipe nav (pointer)
   const onPointerDown = (e) => {
@@ -384,6 +388,20 @@ function App() {
     return items;
   }, [restaurants, recipes, notes]);
 
+  const pickSearchResult = useCallback((r) => {
+    setSearchOpen(false);
+    if (r.kind === "restaurant") {
+      setView(VIEW_MAP);
+      setTimeout(() => setProfile(r.data), 200);
+    } else if (r.kind === "recipe") {
+      setView(VIEW_RECIPES);
+      setFocusRecipeId(r.id);
+    } else if (r.kind === "note") {
+      setView(VIEW_MAP);
+      setTimeout(() => setNoteProfile(r.data), 200);
+    }
+  }, []);
+
   return (
     <ToastProvider>
       <AppInner
@@ -392,6 +410,7 @@ function App() {
         animate={animate}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
+        onOpenSearch={() => setSearchOpen(true)}
         restaurants={restaurants}
         setRestaurants={setRestaurants}
         recipes={recipes}
@@ -421,6 +440,15 @@ function App() {
         cmdErrorKey={cmdErrorKey}
         showCmdError={showCmdError}
         focusRecipeId={focusRecipeId}
+        setFocusRecipeId={setFocusRecipeId}
+      />
+      <GlobalSearch
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        restaurants={restaurants}
+        recipes={recipes}
+        notes={notes}
+        onPick={pickSearchResult}
       />
     </ToastProvider>
   );
@@ -496,9 +524,10 @@ function VoiceResultModal({ result, onClose, setView, mapActionsRef }) {
 
 function AppInner(props) {
   const {
-    view, setView, animate, onPointerDown, onPointerUp,
+    view, setView, animate, onPointerDown, onPointerUp, onOpenSearch,
     restaurants, setRestaurants, recipes, setRecipes,
     notes, setNotes, noteProfile, setNoteProfile,
+    setFocusRecipeId,
     profile, setProfile, modal, setModal, openManage,
     theme, setTheme,
     chatActive, setChatActive, hiddenFilters, setHiddenFilters,
@@ -676,7 +705,18 @@ function AppInner(props) {
           />
         </div>
         <div className="panel panel-about" data-screen-label="01 About">
-          <AboutView goLeft={goLeft} goRight={goRight} isPWA={isPWA} isWatch={isWatch} />
+          <AboutView
+            goLeft={goLeft}
+            goRight={goRight}
+            isPWA={isPWA}
+            isWatch={isWatch}
+            restaurants={restaurants}
+            recipes={recipes}
+            notes={notes}
+            onOpenRestaurant={(r) => { setView(VIEW_MAP); setTimeout(() => setProfile(r), 200); }}
+            onOpenRecipe={(r) => { setView(VIEW_RECIPES); setFocusRecipeId && setFocusRecipeId(r.id); }}
+            onOpenNote={(n) => { setView(VIEW_MAP); setTimeout(() => setNoteProfile(n), 200); }}
+          />
         </div>
         <div className="panel" data-screen-label="03 Recipes">
           <RecipesView
@@ -702,6 +742,14 @@ function AppInner(props) {
       </div>
 
       <div className={`btn-dock${dockOpen ? " dock-open" : ""}`}>
+        <button
+          className="search-trigger"
+          onClick={() => { onOpenSearch && onOpenSearch(); setDockOpen(false); }}
+          title="Search everything ( / )"
+          aria-label="Search"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </button>
         {view === VIEW_RECIPES ? (
           <button
             className={`grocery-toggle${groceryOpen ? " active" : ""}`}

@@ -31,7 +31,84 @@ function CopyLinkBtn({ url, className }) {
    ABOUT VIEW — the masthead, intro, and side arrows
    ============================================================ */
 
-function AboutView({ goLeft, goRight, isPWA, isWatch }) {
+
+function snippetFromHtml(html, max = 140) {
+  if (!html) return "";
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  let t = (div.textContent || "").replace(/\s+/g, " ").trim();
+  if (t.length > max) t = t.slice(0, max - 1).replace(/[\s,.;:—-]+$/, "") + "…";
+  return t;
+}
+
+function RecentlyLogged({ restaurants, recipes, notes, onOpenRestaurant, onOpenRecipe, onOpenNote }) {
+  const items = useMemoV(() => {
+    const r = (restaurants || []).map((x) => ({ kind: "restaurant", id: x.id, name: x.name, createdAt: x.createdAt || "", data: x }));
+    const c = (recipes || []).map((x) => ({ kind: "recipe", id: x.id, name: x.name, createdAt: x.createdAt || "", data: x }));
+    const n = (notes || []).map((x) => ({ kind: "note", id: x.id, name: x.name, createdAt: x.createdAt || "", data: x }));
+    const all = [...r, ...c, ...n];
+    all.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+    return all.slice(0, 3);
+  }, [restaurants, recipes, notes]);
+  if (!items.length) return null;
+  const fmt = (s) => {
+    if (!s) return "";
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  };
+  const labelFor = (k) => k === "restaurant" ? "Restaurant" : k === "recipe" ? "Recipe" : "Note";
+  const open = (it) => {
+    if (it.kind === "restaurant" && onOpenRestaurant) onOpenRestaurant(it.data);
+    else if (it.kind === "recipe" && onOpenRecipe) onOpenRecipe(it.data);
+    else if (it.kind === "note" && onOpenNote) onOpenNote(it.data);
+  };
+  const tag = (it) => {
+    if (it.kind === "restaurant") return <span className="rl-tag rl-tag-r">R</span>;
+    if (it.kind === "note") return <span className="rl-tag rl-tag-n">N</span>;
+    return <span className="rl-tag rl-tag-rec">★</span>;
+  };
+  const sub = (it) => {
+    if (it.kind === "restaurant") {
+      const tags = Array.isArray(it.data.tags) ? it.data.tags.join(" · ") : "Restaurant";
+      const rating = it.data.rating != null ? `★ ${it.data.rating.toFixed(1)}` : null;
+      return [it.data.cuisine, tags, rating].filter(Boolean).join(" · ");
+    }
+    if (it.kind === "recipe") {
+      const parts = [it.data.cuisine, it.data.time ? `${it.data.time} min` : null];
+      const c = getRecipeCost(it.data);
+      if (c != null) parts.push(`${c.toFixed(2)}`);
+      return parts.filter(Boolean).join(" · ");
+    }
+    return it.data.tag || "Note";
+  };
+  return (
+    <div className="recently-logged">
+      <div className="rl-row">
+        <div className="rl-eyebrow">Lately · This Week's Logs</div>
+        <div className="rl-rule" />
+        <div className="rl-issue">No. {String(new Date().getFullYear()).slice(-2)} of MMXXVI</div>
+      </div>
+      <div className="rl-grid">
+        {items.map((it, i) => (
+          <article key={`${it.kind}-${it.id}`} className={`rl-card${i === 0 ? " rl-lead" : ""}`} onClick={() => open(it)} role="button" tabIndex={0}>
+            <div className="rl-meta">
+              {tag(it)}
+              <span className="rl-kind">{labelFor(it.kind)} · {fmt(it.createdAt)}</span>
+            </div>
+            <h3 className="rl-title">{it.name}</h3>
+            {(it.data.tagline || it.data.description) && (
+              <p className="rl-snippet">{it.data.tagline || snippetFromHtml(it.data.description, i === 0 ? 180 : 110)}</p>
+            )}
+            <div className="rl-sub">{sub(it)}</div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AboutView({ goLeft, goRight, isPWA, isWatch, restaurants = [], recipes = [], notes = [], onOpenRestaurant, onOpenRecipe, onOpenNote }) {
   if (isWatch) {
     return (
       <div className="about about--watch" data-screen-label="01 About">
@@ -85,6 +162,7 @@ function AboutView({ goLeft, goRight, isPWA, isWatch }) {
           <span className="drop">G</span><span className="drop-lead">ood</span> food is everywhere — and yet I still can't decide where to go or what to cook&nbsp;because I have no idea where I saved my restaurant list or recipe collection are in my notes. So here we go: this is a no filler, no sponsored seafood towers, no &ldquo;hidden gems&rdquo; that have been on the cover of <em>Eater</em> for two years. The map is the classroom; the recipes are the homework. Pin a place, log a verdict, write the method down before you forget it. <br></br><br></br>Welcome to the place where<br></br>you either find delicious food or make it.<br></br><br></br><i>Buen provecho, bon appétit, and just eat gud y'all!</i><br></br><b>~ G</b>
         </p>
         {!isPWA && <a href="recipe.html" className="about-demo-btn">Download RECIPE Demo</a>}
+        <RecentlyLogged restaurants={restaurants} recipes={recipes} notes={notes} onOpenRestaurant={onOpenRestaurant} onOpenRecipe={onOpenRecipe} onOpenNote={onOpenNote} />
       </div>
 
       <div className="about-meta">
@@ -173,6 +251,23 @@ function isFilterHidden(r, hiddenFilters) {
   return false;
 }
 
+function haversineKm(a, b) {
+  if (!a || !b) return null;
+  const R = 6371;
+  const toRad = (x) => (x * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const s = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+function walkMinutes(from, to) {
+  const km = haversineKm(from, to);
+  if (km == null) return null;
+  return Math.max(1, Math.round((km / 4.8) * 60));
+}
+
 // Session-scoped location decision — persists across component remounts, resets on page reload.
 // null = undecided, 'granted' = user said yes, 'denied' = user said no this session
 let _locDecision = null;
@@ -184,8 +279,10 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
   const markersRef = useRefV([]);
+  const clusterGroupRef = useRefV(null);
   const noteMarkersRef = useRefV([]);
   const userMarkerRef = useRefV(null);
+  const userLatLngRef = useRefV(null);
   const cityTimerRef = useRefV(null);
   const [cityName, setCityName] = useStateV("San Diego");
   const [weather, setWeather] = useStateV(null);
@@ -296,6 +393,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     // location helpers — stored in ref so prompt handlers can call them after effect exits
     const placeUserMarker = (pos) => {
       const { latitude, longitude } = pos.coords;
+      userLatLngRef.current = { lat: latitude, lng: longitude };
       const icon = L.divIcon({
         className: "",
         html: '<div class="sd-marker user-marker"><div class="pulse"></div><div class="dot"></div></div>',
@@ -369,8 +467,28 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     const map = mapInstance.current;
     if (!map) return;
 
+    // Lazy-init cluster group on first render
+    if (!clusterGroupRef.current && window.L && L.markerClusterGroup) {
+      clusterGroupRef.current = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true,
+        maxClusterRadius: 56,
+        iconCreateFunction: (cluster) => {
+          const count = cluster.getChildCount();
+          const size = count < 10 ? 38 : count < 30 ? 46 : 54;
+          return L.divIcon({
+            html: `<div class="sd-cluster" style="width:${size}px;height:${size}px"><span>${count}</span></div>`,
+            className: "",
+            iconSize: [size, size],
+          });
+        },
+      });
+      map.addLayer(clusterGroupRef.current);
+    }
+
     // clear old
-    markersRef.current.forEach((m) => map.removeLayer(m));
+    if (clusterGroupRef.current) clusterGroupRef.current.clearLayers();
+    else markersRef.current.forEach((m) => map.removeLayer(m));
     markersRef.current = [];
 
     const markerById = {};
@@ -417,7 +535,9 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         iconAnchor: [14, 14],
       });
       const pos = jitterPos[r.id] || { lat: r.lat, lng: r.lng };
-      const m = L.marker([pos.lat, pos.lng], { icon }).addTo(map);
+      const m = L.marker([pos.lat, pos.lng], { icon });
+      if (clusterGroupRef.current) clusterGroupRef.current.addLayer(m);
+      else m.addTo(map);
 
       const tagBadges = [
         rTags.includes("restaurant") ? '<span class="pop-tag rt">R</span>' : "",
@@ -437,6 +557,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
             <div id="stars-${r.id}"></div>
             <div class="out">/ 5.0</div>
           </div>
+          <div class="pop-walk" id="walk-${r.id}"></div>
           <div class="pop-actions">
             <a class="pop-dir" href="https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}" target="_blank" rel="noopener noreferrer">Directions ↗</a>
             <button class="pop-select" data-id="${r.id}">Open profile →</button>
@@ -447,6 +568,17 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
       m.on("popupopen", () => {
         const slot = document.getElementById(`stars-${r.id}`);
         if (slot) slot.innerHTML = starsHtml(r.rating || 0);
+        const walkSlot = document.getElementById(`walk-${r.id}`);
+        if (walkSlot) {
+          if (userLatLngRef.current) {
+            const mins = walkMinutes(userLatLngRef.current, { lat: r.lat, lng: r.lng });
+            const km = haversineKm(userLatLngRef.current, { lat: r.lat, lng: r.lng });
+            const miles = km != null ? (km * 0.621371).toFixed(km < 1.6 ? 1 : 1) : "";
+            walkSlot.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M7 22l3-6 3 3 4-2"/></svg><span class="walk-mins">${mins} min</span><span class="walk-sub">walking · ${miles} mi</span>`;
+          } else {
+            walkSlot.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="walk-sub">enable location for walk time</span>`;
+          }
+        }
       });
 
       // hover to open popup
@@ -489,12 +621,22 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           </div>
           <div class="pop-name">${escapeHtml(note.name)}</div>
           ${note.address ? `<div class="pop-addr">${escapeHtml(note.address)}</div>` : ""}
+          <div class="pop-walk" id="walk-note-${note.id}"></div>
           <div class="pop-actions">
             <button class="pop-select" data-note-id="${note.id}">Open note →</button>
           </div>
         </div>`;
       const m = L.marker([note.lat, note.lng], { icon }).addTo(map);
       m.bindPopup(popHtml, { maxWidth: 300 });
+      m.on("popupopen", () => {
+        const walkSlot = document.getElementById(`walk-note-${note.id}`);
+        if (walkSlot && userLatLngRef.current) {
+          const mins = walkMinutes(userLatLngRef.current, { lat: note.lat, lng: note.lng });
+          const km = haversineKm(userLatLngRef.current, { lat: note.lat, lng: note.lng });
+          const miles = km != null ? (km * 0.621371).toFixed(1) : "";
+          walkSlot.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M7 22l3-6 3 3 4-2"/></svg><span class="walk-mins">${mins} min</span><span class="walk-sub">walking · ${miles} mi</span>`;
+        }
+      });
       m.on("mouseover", () => m.openPopup());
       noteMarkersRef.current.push(m);
     });
@@ -958,7 +1100,24 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
     });
   }, [struckSteps, selectedId]);
 
+  const pullQuote = useMemoV(() => {
+    if (!selected || !selected.description) return null;
+    const div = document.createElement("div");
+    div.innerHTML = selected.description;
+    let best = null;
+    div.querySelectorAll("em, strong").forEach((el) => {
+      const text = (el.textContent || "").trim();
+      if (text.length >= 24 && text.length <= 120) {
+        if (!best || text.length > best.length) best = text;
+      }
+    });
+    return best;
+  }, [selected]);
+
   const handleBodyClick = (e) => {
+    // ignore clicks when the user is selecting text
+    const sel = window.getSelection && window.getSelection();
+    if (sel && sel.toString().length > 0) return;
     const li = e.target.closest("li");
     if (!li || !bodyRef.current) return;
     const idx = [...bodyRef.current.querySelectorAll("li")].indexOf(li);
@@ -1185,74 +1344,128 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
               <div className="ln1">No recipe selected.</div>
               <div className="ln2">Add one via Manage → New</div>
             </div>
-          ) : (
-            <>
-              <div className="r-eyebrow-row">
-                <div className="r-eyebrow">{selected.cuisine || "Recipe"} · {selected.modifiedAt ? `Updated ${selected.modifiedAt}` : `Filed ${selected.createdAt}`}</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {onAddToGrocery && (
-                    <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />
-                  )}
-                  <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
-                  {onEditRecipe && (
-                    <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
-                  )}
+          ) : (() => {
+            const totalCost = getRecipeCost(selected);
+            const scaledServes = selected.serves ? selected.serves * scale : null;
+            const perServ = (totalCost != null && selected.serves) ? totalCost / selected.serves : null;
+            const scaledTotal = totalCost != null ? totalCost * scale : null;
+            const fm = (v) => v == null ? "—" : "$" + v.toFixed(2);
+            return (
+            <div className="recipe-shell">
+              <aside className="r-ing-aside">
+                <div className="r-ing-aside-head">
+                  <div className="k">Ingredients</div>
+                  <div className="r-ing-serves-row">
+                    <div className="serves-label">Serves {scaledServes || "—"}</div>
+                    <div className="r-ing-scaler">
+                      {[1, 2, 3].map((n) => (
+                        <button key={n} className={`scaler-btn${scale === n ? " active" : ""}`} onClick={() => setScale(n)}>×{n}</button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <h1>{selected.name}</h1>
-              <p className="r-tagline">{selected.tagline}</p>
-              <div className="r-stats">
-                <div className="stat">
-                  <div className="k">Time</div>
-                  <div className="v">{selected.time} <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>min</span></div>
-                </div>
-                <div className="stat">
-                  <div className="k">Serves</div>
-                  <div className="v">{selected.serves ? selected.serves * scale : "—"}</div>
-                </div>
-                <div className="stat">
-                  <div className="k">Category</div>
-                  <div className="v">{selected.cuisine || "—"}</div>
-                </div>
-                <div className="stat">
-                  <div className="k">Cost</div>
-                  <div className="v">{(() => { const c = getRecipeCost(selected); return c != null ? `$${c.toFixed(2)}` : "—"; })()}</div>
-                </div>
-              </div>
-              <div className="r-scaler">
-                <span className="r-scaler-label">Scale</span>
-                {[1, 2, 3].map((n) => (
-                  <button key={n} className={`scaler-btn${scale === n ? " active" : ""}`} onClick={() => setScale(n)}>×{n}</button>
-                ))}
-              </div>
-              {selected.ingredients && selected.ingredients.length > 0 && (
-                <div className="recipe-ingredients">
-                  <div className="r-ing-label">Ingredients</div>
+
+                {totalCost != null && (
+                  <div className="r-cost-rollup">
+                    <div className="rcr-tag">Cost</div>
+                    <div className="rcr-top">
+                      <span className="rcr-label">total at the till</span>
+                      <span className="rcr-total">{fm(scaledTotal)}</span>
+                    </div>
+                    <div className="rcr-bot">
+                      <span className="rcr-sub-label">per serving</span>
+                      <span className="rcr-per">{fm(perServ)}</span>
+                    </div>
+                  </div>
+                )}
+
+                {selected.ingredients && selected.ingredients.length > 0 && (
                   <div className="ingredient-list">
                     {selected.ingredients.map((ing, i) => (
                       <div
                         key={i}
-                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}${ing.notes ? " has-notes" : ""}${ing.cost ? " has-cost" : ""}`}
+                        className={`ingredient-item${struckIngredients.has(i) ? " struck" : ""}`}
                         onClick={() => toggleStruckIngredient(i)}
                         title="Click to cross out"
                       >
-                        <span className="ing-meta">
-                          <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
-                          <span className="ing-unit">{ing.unit}</span>
-                        </span>
-                        <span className="ing-name">{ing.name}</span>
-                        <span className="ing-bottom">
-                          <span className="ing-notes">{ing.notes || ''}</span>
-                          <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
+                        <span className="ing-num">{String(i + 1).padStart(2, "0")}</span>
+                        <div className="ing-text">
+                          <div className="ing-line">
+                            <span className="ing-qu">{scaleQty(ing.qty, scale)}{ing.unit ? " " + ing.unit : ""}</span>
+                            {ing.name ? " " + ing.name : ""}
+                          </div>
+                          {ing.notes && <div className="ing-notes-line">{ing.notes}</div>}
+                        </div>
+                        <span className="ing-cost">
+                          {ing.cost !== '' && ing.cost != null ? "$" + (parseFloat(String(ing.cost)) * scale).toFixed(2) : ''}
                         </span>
                       </div>
                     ))}
                   </div>
+                )}
+
+                {onAddToGrocery && (
+                  <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />
+                )}
+              </aside>
+
+              <header className="r-method-head">
+                <div className="r-eyebrow-row">
+                  <div className="r-eyebrow">{selected.cuisine || "Recipe"} · {selected.modifiedAt ? `Updated ${selected.modifiedAt}` : `Filed ${selected.createdAt}`}</div>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <button
+                      className={`r-fav-btn${favorites.has(selected.id) ? " on" : ""}`}
+                      onClick={(e) => toggleFavorite(selected.id, e)}
+                      title={favorites.has(selected.id) ? "Remove from favorites" : "Add to favorites"}
+                      aria-label="Favorite"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-6.18 3.73 1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63L22 9.24l-5.46 4.73 1.64 7.03z"/></svg>
+                    </button>
+                    <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
+                    {onEditRecipe && (
+                      <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
+                    )}
+                  </div>
                 </div>
-              )}
-              <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick} dangerouslySetInnerHTML={{ __html: scaleHtml(selected.description || "", scale) }} />
-            </>
-          )}
+                <h1>{selected.name}</h1>
+                <div className="r-meta-inline">
+                  <span><span className="meta-num">{selected.time || "—"}</span> min</span>
+                  <span className="meta-sep">|</span>
+                  <span><span className="meta-num">{scaledServes || "—"}</span> serves</span>
+                  {perServ != null && (
+                    <>
+                      <span className="meta-sep">|</span>
+                      <span className="meta-acc"><span className="meta-num" style={{ color: 'var(--terracotta)' }}>{fm(perServ)}</span>/serving</span>
+                    </>
+                  )}
+                </div>
+                {selected.tagline && <p className="r-tagline">{selected.tagline}</p>}
+              </header>
+
+              <section className="r-method-side">
+                <div className="r-method-label-row">
+                  <span className="method-k">The Method</span>
+                  <span className="method-hr" />
+                  <span className="method-hint">tap a number to strike a step</span>
+                </div>
+
+                <div
+                  className="recipe-body r-method-body"
+                  ref={bodyRef}
+                  onClick={handleBodyClick}
+                  dangerouslySetInnerHTML={{ __html: selected.description || "" }}
+                />
+
+                {pullQuote && (
+                  <blockquote className="recipe-pullquote">
+                    <div className="pullq-label">Pull-quote · new</div>
+                    <div className="pullq-text">"{pullQuote}"</div>
+                  </blockquote>
+                )}
+              </section>
+            </div>
+            );
+          })()}
         </div>
       </div>
     </div>

@@ -530,6 +530,199 @@
       .theme-toggle { right: 22px; }
       .pwa-prompt { left: 0; right: 0; bottom: 76px; width: auto; border-left: none; border-right: none; }
     }
+
+    /* ============================================================
+       v1.2.0 — Proposal-layout recipe detail
+       ============================================================ */
+    .recipe-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      grid-template-rows: auto 1fr;
+      grid-template-areas: "ing head" "ing method";
+      gap: 0;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      min-height: 660px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+    .r-ing-aside {
+      grid-area: ing;
+      border-right: 1px solid var(--ink);
+      padding: 28px 24px 24px;
+      background: var(--cream);
+      display: flex; flex-direction: column; gap: 22px;
+      min-width: 0;
+    }
+    .r-ing-aside-head { display: flex; flex-direction: column; gap: 10px; }
+    .r-ing-aside .k {
+      font-family: var(--mono); font-size: 10px; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .r-ing-serves-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding-bottom: 12px; border-bottom: 1px solid var(--ink);
+    }
+    .r-ing-serves-row .serves-label {
+      font-family: var(--serif); font-weight: 700; font-size: 22px; letter-spacing: -0.005em;
+    }
+    .r-ing-serves-row .r-ing-scaler { display: flex; gap: 5px; }
+    .r-ing-serves-row .r-ing-scaler .scaler-btn {
+      font-family: var(--mono); font-size: 11px; letter-spacing: .04em;
+      padding: 4px 9px; border: 1px solid var(--ink); background: transparent;
+      color: var(--ink); cursor: pointer; transition: background 120ms, color 120ms;
+    }
+    .r-ing-serves-row .r-ing-scaler .scaler-btn:hover { background: var(--cream-2); }
+    .r-ing-serves-row .r-ing-scaler .scaler-btn.active {
+      background: var(--ink); color: var(--paper); border-color: var(--ink);
+    }
+    .r-cost-rollup {
+      background: var(--paper); border: 1px solid var(--ink);
+      padding: 14px 16px 12px; position: relative;
+    }
+    .r-cost-rollup .rcr-tag {
+      position: absolute; top: -8px; left: 12px; background: var(--cream); padding: 0 8px;
+      font-family: var(--mono); font-size: 9px; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--terracotta);
+    }
+    .r-cost-rollup .rcr-top { display: flex; align-items: baseline; justify-content: space-between; }
+    .r-cost-rollup .rcr-label { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--muted); }
+    .r-cost-rollup .rcr-total { font-family: var(--serif); font-weight: 800; font-size: 28px; letter-spacing: -.01em; color: var(--ink); }
+    .r-cost-rollup .rcr-bot { display: flex; align-items: baseline; justify-content: space-between; margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--hairline); }
+    .r-cost-rollup .rcr-sub-label { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+    .r-cost-rollup .rcr-per { font-family: var(--serif); font-weight: 700; font-size: 18px; color: var(--terracotta); }
+
+    .r-ing-aside .ingredient-list { display: flex; flex-direction: column; gap: 0; }
+    .r-ing-aside .ingredient-item {
+      display: grid; grid-template-columns: 26px 1fr auto; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--hairline); border-top: none;
+      align-items: baseline; position: relative; cursor: pointer;
+      font-family: var(--serif); font-size: 15px; line-height: 1.4;
+      transition: opacity .15s; will-change: opacity;
+    }
+    .r-ing-aside .ingredient-item:hover { opacity: .8; }
+    .r-ing-aside .ing-num { font-family: var(--mono); font-size: 10px; color: var(--muted-2); text-align: center; padding-top: 1px; }
+    .r-ing-aside .ing-text { min-width: 0; }
+    .r-ing-aside .ing-line { font-family: var(--serif); font-size: 15px; line-height: 1.35; color: var(--ink-2); }
+    .r-ing-aside .ing-line .ing-qu { font-weight: 700; color: var(--ink); }
+    .r-ing-aside .ing-notes-line { font-family: var(--serif); font-style: italic; font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+    .r-ing-aside .ing-cost-aside { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; align-self: baseline; padding-top: 1px; }
+    .r-ing-aside .ingredient-item.struck { opacity: .42; }
+    .r-ing-aside .ingredient-item.struck .ing-num { color: var(--terracotta); font-weight: 600; }
+    .r-ing-aside .ingredient-item.struck .ing-line,
+    .r-ing-aside .ingredient-item.struck .ing-notes-line {
+      text-decoration: line-through; text-decoration-thickness: 1.3px; text-decoration-color: var(--ink);
+    }
+    .r-ing-aside .ingredient-item.struck::after,
+    .r-ing-aside .ingredient-item.struck::before { content: none; display: none; }
+    .r-ing-aside .add-grocery-btn { margin-top: auto; align-self: stretch; justify-content: center; gap: 8px; }
+
+    .r-method-head { grid-area: head; padding: 32px 40px 0; min-width: 0; display: flex; flex-direction: column; }
+    .r-method-side { grid-area: method; padding: 0 40px 40px; min-width: 0; display: flex; flex-direction: column; }
+    .r-method-head .r-eyebrow-row { margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .r-method-head h1 {
+      font-family: var(--serif); font-weight: 900; font-size: 52px;
+      line-height: 1; letter-spacing: -0.02em; margin: 0 0 12px; text-wrap: balance;
+    }
+    .r-meta-inline {
+      display: flex; flex-wrap: wrap; gap: 18px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 22px;
+    }
+    .r-meta-inline .meta-num { color: var(--ink); font-weight: 600; }
+    .r-meta-inline .meta-sep { opacity: .3; }
+    .r-method-head .r-tagline {
+      font-family: var(--serif); font-style: italic;
+      font-size: 21px; line-height: 1.45;
+      color: var(--ink-2);
+      margin: 0; padding: 20px 0 22px;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--hairline);
+      text-wrap: balance; max-width: none;
+    }
+    .r-method-head .r-tagline::first-letter {
+      initial-letter: 2.2; -webkit-initial-letter: 2.2;
+      font-family: var(--serif); font-weight: 900; font-style: normal;
+      color: var(--terracotta); margin-right: 10px; padding-top: 2px; line-height: .9;
+    }
+    @supports not (initial-letter: 2.2) {
+      .r-method-head .r-tagline::first-letter {
+        float: left; font-size: 3.2em; line-height: .85; padding: 6px 10px 0 0;
+        font-style: normal; font-weight: 900; color: var(--terracotta);
+      }
+    }
+    .r-method-label-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 26px; margin-bottom: 18px;
+    }
+    .r-method-label-row .method-k { font-family: var(--mono); font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); }
+    .r-method-label-row .method-hr { flex: 1; height: 1px; background: var(--hairline); }
+    .r-method-label-row .method-hint { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--muted); }
+
+    .recipe-body.r-method-body { max-width: none; font-size: 17px; }
+    .r-method-body ol {
+      list-style: none; counter-reset: rstep; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .r-method-body ol > li {
+      counter-increment: rstep;
+      display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: baseline;
+      font-family: var(--serif); font-size: 17px; line-height: 1.6;
+      margin: 0; cursor: pointer; user-select: none; position: relative;
+      color: var(--ink-2); transition: opacity 160ms ease;
+    }
+    .r-method-body ol > li::marker { content: none; }
+    .r-method-body ol > li::before {
+      content: counter(rstep, decimal-leading-zero);
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--ink); background: var(--paper);
+      font-family: var(--serif); font-weight: 700; font-size: 13px; color: var(--ink);
+      display: inline-flex; align-items: center; justify-content: center;
+      box-sizing: border-box; position: relative; z-index: 1;
+      transition: background 160ms, border-color 160ms, color 160ms;
+    }
+    .r-method-body ol > li.step-struck {
+      opacity: .42;
+      text-decoration: line-through; text-decoration-thickness: 1.3px; text-decoration-color: var(--ink);
+    }
+    .r-method-body ol > li.step-struck::before {
+      content: '✓'; background: var(--terracotta); border-color: var(--terracotta); color: var(--paper); font-size: 15px;
+      position: relative; inset: auto;
+    }
+    .r-method-body ol > li.step-struck::after { content: none; display: none; }
+
+    .recipe-pullquote {
+      margin: 32px 0 0; padding: 22px 26px;
+      background: var(--cream-2); border-left: 3px solid var(--terracotta);
+      position: relative; break-inside: avoid;
+    }
+    .recipe-pullquote .pullq-label {
+      position: absolute; top: -9px; left: 14px; background: var(--paper);
+      padding: 0 8px; font-family: var(--mono); font-size: 9px;
+      letter-spacing: .22em; text-transform: uppercase; color: var(--terracotta);
+    }
+    .recipe-pullquote .pullq-text {
+      font-family: var(--serif); font-style: italic; font-size: 20px;
+      line-height: 1.4; color: var(--ink); text-wrap: balance;
+    }
+
+    .r-fav-btn {
+      width: 38px; height: 38px;
+      border: 1px solid var(--ink); background: var(--paper);
+      color: var(--muted-2);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: color 160ms, background 160ms, border-color 160ms;
+    }
+    .r-fav-btn:hover, .r-fav-btn.on { color: var(--terracotta); }
+
+    @media (max-width: 960px) {
+      .recipe-shell { grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "head" "ing" "method"; min-height: 0; }
+      .r-ing-aside { border-right: none; border-bottom: 1px solid var(--ink); }
+      .r-method-head { padding: 26px 22px 22px; border-bottom: 1px solid var(--ink); }
+      .r-method-side { padding: 24px 22px 32px; }
+      .r-method-head h1 { font-size: 36px; }
+    }
   </style>
 </head>
 <body>
@@ -1712,71 +1905,134 @@
                   <div className="ln1">No recipe selected.</div>
                   <div className="ln2">Add one via Manage → New Recipe</div>
                 </div>
-              ) : (
-                <>
-                  <div className="r-eyebrow-row">
-                    <div className="r-eyebrow">
-                      {selected.cuisine || 'Recipe'} · {selected.modifiedAt ? `Updated ${selected.modifiedAt}` : `Filed ${selected.createdAt}`}
+              ) : (() => {
+                const totalCost = getRecipeCost(selected);
+                const scaledServes = selected.serves ? selected.serves * scale : null;
+                const perServ = (totalCost != null && selected.serves) ? totalCost / selected.serves : null;
+                const scaledTotal = totalCost != null ? totalCost * scale : null;
+                const fm = (v) => v == null ? '—' : '$' + v.toFixed(2);
+                let pullQuote = null;
+                if (selected.description) {
+                  try {
+                    const div = document.createElement('div');
+                    div.innerHTML = selected.description;
+                    div.querySelectorAll('em, strong').forEach(el => {
+                      const t = (el.textContent || '').trim();
+                      if (t.length >= 24 && t.length <= 120 && (!pullQuote || t.length > pullQuote.length)) pullQuote = t;
+                    });
+                  } catch (e) {}
+                }
+                return (
+                <div className="recipe-shell">
+                  <aside className="r-ing-aside">
+                    <div className="r-ing-aside-head">
+                      <div className="k">Ingredients</div>
+                      <div className="r-ing-serves-row">
+                        <div className="serves-label">Serves {scaledServes || '—'}</div>
+                        <div className="r-ing-scaler">
+                          {[1,2,3].map(n => (
+                            <button key={n} className={`scaler-btn${scale === n ? ' active' : ''}`} onClick={() => setScale(n)}>×{n}</button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      {onAddToGrocery && <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />}
-                      <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
-                      {onEditRecipe && (
-                        <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
-                      )}
-                    </div>
-                  </div>
-                  <h1>{selected.name}</h1>
-                  <p className="r-tagline">{selected.tagline}</p>
-                  <div className="r-stats">
-                    <div className="stat">
-                      <div className="k">Time</div>
-                      <div className="v">{selected.time} <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)' }}>min</span></div>
-                    </div>
-                    <div className="stat">
-                      <div className="k">Serves</div>
-                      <div className="v">{selected.serves ? selected.serves * scale : '—'}</div>
-                    </div>
-                    <div className="stat">
-                      <div className="k">Category</div>
-                      <div className="v">{selected.cuisine || '—'}</div>
-                    </div>
-                    <div className="stat">
-                      <div className="k">Cost</div>
-                      <div className="v">{(() => { const c = getRecipeCost(selected); return c != null ? `$${c.toFixed(2)}` : '—'; })()}</div>
-                    </div>
-                  </div>
-                  <div className="r-scaler">
-                    <span className="r-scaler-label">Scale</span>
-                    {[1,2,3].map(n => (
-                      <button key={n} className={`scaler-btn${scale === n ? ' active' : ''}`} onClick={() => setScale(n)}>×{n}</button>
-                    ))}
-                  </div>
-                  {selected.ingredients && selected.ingredients.length > 0 && (
-                    <div className="recipe-ingredients">
-                      <div className="r-ing-label">Ingredients</div>
+
+                    {totalCost != null && (
+                      <div className="r-cost-rollup">
+                        <div className="rcr-tag">Cost</div>
+                        <div className="rcr-top">
+                          <span className="rcr-label">total at the till</span>
+                          <span className="rcr-total">{fm(scaledTotal)}</span>
+                        </div>
+                        <div className="rcr-bot">
+                          <span className="rcr-sub-label">per serving</span>
+                          <span className="rcr-per">{fm(perServ)}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {selected.ingredients && selected.ingredients.length > 0 && (
                       <div className="ingredient-list">
                         {selected.ingredients.map((ing, i) => (
-                          <div key={i} className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}${ing.notes ? ' has-notes' : ''}${ing.cost ? ' has-cost' : ''}`}
+                          <div key={i}
+                            className={`ingredient-item${struckIngredients.has(i) ? ' struck' : ''}`}
                             onClick={() => toggleStruckIngredient(i)} title="Click to cross out">
-                            <span className="ing-meta">
-                              <span className="ing-qty">{scaleQty(ing.qty, scale)}</span>
-                              <span className="ing-unit">{ing.unit}</span>
-                            </span>
-                            <span className="ing-name">{ing.name}</span>
-                            <span className="ing-bottom">
-                              <span className="ing-notes">{ing.notes || ''}</span>
-                              <span className="ing-cost">{ing.cost !== '' && ing.cost != null ? `$${parseFloat(String(ing.cost)).toFixed(2)}` : ''}</span>
+                            <span className="ing-num">{String(i + 1).padStart(2, '0')}</span>
+                            <div className="ing-text">
+                              <div className="ing-line">
+                                <span className="ing-qu">{scaleQty(ing.qty, scale)}{ing.unit ? ' ' + ing.unit : ''}</span>
+                                {ing.name ? ' ' + ing.name : ''}
+                              </div>
+                              {ing.notes && <div className="ing-notes-line">{ing.notes}</div>}
+                            </div>
+                            <span className="ing-cost-aside">
+                              {ing.cost !== '' && ing.cost != null ? '$' + (parseFloat(String(ing.cost)) * scale).toFixed(2) : ''}
                             </span>
                           </div>
                         ))}
                       </div>
+                    )}
+
+                    {onAddToGrocery && (
+                      <AddToGroceryBtn recipe={selected} onAdd={onAddToGrocery} />
+                    )}
+                  </aside>
+
+                  <header className="r-method-head">
+                    <div className="r-eyebrow-row">
+                      <div className="r-eyebrow">
+                        {selected.cuisine || 'Recipe'} · {selected.modifiedAt ? `Updated ${selected.modifiedAt}` : `Filed ${selected.createdAt}`}
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <button
+                          className={`r-fav-btn${favorites.has(selected.id) ? ' on' : ''}`}
+                          onClick={(e) => toggleFavorite(selected.id, e)}
+                          title={favorites.has(selected.id) ? 'Remove from favorites' : 'Add to favorites'}
+                          aria-label="Favorite"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-6.18 3.73 1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63L22 9.24l-5.46 4.73 1.64 7.03z"/></svg>
+                        </button>
+                        <CopyLinkBtn url={`${location.origin}${location.pathname}#recipes/${selected.id}`} />
+                        {onEditRecipe && (
+                          <button className="recipe-edit-btn" onClick={() => onEditRecipe(selected)} title="Edit recipe">Edit</button>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  <div className="recipe-body" ref={bodyRef} onClick={handleBodyClick}
-                    dangerouslySetInnerHTML={{ __html: scaleHtml(selected.description || '', scale) }} />
-                </>
-              )}
+                    <h1>{selected.name}</h1>
+                    <div className="r-meta-inline">
+                      <span><span className="meta-num">{selected.time || '—'}</span> min</span>
+                      <span className="meta-sep">|</span>
+                      <span><span className="meta-num">{scaledServes || '—'}</span> serves</span>
+                      {perServ != null && (
+                        <>
+                          <span className="meta-sep">|</span>
+                          <span><span className="meta-num" style={{ color: 'var(--terracotta)' }}>{fm(perServ)}</span>/serving</span>
+                        </>
+                      )}
+                    </div>
+                    {selected.tagline && <p className="r-tagline">{selected.tagline}</p>}
+                  </header>
+
+                  <section className="r-method-side">
+                    <div className="r-method-label-row">
+                      <span className="method-k">The Method</span>
+                      <span className="method-hr" />
+                      <span className="method-hint">tap a number to strike a step</span>
+                    </div>
+
+                    <div className="recipe-body r-method-body" ref={bodyRef} onClick={handleBodyClick}
+                      dangerouslySetInnerHTML={{ __html: selected.description || '' }} />
+
+                    {pullQuote && (
+                      <blockquote className="recipe-pullquote">
+                        <div className="pullq-label">Pull-quote</div>
+                        <div className="pullq-text">"{pullQuote}"</div>
+                      </blockquote>
+                    )}
+                  </section>
+                </div>
+                );
+              })()}
             </div>
           </div>
         </div>
