@@ -287,6 +287,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const [cityName, setCityName] = useStateV("San Diego");
   const [weather, setWeather] = useStateV(null);
   const [showLocPrompt, setShowLocPrompt] = useStateV(false);
+  const [openNowOnly, setOpenNowOnly] = useStateV(false);
   const geoCallbackRef = useRefV(null);
   const toast = useToast();
   // Always-current refs so delegated handlers don't go stale
@@ -501,6 +502,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     const coordGroups = {};
     restaurants.forEach((r) => {
       if (isFilterHidden(r, hiddenFilters)) return;
+      if (openNowOnly) { const st = getOpenStatus(r); if (!st || !st.open) return; }
       const key = `${r.lat.toFixed(4)},${r.lng.toFixed(4)}`;
       if (!coordGroups[key]) coordGroups[key] = [];
       coordGroups[key].push(r.id);
@@ -524,7 +526,9 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
 
     restaurants.forEach((r) => {
       if (isFilterHidden(r, hiddenFilters)) return;
+      if (openNowOnly) { const st = getOpenStatus(r); if (!st || !st.open) return; }
 
+      const openStatus = getOpenStatus(r);
       const rTags = Array.isArray(r.tags) ? r.tags : ["restaurant"];
       const isBarOnly = rTags.includes("bar") && !rTags.includes("restaurant");
       const markerCls = isBarOnly ? "sd-marker bar-pin" : "sd-marker";
@@ -557,6 +561,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
             <div id="stars-${r.id}"></div>
             <div class="out">/ 5.0</div>
           </div>
+          ${openStatus ? `<div class="pop-hours ${openStatus.open ? 'is-open' : 'is-closed'}"><span class="ph-dot"></span><span class="ph-label">${openStatus.open ? 'Open now' : 'Closed'}</span>${openStatus.detail ? ` <span class="ph-detail">· ${openStatus.detail}</span>` : ''}</div>` : ''}
           <div class="pop-walk" id="walk-${r.id}"></div>
           <div class="pop-actions">
             <a class="pop-dir" href="https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}" target="_blank" rel="noopener noreferrer">Directions ↗</a>
@@ -598,7 +603,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         },
       };
     }
-  }, [restaurants, hiddenFilters]);
+  }, [restaurants, hiddenFilters, openNowOnly]);
 
   // render note markers
   useEffectV(() => {
@@ -694,6 +699,14 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           spellCheck={false}
         />
         <button className="map-cmd-submit" onClick={onCmdSubmit} title="Run command">↵</button>
+        <button
+          className={`map-open-now${openNowOnly ? " active" : ""}`}
+          onClick={() => setOpenNowOnly((v) => !v)}
+          title={openNowOnly ? "Showing only places open now" : "Show only places open now"}
+          aria-pressed={openNowOnly}
+        >
+          <span className="mon-dot" />Open now
+        </button>
       </div>}
 
       <div ref={mapDiv} className="map-canvas" />
@@ -747,6 +760,59 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[c]);
+}
+
+/* ============================================================
+   OPEN-NOW — business-hours status from per-day hours
+   ============================================================ */
+
+const OPEN_DAY_KEYS = ['sun','mon','tue','wed','thu','fri','sat'];
+const DAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const WEEK_ORDER = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
+
+function hmToMin(t) {
+  if (!t) return null;
+  const p = String(t).split(':');
+  return (+p[0]) * 60 + (+(p[1] || 0));
+}
+
+function fmtClock(min) {
+  if (min == null || isNaN(min)) return "";
+  min = ((Math.round(min) % 1440) + 1440) % 1440;
+  let h = Math.floor(min / 60), m = min % 60;
+  const ap = h >= 12 ? "pm" : "am";
+  let hh = h % 12; if (hh === 0) hh = 12;
+  return m === 0 ? `${hh}${ap}` : `${hh}:${String(m).padStart(2, "0")}${ap}`;
+}
+
+// Returns null when hours are unknown, else { open: bool, detail: string }.
+function getOpenStatus(restaurant, now) {
+  const hours = restaurant && restaurant.hours;
+  if (!hours || !Object.keys(hours).length) return null;
+  now = now || new Date();
+  const di = now.getDay();
+  const nm = now.getHours() * 60 + now.getMinutes();
+  const today = hours[OPEN_DAY_KEYS[di]];
+  if (today && !today.closed && today.open && today.close) {
+    const o = hmToMin(today.open), c = hmToMin(today.close);
+    if (c <= o) { if (nm >= o) return { open: true, detail: "closes " + fmtClock(c) }; }
+    else if (nm >= o && nm < c) { return { open: true, detail: "closes " + fmtClock(c) }; }
+  }
+  // yesterday spilling past midnight
+  const yest = hours[OPEN_DAY_KEYS[(di + 6) % 7]];
+  if (yest && !yest.closed && yest.open && yest.close) {
+    const o = hmToMin(yest.open), c = hmToMin(yest.close);
+    if (c <= o && nm < c) return { open: true, detail: "closes " + fmtClock(c) };
+  }
+  // closed — find the next opening within a week
+  for (let d = 0; d < 7; d++) {
+    const e = hours[OPEN_DAY_KEYS[(di + d) % 7]];
+    if (!e || e.closed || !e.open) continue;
+    const o = hmToMin(e.open);
+    if (d === 0) { if (o > nm) return { open: false, detail: "opens " + fmtClock(o) }; }
+    else return { open: false, detail: "opens " + DAY_SHORT[(di + d) % 7] + " " + fmtClock(o) };
+  }
+  return { open: false, detail: "" };
 }
 
 /* ============================================================
@@ -1561,6 +1627,39 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
       </div>
 
       <ProfileMiniMap lat={restaurant.lat} lng={restaurant.lng} />
+
+      {restaurant.hours && Object.keys(restaurant.hours).length > 0 && (() => {
+        const status = getOpenStatus(restaurant);
+        const todayKey = OPEN_DAY_KEYS[new Date().getDay()];
+        return (
+          <div className="profile-hours">
+            <div className="profile-hours-head">
+              <div className="k">Hours</div>
+              {status && (
+                <div className={`ph-status ${status.open ? "is-open" : "is-closed"}`}>
+                  <span className="ph-dot" />
+                  <span className="ph-label">{status.open ? "Open now" : "Closed"}</span>
+                  {status.detail && <span className="ph-detail">· {status.detail}</span>}
+                </div>
+              )}
+            </div>
+            <div className="profile-hours-list">
+              {WEEK_ORDER.map(([k, label]) => {
+                const d = restaurant.hours[k];
+                const text = (!d || d.closed || !d.open || !d.close)
+                  ? "Closed"
+                  : `${fmtClock(hmToMin(d.open))} – ${fmtClock(hmToMin(d.close))}`;
+                return (
+                  <div key={k} className={`ph-day-row${k === todayKey ? " is-today" : ""}`}>
+                    <span className="ph-day">{label}</span>
+                    <span className={`ph-time${text === "Closed" ? " is-closed-text" : ""}`}>{text}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {(restaurant.website || restaurant.reservationLink) && (
         <div className="profile-links">

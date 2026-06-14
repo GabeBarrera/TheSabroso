@@ -13,6 +13,55 @@ const CUISINE_OPTIONS = [
   "Spanish", "Pizza", "BBQ", "Bakery", "Café", "Cocktail Bar"
 ];
 
+const HOURS_DAYS = [["mon","Mon"],["tue","Tue"],["wed","Wed"],["thu","Thu"],["fri","Fri"],["sat","Sat"],["sun","Sun"]];
+
+function normalizeHours(h) {
+  const out = {};
+  HOURS_DAYS.forEach(([k]) => {
+    const d = h[k];
+    if (!d) return;
+    if (d.closed) out[k] = { closed: true };
+    else if (d.open && d.close) out[k] = { open: d.open, close: d.close };
+  });
+  return Object.keys(out).length ? out : undefined;
+}
+
+function HoursEditor({ hours, onChange }) {
+  const get = (k) => hours[k] || { closed: false, open: "", close: "" };
+  const set = (k, patch) => onChange({ ...hours, [k]: { ...get(k), ...patch } });
+  const copyToAll = () => {
+    const m = get("mon");
+    const next = {};
+    HOURS_DAYS.forEach(([k]) => { next[k] = { ...m }; });
+    onChange(next);
+  };
+  return (
+    <div className="hours-editor">
+      {HOURS_DAYS.map(([k, label]) => {
+        const d = get(k);
+        return (
+          <div key={k} className={`hours-row${d.closed ? " is-closed" : ""}`}>
+            <span className="hours-day">{label}</span>
+            <button type="button" className={`hours-state-toggle${d.closed ? " closed" : ""}`} onClick={() => set(k, { closed: !d.closed })}>
+              {d.closed ? "Closed" : "Open"}
+            </button>
+            {d.closed ? (
+              <span className="hours-closed-note">— closed all day</span>
+            ) : (
+              <div className="hours-times">
+                <input type="time" className="field-input hours-time" value={d.open} onChange={(e) => set(k, { open: e.target.value })} />
+                <span className="hours-dash">–</span>
+                <input type="time" className="field-input hours-time" value={d.close} onChange={(e) => set(k, { close: e.target.value })} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <button type="button" className="btn ghost hours-copy" onClick={copyToAll}>Copy Monday to every day</button>
+    </div>
+  );
+}
+
 function RestaurantForm({ initial, defaultLat, defaultLng, defaultAddress, onSave, onCancel, onDelete, mode = "new", isAdmin = false }) {
   const toast = useToast();
   const [name, setName] = useStateF(initial?.name || "");
@@ -27,6 +76,7 @@ function RestaurantForm({ initial, defaultLat, defaultLng, defaultAddress, onSav
   const [contacts, setContacts] = useStateF(() => initial?.id ? SDStore.getRestaurantContacts(initial.id) : []);
   const [website, setWebsite] = useStateF(initial?.website || "");
   const [reservationLink, setReservationLink] = useStateF(initial?.reservationLink || "");
+  const [hours, setHours] = useStateF(initial?.hours || {});
 
   const addContact = () => setContacts(prev => [...prev, { title: "", name: "" }]);
   const removeContact = (i) => setContacts(prev => prev.filter((_, idx) => idx !== i));
@@ -57,6 +107,7 @@ function RestaurantForm({ initial, defaultLat, defaultLng, defaultAddress, onSav
       description,
       website: website.trim() || undefined,
       reservationLink: reservationLink.trim() || undefined,
+      hours: normalizeHours(hours),
       createdAt: initial?.createdAt || new Date().toISOString().slice(0, 10),
     };
     onSave(entry);
@@ -148,6 +199,11 @@ function RestaurantForm({ initial, defaultLat, defaultLng, defaultAddress, onSav
           <label className="field-label">Reservation Link <span className="field-optional">optional</span></label>
           <input className="field-input" value={reservationLink} onChange={(e) => setReservationLink(e.target.value)} placeholder="OpenTable, Tock, Resy URL…" />
         </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">Business Hours <span className="field-optional">powers “Open now”</span></label>
+        <HoursEditor hours={hours} onChange={setHours} />
       </div>
 
       <div className="field-row">

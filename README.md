@@ -12,7 +12,7 @@ Live at [thesabroso.com](https://thesabroso.com)
 |---|---|
 | UI | React 18 (CDN, no bundler) |
 | JSX | Babel Standalone (in-browser transform) |
-| Map | Leaflet 1.9 + CartoDB tiles + MarkerCluster |
+| Map | Leaflet 1.9 + MarkerCluster + CartoDB tiles |
 | Fonts | Playfair Display · Manrope · JetBrains Mono |
 | Persistence | `localStorage` (restaurants and recipes seeded from JSON on first visit) |
 | Geocoding | Nominatim reverse geocoding API |
@@ -40,7 +40,7 @@ TheSabroso/
 └── src/
     ├── scripts/
     │   ├── storage.js       # localStorage helpers (SDStore) — plain JS, no JSX
-    │   ├── components.js    # Shared UI: StarRating, RichEditor, Modal, Toast, ManageMenu
+    │   ├── components.js    # Shared UI: StarRating, RichEditor, Modal, Toast, ManageMenu, GlobalSearch
     │   ├── forms.js         # RestaurantForm, RecipeForm, NoteForm, ImportDialog, and more
     │   ├── views.js         # AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile
     │   └── app.js           # Root App component, routing, state, CRUD handlers
@@ -74,7 +74,9 @@ Then open `http://localhost:8080`.
 
 ### About
 
-Masthead with the journal's title, byline, intro paragraph, and version/coordinate metadata. Links to the author's site.
+Masthead with the journal's title, byline, intro paragraph, and version/coordinate metadata, plus a link to the author's site.
+
+Below the masthead, a **This Week's Logs** strip shows the three most recently added entries — restaurants, recipes, or notes — as newspaper-style cards. Each card is clickable and jumps straight to that entry's profile, recipe, or note.
 
 ### Map
 
@@ -85,11 +87,15 @@ Leaflet map of San Diego. Each entry drops a color-coded pin:
 - **Gold square** — note
 - **Pulsing blue dot** — your current location (if geolocation is granted)
 
-When zoomed out, nearby pins are **clustered** into a numbered badge — click a cluster to zoom into it and reveal the individual pins.
+Hover or tap a pin to open its popup with name, cuisine, and address — plus a **Directions ↗** link (opens Google Maps) and, when location is enabled, **walking time and distance** from where you are. Click **Open profile →** or **Open note →** for the full detail modal.
 
-Hover or tap a pin to open its popup with name, cuisine, and address. Click **Open profile →** or **Open note →** for the full detail modal.
+Pins are **clustered** when zoomed out (count shown in a circle; click to expand) and **jittered** apart when several entries share the same coordinates, so overlapping pins stay individually clickable.
+
+**Open now.** Restaurants that have business hours show a live **Open now / Closed** status — with the next closing or opening time — in their popup and full profile. An **Open now** toggle in the map command bar filters the map down to just the places open at the current moment.
 
 The map chrome shows real-time **weather** (temperature + condition icon) and your **current neighborhood** via reverse geocoding. Both update automatically on load.
+
+On first visit the app asks — via an in-theme dialog — whether to use your location. Allow it and a pulsing blue dot marks your position and powers walk-time estimates; decline and it falls back to an approximate downtown marker. The choice is remembered for the session.
 
 **Filtering.** The top-left corner has a filter row. Toggle any cuisine or the Restaurant / Bar tags to hide or show those pins on the map. Active filters persist while you navigate.
 
@@ -105,7 +111,7 @@ The map chrome shows real-time **weather** (temperature + condition icon) and yo
 | `find nearest restaurant` | Uses your location + haversine distance to open the closest entry |
 | `find [keyword]` | Keyword search across name, cuisine, address, and description |
 
-Results appear in a collapsible **Voice Result** drawer (with distance info where applicable). A keyboard help modal lists all commands — accessible via the `?` key while the mic is active.
+Next to the mic is a **command bar** — type any of the same commands (or `help`) and press Enter to run them without speaking. Results appear in a collapsible **Voice Result** drawer (with distance info where applicable), and `help` opens a modal listing every command.
 
 ### Recipes
 
@@ -122,6 +128,7 @@ Split-pane layout: a searchable/sortable sidebar on the left, a detail panel on 
 | Serves | Ascending by serving count |
 | Cuisine | Grouped sections by cuisine (expand/collapse) |
 | Type | Grouped sections by badge type (Meat, Seafood, Veg, Baked, Sweet) |
+| Cost | Ascending by total ingredient cost (recipes without costs sort last) |
 
 **Badge filter.** Below the sort control, pill badges let you filter the list to only show recipes of a given type. Active badge is highlighted; click again to clear.
 
@@ -141,20 +148,31 @@ Split-pane layout: a searchable/sortable sidebar on the left, a detail panel on 
 
 ## Recipe detail
 
-Selecting a recipe in the sidebar opens the detail panel with:
+Selecting a recipe opens a two-column detail layout.
 
-- Name, cuisine, time, and serving count
-- Tagline
-- Structured ingredient list with qty, unit, name, and optional notes
-- Rich HTML method section
+**Left — the ingredients aside:**
+- A **Serves** count and an ×1 / ×2 / ×3 **scaler**
+- A **cost roll-up** (when ingredients carry costs): total "at the till" and per-serving, both scaling with the multiplier
+- The structured ingredient list — number, qty + unit + name, optional notes, and per-item cost
+- An **Add to grocery** button
 
-**Ingredient scaling.** Buttons above the ingredient list multiply all quantities ×1, ×2, or ×3. Fractions (e.g. `1/2`) and mixed numbers (e.g. `1 1/2`) are resolved before scaling.
+**Right — the method:**
+- Header with cuisine + filed/updated date, a **favorite** star, a **copy-link** button, and (admin only) an **Edit** button
+- Recipe name, an inline meta row (time · serves · per-serving cost), and the tagline
+- The rich-HTML method, rendered as numbered steps
+- An auto-extracted **pull-quote** — the longest emphasized (`<em>` / `<strong>`) phrase in the method, surfaced as a callout
 
-**Step striking.** Click any ingredient row or any method paragraph to cross it out while cooking. State resets when you navigate away.
+**Ingredient scaling.** The ×1 / ×2 / ×3 buttons multiply every ingredient quantity, the serving count, and all costs at once. Fractions (`1/2`), mixed numbers (`1 1/2`), and ranges (`4–5`) are parsed before scaling.
 
-**Add to Grocery.** The clipboard button in the detail header sends the recipe's ingredients to the Grocery List. Re-clicking refreshes that recipe's block (no duplicate append).
+**Striking.** Click any ingredient in the aside, or any method step, to cross it out while cooking. Both reset when you switch recipes.
 
-**Edit button.** An **Edit** button appears in the detail header — admin only. It opens the recipe's edit form directly from the detail panel.
+**Add to Grocery.** The button at the foot of the ingredients aside sends the recipe's ingredients (with costs) to the Grocery List. Re-clicking refreshes that recipe's block rather than appending a duplicate.
+
+**Copy link.** The link button copies a deep link (`/#recipes/{id}`) to the clipboard so a recipe can be shared or bookmarked.
+
+**Edit button.** Admin only — opens the recipe's edit form directly from the detail panel.
+
+**Mobile.** The sidebar and detail collapse to one column; selecting a recipe hides the list, and a **← Recipes** button brings it back.
 
 **Legacy migration.** Older recipes that stored ingredients as `<ul><li>` elements inside the description field are automatically migrated to the structured `ingredients` array on first load. The `<h3>` "Ingredients" header and list are removed from the description and parsed into `qty`, `unit`, and `name` fields.
 
@@ -167,6 +185,8 @@ The three views (Map, About, Recipes) are arranged in a horizontal carousel.
 | Input | Effect |
 |---|---|
 | Arrow Left / Arrow Right | Move one view in that direction |
+| ⌘K / Ctrl+K | Toggle global search |
+| / | Open global search |
 | Home | Jump to the About view |
 | Swipe left / right | Swipe on mobile or touchpad to advance views |
 
@@ -183,25 +203,12 @@ The last active view is saved to `localStorage` (`sabroso_last_view`) and restor
 
 ## Global search
 
-Press `/` or `Cmd/Ctrl + K` (or click the magnifying-glass icon in the bottom dock) to open the global search overlay.
+A command-palette-style overlay searches **recipes, restaurants, and notes** at once. Open it with **⌘K / Ctrl+K**, the **`/`** key, or the search icon in the bottom dock.
 
-Searches across all three collections simultaneously:
-
-| Collection | Searched fields |
-|---|---|
-| Restaurants | Name, cuisine, address, description, tags |
-| Recipes | Name, cuisine, tagline, description, ingredients |
-| Notes | Name, tag, address, description |
-
-Results are grouped by type (recipes first, then restaurants, then notes). Each result shows a **snippet** with the matching context inline.
-
-**Keyboard navigation inside the overlay:**
-
-| Key | Effect |
-|---|---|
-| `↑` / `↓` | Move through results |
-| `Enter` | Open the selected result (switches view and opens the profile) |
-| `Esc` | Close the overlay |
+- Matches across name, cuisine, address, tagline, description, ingredients, and tags
+- Results are grouped by type (Recipes · Restaurants · Notes & Map Pins) with a matching-text snippet, and a per-serving cost for recipes
+- Navigate with **↑ / ↓**, open with **Enter**, dismiss with **Esc**
+- Picking a result jumps to the right view and opens that restaurant profile, recipe, or note
 
 ---
 
@@ -234,7 +241,7 @@ A floating action bar persists across all views. The three-dot FAB collapses and
 
 | Icon | Available on | Effect |
 |---|---|---|
-| Search | All views | Open global search (`/` or `Cmd/Ctrl+K`) — always visible, outside the FAB |
+| Search | All views | Open global search across recipes, restaurants, and notes |
 | Notepad | Recipes view | Toggle the Grocery List panel |
 | Eye | Map view | Show / hide the weather and location chrome on the map |
 | Edit | About view | Open `editor.html` in a new tab |
@@ -274,7 +281,7 @@ The restaurant **Backup** button opens a modal with export options:
 - `contacts.json` — admin only
 - Both files — admin only
 
-Restaurant entries can also be exported as **CSV** directly from the restaurant form (Edit mode), producing a flat spreadsheet-friendly file.
+Both restaurant and recipe entries can also be exported as **CSV** directly from their forms (Edit mode), producing a flat spreadsheet-friendly file.
 
 ### Import
 
@@ -296,13 +303,15 @@ Wipes `sabroso_restaurants`, `sabroso_recipes`, and `sabroso_contacts` from `loc
 Accessible via the notepad icon in the bottom dock (visible only while on the Recipes view).
 
 **Adding ingredients:**
-- Click the clipboard button in any recipe's detail header to add that recipe's structured ingredients (qty + unit + name) to the list.
+- Click the **Add to grocery** button in any recipe's ingredients aside to add that recipe's structured ingredients (qty + unit + name + cost) to the list.
 - Re-clicking replaces that recipe's existing block — not a duplicate append.
 - Type a custom item into the input at the bottom of the panel and click **Add**.
 
 **Two view modes (tabs at the top of the panel):**
-- **By Recipe** — items grouped under their source recipe name. Each group has a **Remove** button to drop that recipe's entire block.
-- **Total** — all items aggregated alphabetically. Quantities are parsed and summed across recipes (e.g. `1/2 cup flour` from two recipes → `1 cup flour`). Source recipes are listed beneath each line.
+- **Per Recipe** — items grouped under their source recipe name. Each group has a **Remove** button to drop that recipe's entire block.
+- **Totals** — all items aggregated alphabetically. Quantities are parsed and summed across recipes (e.g. `1/2 cup flour` from two recipes → `1 cup flour`). Source recipes are listed beneath each line.
+
+Items that carry a cost show it on the right, and a **Total Cost** row at the foot of the panel sums every priced item.
 
 **Checking off and clearing:**
 - Tap any item to check it off (strikethrough). Checked state persists in `localStorage` under `sabroso_grocery_checked`.
@@ -383,7 +392,7 @@ The description fields in restaurant and recipe forms use a `contentEditable` ri
 | `sabroso_admin_pw` | SHA-256 hash of the admin password (absent = use default) |
 | `sabroso_admin_session` | Set to `"1"` while an admin session is active |
 | `sabroso_recipe_favs` | Array of favorited recipe IDs |
-| `sabroso_grocery` | Array of grocery list items (each with `id`, `text`, `recipeId`, `recipeName`) |
+| `sabroso_grocery` | Array of grocery list items (each with `id`, `text`, `cost`, `recipeId`, `recipeName`) |
 | `sabroso_grocery_checked` | Array of checked ingredient keys (ingredient text lowercased) |
 | `sabroso_theme` | `"light"` or `"dark"` |
 | `sabroso_last_view` | Index of the last active view (0 = Map, 1 = About, 2 = Recipes) |
@@ -407,11 +416,18 @@ The description fields in restaurant and recipe forms use a `contentEditable` ri
   "description":     "<p>HTML review content...</p>",
   "website":         "https://buonaforchettasd.com",
   "reservationLink": "https://www.opentable.com/...",
+  "hours":           {
+    "mon": { "closed": true },
+    "tue": { "open": "11:30", "close": "21:00" },
+    "sat": { "open": "10:00", "close": "22:00" }
+  },
   "createdAt":       "2026-01-14"
 }
 ```
 
 `tags` accepts any combination of `"restaurant"` and `"bar"`. Contacts are stored separately in `sabroso_contacts` keyed by restaurant `id`.
+
+`hours` is optional and keyed by short day name (`mon`–`sun`); each day is either `{ "closed": true }` or `{ "open": "HH:MM", "close": "HH:MM" }` in 24-hour time (a `close` earlier than `open` means it runs past midnight). It is edited per-day in the restaurant form and drives the **Open now** status and map filter. Days with no entry are treated as closed.
 
 ### Recipe
 
@@ -424,15 +440,16 @@ The description fields in restaurant and recipe forms use a `contentEditable` ri
   "serves":      4,
   "tagline":     "Skirt steak, charred lime, no shortcuts.",
   "ingredients": [
-    { "qty": "2", "unit": "lb",   "name": "skirt steak", "notes": "ask for outside skirt" },
-    { "qty": "2", "unit": "tbsp", "name": "olive oil",   "notes": "" }
+    { "qty": "2", "unit": "lb",   "name": "skirt steak", "notes": "ask for outside skirt", "cost": "14.00" },
+    { "qty": "2", "unit": "tbsp", "name": "olive oil",   "notes": "", "cost": "" }
   ],
   "description": "<p>HTML method content...</p>",
-  "createdAt":   "2025-09-20"
+  "createdAt":   "2025-09-20",
+  "modifiedAt":  "2026-01-12"
 }
 ```
 
-`ingredients` is a structured array separate from `description`. Each entry has `qty`, `unit`, `name`, and an optional `notes` field. Notes appear in the recipe detail view but are not included in grocery list exports. Older recipes without an `ingredients` field are auto-migrated from `<li>` elements in the description on first load.
+`ingredients` is a structured array separate from `description`. Each entry has `qty`, `unit`, `name`, and optional `notes` and `cost` fields. When ingredients carry costs, the recipe shows total and per-serving roll-ups and can be sorted by cost. `modifiedAt` is stamped automatically whenever a recipe is edited — the detail header then reads "Updated …" instead of "Filed …". Older recipes without an `ingredients` field are auto-migrated from `<li>` elements in the description on first load.
 
 ### Note
 
