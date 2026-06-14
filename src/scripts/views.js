@@ -1590,6 +1590,7 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
   }, [onClose]);
 
   const contacts = SDStore.getRestaurantContacts(restaurant.id);
+  const [hoursOpen, setHoursOpen] = useStateV(false);
 
   return (
     <div className="profile" role="dialog">
@@ -1628,49 +1629,61 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
 
       <ProfileMiniMap lat={restaurant.lat} lng={restaurant.lng} />
 
-      {restaurant.hours && Object.keys(restaurant.hours).length > 0 && (() => {
-        const status = getOpenStatus(restaurant);
+      {(() => {
+        const hasHours = restaurant.hours && Object.keys(restaurant.hours).length > 0;
+        if (!hasHours && !restaurant.website && !restaurant.reservationLink) return null;
+        const status = hasHours ? getOpenStatus(restaurant) : null;
         const todayKey = OPEN_DAY_KEYS[new Date().getDay()];
         return (
-          <div className="profile-hours">
-            <div className="profile-hours-head">
-              <div className="k">Hours</div>
-              {status && (
-                <div className={`ph-status ${status.open ? "is-open" : "is-closed"}`}>
-                  <span className="ph-dot" />
-                  <span className="ph-label">{status.open ? "Open now" : "Closed"}</span>
-                  {status.detail && <span className="ph-detail">· {status.detail}</span>}
-                </div>
+          <div className="profile-cta">
+            <div className="profile-links">
+              {hasHours && (
+                <button
+                  type="button"
+                  className={`profile-link profile-hours-btn${hoursOpen ? " open" : ""}`}
+                  onClick={() => setHoursOpen((vv) => !vv)}
+                  aria-expanded={hoursOpen}
+                >
+                  {status && <span className={`ph-dot ${status.open ? "is-open" : "is-closed"}`} />}
+                  {status ? (status.open ? "Open" : "Closed") : "Hours"}
+                  <span className="ph-chev" aria-hidden="true" />
+                </button>
+              )}
+              {restaurant.website && (
+                <a className="profile-link" href={restaurant.website} target="_blank" rel="noopener noreferrer">Website ↗</a>
+              )}
+              {restaurant.reservationLink && (
+                <a className="profile-link profile-link-reserve" href={restaurant.reservationLink} target="_blank" rel="noopener noreferrer">Reserve a Table ↗</a>
               )}
             </div>
-            <div className="profile-hours-list">
-              {WEEK_ORDER.map(([k, label]) => {
-                const d = restaurant.hours[k];
-                const text = (!d || d.closed || !d.open || !d.close)
-                  ? "Closed"
-                  : `${fmtClock(hmToMin(d.open))} – ${fmtClock(hmToMin(d.close))}`;
-                return (
-                  <div key={k} className={`ph-day-row${k === todayKey ? " is-today" : ""}`}>
-                    <span className="ph-day">{label}</span>
-                    <span className={`ph-time${text === "Closed" ? " is-closed-text" : ""}`}>{text}</span>
+            {hasHours && hoursOpen && (
+              <div className="profile-hours-table">
+                {status && (
+                  <div className={`pht-status ${status.open ? "is-open" : "is-closed"}`}>
+                    <span className="ph-dot" />
+                    <span className="ph-label">{status.open ? "Open now" : "Closed"}</span>
+                    {status.detail && <span className="ph-detail">· {status.detail}</span>}
                   </div>
-                );
-              })}
-            </div>
+                )}
+                <div className="pht-rows">
+                  {WEEK_ORDER.map(([k, label]) => {
+                    const d = restaurant.hours[k];
+                    const text = (!d || d.closed || !d.open || !d.close)
+                      ? "Closed"
+                      : `${fmtClock(hmToMin(d.open))} – ${fmtClock(hmToMin(d.close))}`;
+                    return (
+                      <div key={k} className={`ph-day-row${k === todayKey ? " is-today" : ""}`}>
+                        <span className="ph-day">{label}</span>
+                        <span className={`ph-time${text === "Closed" ? " is-closed-text" : ""}`}>{text}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         );
       })()}
-
-      {(restaurant.website || restaurant.reservationLink) && (
-        <div className="profile-links">
-          {restaurant.website && (
-            <a className="profile-link" href={restaurant.website} target="_blank" rel="noopener noreferrer">Website ↗</a>
-          )}
-          {restaurant.reservationLink && (
-            <a className="profile-link profile-link-reserve" href={restaurant.reservationLink} target="_blank" rel="noopener noreferrer">Reserve a Table ↗</a>
-          )}
-        </div>
-      )}
 
       <div className="profile-body" dangerouslySetInnerHTML={{ __html: restaurant.description || "<p><em>No review yet.</em></p>" }} />
 

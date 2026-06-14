@@ -16,13 +16,13 @@
     "website": "https://buonaforchettasd.com/location/coronado/",
     "reservationLink": "https://www.opentable.com/r/garage-buona-forchetta-coronado",
     "hours": {
-      "mon": { "closed": true },
+      "mon": { "open": "11:30", "close": "21:00" },
       "tue": { "open": "11:30", "close": "21:00" },
       "wed": { "open": "11:30", "close": "21:00" },
       "thu": { "open": "11:30", "close": "21:00" },
       "fri": { "open": "11:30", "close": "22:00" },
-      "sat": { "open": "10:00", "close": "22:00" },
-      "sun": { "open": "10:00", "close": "21:00" }
+      "sat": { "open": "11:30", "close": "22:00" },
+      "sun": { "open": "11:30", "close": "21:00" }
     },
     "createdAt": "2026-01-14"
   },
@@ -41,13 +41,13 @@
     "description": "<p>If you're into ramen and the cyberpunk aesthetic as much as I am, this is the spot for you. This corner downtown ramen counter with a tonkotsu broth that runs 12 hours is a lunchtime and late night staple. The chashu comes from a low braise and the soft egg is seasoned overnight. Cramped, loud, worth every inconvenience to sit under the glowing neon masterpiece above you. This is yet another Consortium Holdings offering that does not disappoint.&nbsp;</p><h3>My Order</h3><ul><li>BELLY OF THE BEAST&nbsp;— rich tonkotsu broth, soft boiled egg, oxtail dumplings, hoisin glazed short ribs... a meat lovers delight</li><li>SPICY JFC — add it, don't think about it.&nbsp;Red pepper sauce, cabbage, lemon, and a side of mayo.</li><li>SHO CHIKU BAI — Nigori Sake. 375ml. 15% unfiltered; the perfect ramen pairing.</li></ul>",
     "contacts": [],
     "hours": {
-      "mon": { "open": "11:00", "close": "23:00" },
-      "tue": { "open": "11:00", "close": "23:00" },
-      "wed": { "open": "11:00", "close": "23:00" },
-      "thu": { "open": "11:00", "close": "23:00" },
-      "fri": { "open": "11:00", "close": "01:00" },
-      "sat": { "open": "11:00", "close": "01:00" },
-      "sun": { "open": "11:00", "close": "22:00" }
+      "mon": { "open": "11:30", "close": "23:30" },
+      "tue": { "open": "11:30", "close": "23:30" },
+      "wed": { "open": "11:30", "close": "23:30" },
+      "thu": { "open": "11:30", "close": "23:30" },
+      "fri": { "open": "11:30", "close": "23:30" },
+      "sat": { "open": "11:30", "close": "23:30" },
+      "sun": { "open": "11:30", "close": "23:30" }
     },
     "createdAt": "2026-01-22"
   },
