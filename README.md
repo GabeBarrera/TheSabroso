@@ -193,7 +193,7 @@ Searches across all three collections simultaneously:
 | Recipes | Name, cuisine, tagline, description, ingredients |
 | Notes | Name, tag, address, description |
 
-Results are grouped by type (recipes first, then restaurants, then notes). Each result shows a **snippet** with the matching context highlighted inline.
+Results are grouped by type (recipes first, then restaurants, then notes). Each result shows a **snippet** with the matching context inline.
 
 **Keyboard navigation inside the overlay:**
 
