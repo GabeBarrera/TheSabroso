@@ -12,7 +12,7 @@ Live at [thesabroso.com](https://thesabroso.com)
 |---|---|
 | UI | React 18 (CDN, no bundler) |
 | JSX | Babel Standalone (in-browser transform) |
-| Map | Leaflet 1.9 + CartoDB tiles |
+| Map | Leaflet 1.9 + CartoDB tiles + MarkerCluster |
 | Fonts | Playfair Display · Manrope · JetBrains Mono |
 | Persistence | `localStorage` (restaurants and recipes seeded from JSON on first visit) |
 | Geocoding | Nominatim reverse geocoding API |
@@ -84,6 +84,8 @@ Leaflet map of San Diego. Each entry drops a color-coded pin:
 - **Blue (B)** — bar only
 - **Gold square** — note
 - **Pulsing blue dot** — your current location (if geolocation is granted)
+
+When zoomed out, nearby pins are **clustered** into a numbered badge — click a cluster to zoom into it and reveal the individual pins.
 
 Hover or tap a pin to open its popup with name, cuisine, and address. Click **Open profile →** or **Open note →** for the full detail modal.
 
@@ -179,6 +181,30 @@ The last active view is saved to `localStorage` (`sabroso_last_view`) and restor
 
 ---
 
+## Global search
+
+Press `/` or `Cmd/Ctrl + K` (or click the magnifying-glass icon in the bottom dock) to open the global search overlay.
+
+Searches across all three collections simultaneously:
+
+| Collection | Searched fields |
+|---|---|
+| Restaurants | Name, cuisine, address, description, tags |
+| Recipes | Name, cuisine, tagline, description, ingredients |
+| Notes | Name, tag, address, description |
+
+Results are grouped by type (recipes first, then restaurants, then notes). Each result shows a **snippet** with the matching context highlighted inline.
+
+**Keyboard navigation inside the overlay:**
+
+| Key | Effect |
+|---|---|
+| `↑` / `↓` | Move through results |
+| `Enter` | Open the selected result (switches view and opens the profile) |
+| `Esc` | Close the overlay |
+
+---
+
 ## PWA
 
 The app ships with a Web App Manifest and can be installed as a standalone PWA on desktop and mobile. On first visit, a dismissible install prompt appears if the browser supports it.
@@ -208,6 +234,7 @@ A floating action bar persists across all views. The three-dot FAB collapses and
 
 | Icon | Available on | Effect |
 |---|---|---|
+| Search | All views | Open global search (`/` or `Cmd/Ctrl+K`) — always visible, outside the FAB |
 | Notepad | Recipes view | Toggle the Grocery List panel |
 | Eye | Map view | Show / hide the weather and location chrome on the map |
 | Edit | About view | Open `editor.html` in a new tab |
