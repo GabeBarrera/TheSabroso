@@ -274,7 +274,7 @@ let _locDecision = null;
 
 function MapView({ restaurants, setRestaurants, openProfile, openManage, navigate, theme, hiddenFilters, mapActionsRef,
                    cmdText, setCmdText, onCmdSubmit, chatActive, setChatActive, widgetsVisible,
-                   notes, openNoteProfile, onPinDrop, isWatch }) {
+                   notes, openNoteProfile, onPinDrop, isAdmin, isWatch }) {
   const mapDiv = useRefV(null);
   const mapInstance = useRefV(null);
   const tileLayerRef = useRefV(null);
@@ -287,7 +287,9 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const [cityName, setCityName] = useStateV("San Diego");
   const [weather, setWeather] = useStateV(null);
   const [showLocPrompt, setShowLocPrompt] = useStateV(false);
-  const [openNowOnly, setOpenNowOnly] = useStateV(false);
+  const [filters, setFilters] = useStateV({ openNow: false, restaurants: false, bars: false, nearby: false });
+  const [filterOpen, setFilterOpen] = useStateV(false);
+  const filterWrapRef = useRefV(null);
   const geoCallbackRef = useRefV(null);
   const toast = useToast();
   // Always-current refs so delegated handlers don't go stale
@@ -296,11 +298,13 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
   const notesRef = useRefV(notes || []);
   const openNoteProfileRef = useRefV(openNoteProfile);
   const onPinDropRef = useRefV(onPinDrop);
+  const isAdminRef = useRefV(isAdmin);
   useEffectV(() => { restaurantsRef.current = restaurants; }, [restaurants]);
   useEffectV(() => { openProfileRef.current = openProfile; }, [openProfile]);
   useEffectV(() => { notesRef.current = notes || []; }, [notes]);
   useEffectV(() => { openNoteProfileRef.current = openNoteProfile; }, [openNoteProfile]);
   useEffectV(() => { onPinDropRef.current = onPinDrop; }, [onPinDrop]);
+  useEffectV(() => { isAdminRef.current = isAdmin; }, [isAdmin]);
 
   // build map once
   useEffectV(() => {
@@ -348,7 +352,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
       lpMoved = false;
       lpLatLng = e.latlng;
       lpTimer = setTimeout(() => {
-        if (!lpMoved && lpLatLng) onPinDropRef.current?.({ lat: lpLatLng.lat, lng: lpLatLng.lng });
+        if (!lpMoved && lpLatLng && isAdminRef.current) onPinDropRef.current?.({ lat: lpLatLng.lat, lng: lpLatLng.lng });
       }, 600);
     });
     map.on("mousemove", () => { lpMoved = true; clearTimeout(lpTimer); lpTimer = null; });
@@ -361,7 +365,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
       const rect = container.getBoundingClientRect();
       lpLatLng = map.containerPointToLatLng(L.point(t.clientX - rect.left, t.clientY - rect.top));
       lpTimer = setTimeout(() => {
-        if (!lpMoved && lpLatLng) onPinDropRef.current?.({ lat: lpLatLng.lat, lng: lpLatLng.lng });
+        if (!lpMoved && lpLatLng && isAdminRef.current) onPinDropRef.current?.({ lat: lpLatLng.lat, lng: lpLatLng.lng });
       }, 600);
     };
     const onTouchMove = () => { lpMoved = true; clearTimeout(lpTimer); lpTimer = null; };
@@ -494,6 +498,25 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
 
     const markerById = {};
 
+    const FIVE_MI_KM = 8.04672;
+    const passesFilters = (r) => {
+      if (isFilterHidden(r, hiddenFilters)) return false;
+      if (filters.openNow) { const st = getOpenStatus(r); if (!st || !st.open) return false; }
+      if (filters.restaurants || filters.bars) {
+        const rt = Array.isArray(r.tags) ? r.tags : ["restaurant"];
+        const isRest = rt.includes("restaurant");
+        const isBar = rt.includes("bar");
+        if (!((filters.restaurants && isRest) || (filters.bars && isBar))) return false;
+      }
+      if (filters.nearby) {
+        const u = userLatLngRef.current;
+        if (!u) return false;
+        const km = haversineKm(u, { lat: r.lat, lng: r.lng });
+        if (km == null || km > FIVE_MI_KM) return false;
+      }
+      return true;
+    };
+
     // Jitter co-located markers so overlapping pins are visually separate.
     // Groups by coordinate rounded to 4 decimal places (~11m), then spreads
     // each group in a small circle. Original r.lat/r.lng are preserved for
@@ -501,8 +524,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     const JITTER_R = 0.00022;
     const coordGroups = {};
     restaurants.forEach((r) => {
-      if (isFilterHidden(r, hiddenFilters)) return;
-      if (openNowOnly) { const st = getOpenStatus(r); if (!st || !st.open) return; }
+      if (!passesFilters(r)) return;
       const key = `${r.lat.toFixed(4)},${r.lng.toFixed(4)}`;
       if (!coordGroups[key]) coordGroups[key] = [];
       coordGroups[key].push(r.id);
@@ -525,8 +547,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     });
 
     restaurants.forEach((r) => {
-      if (isFilterHidden(r, hiddenFilters)) return;
-      if (openNowOnly) { const st = getOpenStatus(r); if (!st || !st.open) return; }
+      if (!passesFilters(r)) return;
 
       const openStatus = getOpenStatus(r);
       const rTags = Array.isArray(r.tags) ? r.tags : ["restaurant"];
@@ -603,7 +624,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
         },
       };
     }
-  }, [restaurants, hiddenFilters, openNowOnly]);
+  }, [restaurants, hiddenFilters, filters]);
 
   // render note markers
   useEffectV(() => {
@@ -647,6 +668,33 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
     });
   }, [notes]);
 
+  const FILTER_OPTS = [
+    { key: "openNow", label: "Open now" },
+    { key: "restaurants", label: "Restaurants" },
+    { key: "bars", label: "Bars" },
+    { key: "nearby", label: "Nearby \u00b7 5 mi" },
+  ];
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const toggleFilter = (key) => {
+    setFilters((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      if (key === "nearby" && next.nearby && !userLatLngRef.current && toast) {
+        toast("Enable location to filter by distance", "warn");
+      }
+      return next;
+    });
+  };
+  const clearFilters = () => setFilters({ openNow: false, restaurants: false, bars: false, nearby: false });
+
+  useEffectV(() => {
+    if (!filterOpen) return;
+    const onDoc = (e) => { if (!filterWrapRef.current?.contains(e.target)) setFilterOpen(false); };
+    const onEsc = (e) => { if (e.key === "Escape") setFilterOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onEsc);
+    return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onEsc); };
+  }, [filterOpen]);
+
   const handleLocAllow = () => {
     _locDecision = 'granted';
     setShowLocPrompt(false);
@@ -666,8 +714,8 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           <div className="map-header-left" />
           <div className="title">The Map<span className="title-city"> · <span className="it">{cityName}</span></span></div>
           <div className="map-header-right">
-            <ManageMenu items={openManage("note")} label="Notes" />
-            <ManageMenu items={openManage("restaurant")} label="Restaurants" />
+            {isAdmin && <ManageMenu items={openManage("note")} label="Notes" />}
+            {isAdmin && <ManageMenu items={openManage("restaurant")} label="Restaurants" />}
           </div>
         </div>
       )}
@@ -699,14 +747,40 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           spellCheck={false}
         />
         <button className="map-cmd-submit" onClick={onCmdSubmit} title="Run command">↵</button>
-        <button
-          className={`map-open-now${openNowOnly ? " active" : ""}`}
-          onClick={() => setOpenNowOnly((v) => !v)}
-          title={openNowOnly ? "Showing only places open now" : "Show only places open now"}
-          aria-pressed={openNowOnly}
-        >
-          <span className="mon-dot" />Open now
-        </button>
+        <div className="map-filter-wrap" ref={filterWrapRef}>
+          <button
+            className={`map-filter-btn${activeFilterCount ? " active" : ""}`}
+            onClick={() => setFilterOpen((v) => !v)}
+            title="Filter map pins"
+            aria-label="Filter map pins"
+            aria-expanded={filterOpen}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+            </svg>
+            {activeFilterCount > 0 && <span className="map-filter-count">{activeFilterCount}</span>}
+          </button>
+          {filterOpen && (
+            <div className="map-filter-menu" role="menu">
+              <div className="map-filter-head">Filter Pins</div>
+              {FILTER_OPTS.map((opt) => (
+                <button
+                  key={opt.key}
+                  className={`map-filter-opt${filters[opt.key] ? " on" : ""}`}
+                  onClick={() => toggleFilter(opt.key)}
+                  role="menuitemcheckbox"
+                  aria-checked={filters[opt.key]}
+                >
+                  <span className="mf-check" />
+                  <span className="mf-label">{opt.label}</span>
+                </button>
+              ))}
+              {activeFilterCount > 0 && (
+                <button className="map-filter-clear" onClick={clearFilters}>Clear filters</button>
+              )}
+            </div>
+          )}
+        </div>
       </div>}
 
       <div ref={mapDiv} className="map-canvas" />

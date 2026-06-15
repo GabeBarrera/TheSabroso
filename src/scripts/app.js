@@ -701,6 +701,7 @@ function AppInner(props) {
             notes={notes}
             openNoteProfile={setNoteProfile}
             onPinDrop={handlePinDrop}
+            isAdmin={isAdmin}
             isWatch={isWatch}
           />
         </div>
