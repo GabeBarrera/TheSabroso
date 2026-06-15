@@ -714,8 +714,7 @@ function MapView({ restaurants, setRestaurants, openProfile, openManage, navigat
           <div className="map-header-left" />
           <div className="title">The Map<span className="title-city"> · <span className="it">{cityName}</span></span></div>
           <div className="map-header-right">
-            {isAdmin && <ManageMenu items={openManage("note")} label="Notes" />}
-            {isAdmin && <ManageMenu items={openManage("restaurant")} label="Restaurants" />}
+            {isAdmin && <ManageMenu items={openManage("manage")} label="Manage" />}
           </div>
         </div>
       )}
@@ -1656,7 +1655,7 @@ function ProfileMiniMap({ lat, lng }) {
   return <div ref={containerRef} className="profile-minimap" />;
 }
 
-function RestaurantProfile({ restaurant, onClose, isAdmin }) {
+function RestaurantProfile({ restaurant, onClose, isAdmin, onEdit, onDelete }) {
   useEffectV(() => {
     const onEsc = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onEsc);
@@ -1778,6 +1777,13 @@ function RestaurantProfile({ restaurant, onClose, isAdmin }) {
                 ))
             }
           </div>
+        </div>
+      )}
+
+      {isAdmin && (onEdit || onDelete) && (
+        <div className="profile-note-actions">
+          {onEdit && <button className="btn ghost" onClick={() => onEdit(restaurant)}>Edit entry</button>}
+          {onDelete && <button className="btn danger" onClick={onDelete}>Delete</button>}
         </div>
       )}
     </div>

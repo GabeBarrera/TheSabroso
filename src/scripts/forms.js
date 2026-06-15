@@ -2,6 +2,8 @@
 /* global React, RichEditor, StarRating, Modal, useToast, SDStore */
 const { useState: useStateF, useEffect: useEffectF, useMemo: useMemoF, useRef: useRefF } = React;
 
+const stripTags = (s) => (s ? String(s).replace(/<[^>]+>/g, " ") : "");
+
 /* ============================================================
    RESTAURANT FORM (new + edit)
    ============================================================ */
@@ -1004,6 +1006,351 @@ function BothImportDialog({ existing, onClose, onCommit }) {
    LOGIN MODAL
    ============================================================ */
 
+/* ============================================================
+   ALL ENTRIES LIST — unified restaurants + notes, searchable
+   ============================================================ */
+
+function AllEntriesListModal({ restaurants, notes, onClose, onOpenRestaurant, onEditRestaurant, onOpenNote, onEditNote }) {
+  const [q, setQ] = useStateF("");
+  const term = q.trim().toLowerCase();
+
+  const matchInfo = (entry) => {
+    if (!term) return { match: true, titleHit: false };
+    const titleHit = (entry.name || "").toLowerCase().includes(term);
+    const other = [
+      entry.cuisine, entry.tag, entry.address, stripTags(entry.description),
+      Array.isArray(entry.tags) ? entry.tags.join(" ") : "",
+    ].filter(Boolean).join(" ").toLowerCase();
+    return { match: titleHit || other.includes(term), titleHit };
+  };
+
+  // Title matches float to the top of each section, then alphabetical.
+  const sortFilter = (list) => list
+    .map((e) => ({ e, ...matchInfo(e) }))
+    .filter((x) => x.match)
+    .sort((a, b) => (a.titleHit !== b.titleHit ? (a.titleHit ? -1 : 1) : (a.e.name || "").localeCompare(b.e.name || "")))
+    .map((x) => x.e);
+
+  const rList = useMemoF(() => sortFilter(restaurants || []), [restaurants, term]);
+  const nList = useMemoF(() => sortFilter(notes || []), [notes, term]);
+  const empty = rList.length === 0 && nList.length === 0;
+
+  const sectionStyle = {
+    fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase",
+    color: "var(--muted)", padding: "16px 4px 8px", display: "flex", justifyContent: "space-between",
+    alignItems: "center", borderBottom: "1px solid var(--hairline)", marginBottom: 4,
+  };
+  const badge = (letter, bg) => (
+    <span style={{
+      display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16,
+      borderRadius: 4, fontSize: 9, fontWeight: 700, fontFamily: "var(--mono)", marginRight: 7,
+      verticalAlign: "middle", background: bg, color: "var(--paper)",
+    }}>{letter}</span>
+  );
+
+  return (
+    <Modal eyebrow="Manage" title="All" italicTitle="entries" onClose={onClose}>
+      <div className="edit-search">
+        <div className="search-field">
+          <span className="icon" />
+          <input
+            autoFocus
+            placeholder="Search restaurants & notes — matches titles first…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="edit-list">
+        {empty && (
+          <div style={{ padding: "32px 18px", textAlign: "center" }} className="muted">
+            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18 }}>
+              {term ? "Nothing matches." : "No entries yet."}
+            </div>
+          </div>
+        )}
+
+        {rList.length > 0 && (
+          <>
+            <div style={sectionStyle}><span>Restaurants</span><span>{rList.length}</span></div>
+            {rList.map((r) => (
+              <div key={r.id} className="restaurant-list-row">
+                <button className="restaurant-list-row-main" onClick={() => onOpenRestaurant(r)}>
+                  <div>
+                    <div className="er-name">{badge("R", "var(--marine)")}{r.name}</div>
+                    <div className="er-meta">{r.cuisine || "Restaurant"}{r.address ? ` · ${r.address.split(",")[0]}` : ""}</div>
+                  </div>
+                </button>
+                <button className="restaurant-list-edit-btn" onClick={() => onEditRestaurant(r)}>Edit</button>
+              </div>
+            ))}
+          </>
+        )}
+
+        {nList.length > 0 && (
+          <>
+            <div style={sectionStyle}><span>Notes</span><span>{nList.length}</span></div>
+            {nList.map((n) => (
+              <div key={n.id} className="restaurant-list-row">
+                <button className="restaurant-list-row-main" onClick={() => onOpenNote(n)}>
+                  <div>
+                    <div className="er-name">{badge("N", "var(--terracotta)")}{n.name}</div>
+                    <div className="er-meta">{n.tag || "Note"}{n.address ? ` · ${n.address.split(",")[0]}` : ""}</div>
+                  </div>
+                </button>
+                <button className="restaurant-list-edit-btn" onClick={() => onEditNote(n)}>Edit</button>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
+/* ============================================================
+   GENERAL IMPORT — one of restaurants.json / contacts.json / notes.json
+   ============================================================ */
+
+const IMPORT_TYPES = [
+  { key: "restaurant", file: "restaurants.json", title: "Restaurants", desc: "An array of restaurant entries — each needs a name plus numeric lat & lng." },
+  { key: "note",       file: "notes.json",       title: "Notes",       desc: "An array of map notes — each needs a name plus numeric lat & lng." },
+  { key: "contacts",   file: "contacts.json",    title: "Contacts",    desc: "A JSON object keyed by restaurant ID, each holding an array of contacts." },
+];
+
+function GeneralImportDialog({ restaurants, notes, onClose, onCommitRestaurants, onCommitNotes, onCommitContacts }) {
+  const toast = useToast();
+  const [type, setType] = useStateF(null);       // "restaurant" | "note" | "contacts"
+  const [stage, setStage] = useStateF("type");   // type | pick | review
+  const [incoming, setIncoming] = useStateF([]);
+  const [decisions, setDecisions] = useStateF({});
+  const fileRef = useRefF(null);
+
+  const existing = type === "restaurant" ? (restaurants || []) : type === "note" ? (notes || []) : [];
+  const meta = IMPORT_TYPES.find((t) => t.key === type);
+
+  const startType = (t) => { setType(t); setStage("pick"); };
+
+  const handleFile = async (f) => {
+    if (!f) return;
+
+    // Soft filename guard — reject a file that clearly belongs to another type.
+    const fname = (f.name || "").toLowerCase();
+    const others = IMPORT_TYPES.filter((t) => t.key !== type).map((t) => t.file.replace(".json", ""));
+    const mineRoot = meta.file.replace(".json", "");
+    if (!fname.includes(mineRoot) && others.some((o) => fname.includes(o))) {
+      toast(`That looks like a different file — choose a ${meta.file}`, "warn");
+      return;
+    }
+
+    let data;
+    try {
+      data = JSON.parse(await f.text());
+    } catch {
+      toast("Invalid JSON file", "warn");
+      return;
+    }
+
+    if (type === "contacts") {
+      if (typeof data !== "object" || data === null || Array.isArray(data)) {
+        toast("Wrong format — contacts.json must be an object keyed by restaurant ID", "warn");
+        return;
+      }
+      const bad = Object.keys(data).some((k) => !Array.isArray(data[k]));
+      if (bad) {
+        toast("Wrong format — each restaurant's contacts must be an array", "warn");
+        return;
+      }
+      onCommitContacts(data);
+      toast("Imported · contacts", "ok");
+      return;
+    }
+
+    // restaurant / note — both are arrays of geo entries
+    const arr = Array.isArray(data) ? data : [data];
+    if (arr.length === 0) { toast("File contained no entries", "warn"); return; }
+    const invalid = arr.filter((e) => {
+      if (!e || typeof e !== "object" || Array.isArray(e)) return true;
+      if (!e.name || typeof e.name !== "string" || !e.name.trim()) return true;
+      if (typeof e.lat !== "number" || typeof e.lng !== "number") return true;
+      return false;
+    });
+    if (invalid.length > 0) {
+      toast(`Wrong format — ${invalid.length} entr${invalid.length === 1 ? "y" : "ies"} missing required fields (name, lat, lng)`, "warn");
+      return;
+    }
+    setIncoming(arr);
+    const init = {};
+    arr.forEach((e) => {
+      const dup = existing.find((x) => x.id === e.id || x.name?.trim().toLowerCase() === (e.name || "").trim().toLowerCase());
+      if (dup) init[e.id || ("name:" + (e.name || ""))] = "overwrite";
+    });
+    setDecisions(init);
+    setStage("review");
+  };
+
+  const dupes = useMemoF(() => {
+    if (type === "contacts") return [];
+    return incoming.map((e) => {
+      const dup = existing.find((x) => x.id === e.id || x.name?.trim().toLowerCase() === (e.name || "").trim().toLowerCase());
+      return { entry: e, dup: dup || null, key: e.id || ("name:" + (e.name || "")) };
+    });
+  }, [incoming, existing, type]);
+
+  const duplicates = dupes.filter((d) => d.dup);
+  const fresh = dupes.filter((d) => !d.dup);
+
+  const commit = () => {
+    const prefix = type === "restaurant" ? "r" : "n";
+    const out = [...existing];
+    const byId = new Map(out.map((x) => [x.id, x]));
+
+    fresh.forEach(({ entry }) => {
+      const e = { ...entry, id: entry.id || SDStore.newId(prefix) };
+      if (byId.has(e.id)) e.id = SDStore.newId(prefix);
+      byId.set(e.id, e);
+      out.push(e);
+    });
+
+    duplicates.forEach(({ entry, dup, key }) => {
+      const decision = decisions[key] || "overwrite";
+      if (decision === "overwrite") {
+        const idx = out.findIndex((x) => x.id === dup.id);
+        out[idx] = { ...dup, ...entry, id: dup.id };
+      }
+    });
+
+    if (type === "restaurant") onCommitRestaurants(out);
+    else onCommitNotes(out);
+    toast(`Imported · ${fresh.length} new · ${duplicates.length} duplicate${duplicates.length === 1 ? "" : "s"} reviewed`, "ok");
+  };
+
+  const monoNote = { fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".18em", textTransform: "uppercase" };
+
+  let titleA = "Choose a", titleB = "data type";
+  if (stage === "pick") { titleA = "Choose a"; titleB = meta.file; }
+  if (stage === "review") { titleA = "Review the"; titleB = "incoming entries"; }
+
+  return (
+    <Modal
+      eyebrow="Import"
+      title={titleA}
+      italicTitle={titleB}
+      onClose={onClose}
+      footer={
+        stage === "type" ? (
+          <div className="muted" style={monoNote}>One file at a time — verified before it lands</div>
+        ) : stage === "pick" ? (
+          <div className="row" style={{ width: "100%", justifyContent: "space-between" }}>
+            <button className="btn ghost" onClick={() => { setStage("type"); setType(null); }}>← Back</button>
+            <div className="muted" style={monoNote}>Accepts {meta.file}</div>
+          </div>
+        ) : (
+          <>
+            <div className="muted" style={monoNote}>{fresh.length} new · {duplicates.length} duplicate{duplicates.length === 1 ? "" : "s"}</div>
+            <div className="row">
+              <button className="btn ghost" onClick={onClose}>Cancel</button>
+              <button className="btn accent" onClick={commit}>Commit import</button>
+            </div>
+          </>
+        )
+      }
+    >
+      {stage === "type" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
+          <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 6 }}>
+            Which kind of backup are you importing? You can bring in one file at a time.
+          </p>
+          {IMPORT_TYPES.map((t) => (
+            <button key={t.key} className="btn primary" onClick={() => startType(t.key)}>
+              {t.file}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {stage === "pick" && (
+        <div style={{ padding: "12px 0" }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 17, color: "var(--muted)", maxWidth: 540, marginBottom: 18 }}>
+            {meta.desc} {type !== "contacts" && <>Duplicates are flagged so you can overwrite or discard, one by one.</>}
+          </div>
+          <button className="btn primary" onClick={() => fileRef.current?.click()}>Choose {meta.file}</button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden-file"
+            onChange={(e) => handleFile(e.target.files?.[0])}
+          />
+        </div>
+      )}
+
+      {stage === "review" && (
+        <div>
+          {fresh.length > 0 && (
+            <div style={{ marginBottom: 22 }}>
+              <div className="field-label" style={{ color: "var(--marine)" }}>{fresh.length} new entr{fresh.length === 1 ? "y" : "ies"} — will be added</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {fresh.map(({ entry }, i) => (
+                  <div key={i} className="dup-row" style={{ borderColor: "var(--hairline)" }}>
+                    <div>
+                      <div className="dup-name">{entry.name}</div>
+                      <div className="er-meta">{entry.cuisine || entry.tag || "—"}{entry.address ? ` · ${entry.address.split(",")[0]}` : ""}</div>
+                    </div>
+                    <div className="dup-actions">
+                      <span className="mini" style={{ background: "var(--marine)", borderColor: "var(--marine)", color: "var(--paper)" }}>New</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {duplicates.length > 0 && (
+            <div>
+              <div className="field-label" style={{ color: "var(--terracotta)" }}>
+                {duplicates.length} duplicate{duplicates.length === 1 ? "" : "s"} — choose overwrite or discard
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {duplicates.map(({ entry, dup, key }) => {
+                  const choice = decisions[key] || "overwrite";
+                  return (
+                    <div key={key} className="dup-row">
+                      <div>
+                        <div className="dup-name">{entry.name}</div>
+                        <div className="er-meta">
+                          Existing: {dup.cuisine || dup.tag || "—"}{dup.address ? ` · ${dup.address.split(",")[0]}` : ""}
+                        </div>
+                      </div>
+                      <div className="dup-actions">
+                        <button
+                          className="mini"
+                          style={choice === "overwrite" ? { background: "var(--ink)", color: "var(--paper)" } : {}}
+                          onClick={() => setDecisions({ ...decisions, [key]: "overwrite" })}
+                        >
+                          Overwrite
+                        </button>
+                        <button
+                          className="mini danger"
+                          style={choice === "discard" ? { background: "var(--terracotta)", borderColor: "var(--terracotta)", color: "var(--paper)" } : {}}
+                          onClick={() => setDecisions({ ...decisions, [key]: "discard" })}
+                        >
+                          Discard new
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+
 function LoginModal({ onLogin, onCancel }) {
   const [pw, setPw] = useStateF("");
   const [err, setErr] = useStateF(false);
@@ -1056,6 +1403,6 @@ function LoginModal({ onLogin, onCancel }) {
   );
 }
 
-Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog });
+Object.assign(window, { RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal, ContactsImportDialog, BothImportDialog, AllEntriesListModal, GeneralImportDialog });
 
 })();

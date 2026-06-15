@@ -1,7 +1,7 @@
 (function () {
 /* global React, ReactDOM, AboutView, MapView, RecipesView, RestaurantProfile, NoteProfile, GlobalSearch,
           RestaurantForm, RecipeForm, NoteForm, EditPicker, RestaurantListModal, NoteListModal, ImportDialog, LoginModal,
-          ContactsImportDialog, BothImportDialog,
+          ContactsImportDialog, BothImportDialog, AllEntriesListModal, GeneralImportDialog,
           ToastProvider, useToast, SDStore, GroceryListPanel */
 
 const { useState, useEffect, useRef, useCallback } = React;
@@ -375,6 +375,15 @@ function App() {
   // ----- Manage menu builders -----
 
   const openManage = useCallback((target) => {
+    if (target === "manage") {
+      return [
+        { label: "New entry", hint: "create", onClick: () => setModal({ kind: "new-pick" }) },
+        { label: "List entries", hint: "browse", onClick: () => setModal({ kind: "list-all" }) },
+        { label: "Import", hint: "merge", onClick: () => setModal({ kind: "import-any" }) },
+        { label: "Backup", hint: "export", onClick: () => setModal({ kind: "backup" }) },
+        { label: "Resync data", hint: "reset", onClick: () => setModal({ kind: "resync" }) },
+      ];
+    }
     const list = target === "restaurant" ? restaurants : target === "recipe" ? recipes : notes;
     const items = [
       { label: target === "note" ? "New note" : "New entry", hint: "create", onClick: () => setModal({ kind: "new", target }) },
@@ -866,7 +875,13 @@ function AppInner(props) {
 
       {/* PROFILE OVERLAYS */}
       {profile && (
-        <RestaurantProfile restaurant={profile} onClose={() => setProfile(null)} isAdmin={isAdmin} />
+        <RestaurantProfile
+          restaurant={profile}
+          onClose={() => setProfile(null)}
+          isAdmin={isAdmin}
+          onEdit={(r) => { setProfile(null); setModal({ kind: "edit", target: "restaurant", initial: r }); }}
+          onDelete={() => { const id = profile.id; setProfile(null); deleteRestaurant(id); }}
+        />
       )}
       {noteProfile && (
         <NoteProfile
@@ -976,6 +991,41 @@ function AppInner(props) {
           onCommit={commitImport}
         />
       )}
+      {modal?.kind === "new-pick" && (
+        <Modal eyebrow="New entry" title="What are you" italicTitle="adding?"
+          onClose={closeModal}
+          footer={<button className="btn ghost" onClick={closeModal}>Cancel</button>}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "8px 0" }}>
+            <p style={{ fontFamily: "var(--serif)", fontSize: 16, lineHeight: 1.65, marginBottom: 6 }}>
+              Choose what kind of entry to create.
+            </p>
+            <button className="btn primary" onClick={() => setModal({ kind: "new", target: "restaurant" })}>Restaurant</button>
+            <button className="btn primary" onClick={() => setModal({ kind: "new", target: "note" })}>Note</button>
+          </div>
+        </Modal>
+      )}
+      {modal?.kind === "list-all" && (
+        <AllEntriesListModal
+          restaurants={restaurants}
+          notes={notes}
+          onClose={closeModal}
+          onOpenRestaurant={(r) => { closeModal(); setProfile(r); }}
+          onEditRestaurant={(r) => setModal({ kind: "edit", target: "restaurant", initial: r })}
+          onOpenNote={(n) => { closeModal(); setNoteProfile(n); }}
+          onEditNote={(n) => setModal({ kind: "edit", target: "note", initial: n })}
+        />
+      )}
+      {modal?.kind === "import-any" && (
+        <GeneralImportDialog
+          restaurants={restaurants}
+          notes={notes}
+          onClose={closeModal}
+          onCommitRestaurants={(list) => { setRestaurants(list); closeModal(); }}
+          onCommitNotes={(list) => { setNotes(list); closeModal(); }}
+          onCommitContacts={(map) => { SDStore.saveContacts({ ...SDStore.loadContacts(), ...map }); closeModal(); }}
+        />
+      )}
       {helpOpen && (
         <Modal eyebrow="Keyboard" title="Available" italicTitle="Commands" onClose={() => setHelpOpen(false)}>
           <div className="help-commands">
@@ -1038,6 +1088,10 @@ function AppInner(props) {
               onClick={() => { SDStore.download("restaurants.json", JSON.stringify(restaurants, null, 2)); closeModal(); }}>
               restaurants.json
             </button>
+            <button className="btn primary"
+              onClick={() => { SDStore.download("notes.json", JSON.stringify(notes, null, 2)); closeModal(); }}>
+              notes.json
+            </button>
             {isAdmin && (
               <>
                 <button className="btn primary"
@@ -1047,10 +1101,11 @@ function AppInner(props) {
                 <button className="btn primary"
                   onClick={() => {
                     SDStore.download("restaurants.json", JSON.stringify(restaurants, null, 2));
+                    SDStore.download("notes.json", JSON.stringify(notes, null, 2));
                     SDStore.download("contacts.json", JSON.stringify(SDStore.loadContacts(), null, 2));
                     closeModal();
                   }}>
-                  Both files
+                  All files
                 </button>
               </>
             )}
