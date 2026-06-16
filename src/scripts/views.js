@@ -1384,7 +1384,7 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
           {isAdmin ? (
             <ManageMenu items={openManage("recipe")} />
           ) : isPWA ? (
-            <button className="manage-btn" onClick={onResync}>Resync</button>
+            <div className="manage-wrap"><button className="manage-btn" onClick={onResync}>Resync</button></div>
           ) : null}
         </div>
       )}
@@ -1425,8 +1425,8 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
           <div className="recipe-list">
             {isEmpty && (
               <div style={{ padding: "40px 8px", textAlign: "center" }} className="muted">
-                <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18, marginBottom: 4 }}>Nothing matches.</div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".22em", textTransform: "uppercase" }}>Try another word</div>
+                <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 18, marginBottom: 4 }}>{recipes.length === 0 ? "No recipes yet." : "Nothing matches."}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: ".22em", textTransform: "uppercase" }}>{recipes.length === 0 ? (isAdmin ? "Add one via Manage → New" : "Check back soon") : "Try another word"}</div>
               </div>
             )}
 
@@ -1480,8 +1480,8 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
           {!selected ? (
             <div className="empty">
               <div className="glyph">Ⓡ</div>
-              <div className="ln1">No recipe selected.</div>
-              <div className="ln2">Add one via Manage → New</div>
+              <div className="ln1">{recipes.length === 0 ? "No recipes yet." : "No recipe selected."}</div>
+              <div className="ln2">{recipes.length === 0 ? (isAdmin ? "Add one via Manage → New" : "Check back soon") : "Choose one from the list"}</div>
             </div>
           ) : (() => {
             const totalCost = getRecipeCost(selected);
@@ -1584,8 +1584,6 @@ function RecipesView({ recipes, openManage, navigate, focusRecipeId, onAddToGroc
               <section className="r-method-side">
                 <div className="r-method-label-row">
                   <span className="method-k">The Method</span>
-                  <span className="method-hr" />
-                  <span className="method-hint">tap a number to strike a step</span>
                 </div>
 
                 <div

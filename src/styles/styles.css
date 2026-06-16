@@ -4229,12 +4229,8 @@ a { color: inherit; }
   margin-bottom: 18px;
 }
 .r-method-label-row .method-k {
-  font-family: var(--mono); font-size: 10px; letter-spacing: .28em;
+  font-family: var(--mono); font-size: 12px; letter-spacing: .28em;
   text-transform: uppercase; color: var(--muted);
-}
-.r-method-label-row .method-hr { flex: 1; height: 1px; background: var(--hairline); }
-.r-method-label-row .method-hint {
-  font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--muted);
 }
 
 /* ---------- Numbered step buttons inside the rich body ---------- */
@@ -4302,8 +4298,9 @@ a { color: inherit; }
   cursor: pointer;
   transition: color 160ms, background 160ms, border-color 160ms;
 }
-.r-fav-btn:hover { color: var(--terracotta); }
-.r-fav-btn.on { color: var(--terracotta); }
+.r-fav-btn:hover { color: var(--terracotta); border-color: var(--terracotta); }
+.r-fav-btn.on { color: var(--paper); background: var(--terracotta); border-color: var(--terracotta); }
+.r-fav-btn.on:hover { color: var(--paper); background: var(--terracotta); }
 
 /* ---------- Hide old r-stats when using new shell layout ---------- */
 .recipe-shell .r-stats,

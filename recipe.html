@@ -656,9 +656,7 @@
       display: flex; align-items: center; gap: 12px;
       margin-top: 26px; margin-bottom: 18px;
     }
-    .r-method-label-row .method-k { font-family: var(--mono); font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); }
-    .r-method-label-row .method-hr { flex: 1; height: 1px; background: var(--hairline); }
-    .r-method-label-row .method-hint { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--muted); }
+    .r-method-label-row .method-k { font-family: var(--mono); font-size: 15px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); }
 
     .recipe-body.r-method-body { max-width: none; font-size: 17px; }
     .r-method-body ol {
@@ -714,7 +712,9 @@
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; transition: color 160ms, background 160ms, border-color 160ms;
     }
-    .r-fav-btn:hover, .r-fav-btn.on { color: var(--terracotta); }
+    .r-fav-btn:hover { color: var(--terracotta); border-color: var(--terracotta); }
+    .r-fav-btn.on { color: var(--paper); background: var(--terracotta); border-color: var(--terracotta); }
+    .r-fav-btn.on:hover { color: var(--paper); background: var(--terracotta); }
 
     @media (max-width: 960px) {
       .recipe-shell { grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: "head" "ing" "method"; min-height: 0; }
@@ -1672,7 +1672,7 @@
       const [q, setQ] = useState('');
       const [selectedId, setSelectedId] = useState(null);
       const [sidebarOpen, setSidebarOpen] = useState(true);
-      const [sort, setSort] = useState('az');
+      const [sort, setSort] = useState(null);
       const [sortOpen, setSortOpen] = useState(false);
       const [favorites, setFavorites] = useState(() => loadFavorites());
       const [openCuisines, setOpenCuisines] = useState(() => new Set());
@@ -1902,8 +1902,8 @@
               {!selected ? (
                 <div className="empty">
                   <div className="glyph">Ⓡ</div>
-                  <div className="ln1">No recipe selected.</div>
-                  <div className="ln2">Add one via Manage → New Recipe</div>
+                  <div className="ln1">{recipes.length === 0 ? 'No recipes yet.' : 'No recipe selected.'}</div>
+                  <div className="ln2">{recipes.length === 0 ? 'Add one via Manage → New Recipe' : 'Choose one from the list'}</div>
                 </div>
               ) : (() => {
                 const totalCost = getRecipeCost(selected);
@@ -2016,8 +2016,6 @@
                   <section className="r-method-side">
                     <div className="r-method-label-row">
                       <span className="method-k">The Method</span>
-                      <span className="method-hr" />
-                      <span className="method-hint">tap a number to strike a step</span>
                     </div>
 
                     <div className="recipe-body r-method-body" ref={bodyRef} onClick={handleBodyClick}
