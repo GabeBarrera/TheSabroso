@@ -343,7 +343,7 @@ The sun/moon icon in the bottom dock toggles between light and dark themes. The 
 
 ## Data editor (`editor.html`)
 
-Open `editor.html` from the same static server for a full CRUD interface over both collections.
+Open `editor.html` from the same static server for a full CRUD interface over restaurants, recipes, and notes.
 
 **Features:**
 - Tab interface — **Restaurants** | **Recipes** with entry counts
@@ -352,9 +352,11 @@ Open `editor.html` from the same static server for a full CRUD interface over bo
 - **Edit** button per entry to open the full form in a modal
 - **New Restaurant / New Recipe** buttons
 - **Export JSON** button per collection
-- **Export All** to download both collections at once
-- **Reload JSON** to re-fetch seed data without navigating away
-- All changes save directly to `localStorage` so the main app reflects them immediately
+- **Notes** tab for map pins (`data/notes.json`)
+- **Export All** to download all three collections at once
+- **Reload** to re-read from disk / JSON files without navigating away
+- **Connect data folder** (top-right) — grants the editor write access to the `data/` folder so every edit is written straight to `data/*.json` on disk, no server required. The folder is remembered across reloads. Chromium-only (Chrome/Edge/Brave); other browsers fall back to localStorage + Export. Works under any static host, e.g. `python -m http.server 8000`.
+- All changes also save to `localStorage` so the main app reflects them immediately in the same browser
 - Toast notifications for success/error feedback
 
 Forms in the editor are the same components used in the main app, including the full rich-text editor.

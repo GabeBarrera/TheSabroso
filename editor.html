@@ -42,10 +42,10 @@
   .ed-wordmark {
     font-family: var(--serif);
     font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -.01em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
-  .ed-wordmark span { font-style: italic; font-weight: 400; color: var(--terracotta); }
+  .ed-wordmark span { font-style: italic; font-weight: 400; color: var(--paper); }
   .ed-header-right { display: flex; gap: 8px; align-items: center; }
   .ed-header-btn {
     display: inline-flex;
@@ -64,6 +64,29 @@
     transition: background 140ms ease, border-color 140ms ease;
   }
   .ed-header-btn:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.4); }
+  .ed-fs-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 13px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    cursor: default;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .ed-fs-pill.live {
+    color: #7ee0a8;
+    border-color: rgba(126,224,168,.45);
+    background: rgba(126,224,168,.12);
+  }
+  .ed-fs-pill.warn {
+    color: #e0b27e;
+    border-color: rgba(224,178,126,.45);
+    background: rgba(224,178,126,.12);
+  }
 
   /* ── Tabs ── */
   .ed-tabs {
@@ -923,93 +946,210 @@ function ExportModal({ defaultKind, onExport, onClose }) {
 const R_KEY   = "sabroso_restaurants";
 const REC_KEY = "sabroso_recipes";
 
+function NoteForm({ initial, onSave, onCancel, onDelete, mode = "new" }) {
+  const toast = useToast();
+  const [name,        setName]        = useState(initial?.name || "");
+  const [tag,         setTag]         = useState(initial?.tag || "");
+  const [address,     setAddress]     = useState(initial?.address || "");
+  const [lat,         setLat]         = useState(initial?.lat ?? 32.7157);
+  const [lng,         setLng]         = useState(initial?.lng ?? -117.1611);
+  const [description, setDescription] = useState(initial?.description || "");
+
+  const handleSave = () => {
+    if (!name.trim()) { toast("Name is required", "warn"); return; }
+    onSave({
+      id:          initial?.id || SDStore.newId("n"),
+      name:        name.trim(),
+      tag:         tag.trim() || "Note",
+      address:     address.trim() || undefined,
+      lat:         Number(lat),
+      lng:         Number(lng),
+      description,
+      createdAt:   initial?.createdAt || new Date().toISOString().slice(0,10),
+    });
+  };
+
+  return (
+    <Modal
+      eyebrow={mode==="new" ? "New note" : "Edit note"}
+      title={mode==="new" ? "Pin a" : "Edit the"}
+      italicTitle="note"
+      onClose={onCancel}
+      wide
+      footer={
+        <>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {mode==="edit" && onDelete && (
+              <button className="btn danger" onClick={onDelete}>Delete</button>
+            )}
+          </div>
+          <div className="row">
+            <button className="btn ghost" onClick={onCancel}>Cancel</button>
+            <button className="btn accent" onClick={handleSave}>{mode==="new" ? "Save note" : "Save changes"}</button>
+          </div>
+        </>
+      }
+    >
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Name</label>
+          <input className="field-input" value={name} onChange={e=>setName(e.target.value)} placeholder="Sunset viewpoint" />
+        </div>
+        <div className="field">
+          <label className="field-label">Tag</label>
+          <input className="field-input" value={tag} onChange={e=>setTag(e.target.value)} placeholder="Viewpoint, Parking, Hidden Gem…" />
+        </div>
+      </div>
+      <div className="field">
+        <label className="field-label">Address <span className="field-optional">optional</span></label>
+        <input className="field-input" value={address} onChange={e=>setAddress(e.target.value)} placeholder="1234 Coast Hwy, San Diego, CA" />
+      </div>
+      <div className="field-row">
+        <div className="field">
+          <label className="field-label">Latitude</label>
+          <input className="field-input" type="number" step="0.0001" value={lat} onChange={e=>setLat(e.target.value)} />
+        </div>
+        <div className="field">
+          <label className="field-label">Longitude</label>
+          <input className="field-input" type="number" step="0.0001" value={lng} onChange={e=>setLng(e.target.value)} />
+        </div>
+      </div>
+      <div className="field">
+        <label className="field-label">Notes</label>
+        <RichEditor value={description} onChange={setDescription} placeholder="What makes this spot worth noting…" />
+      </div>
+    </Modal>
+  );
+}
+
+/* ── Persistence via server.py REST API.
+   The editor POSTs the full collection back to /api/<kind>; server.py
+   writes it atomically to data/<kind>.json. Start it with
+   `python server.py` (port 8000), then open
+   http://localhost:8000/editor.html. Works in every browser.
+   Reads stay plain GETs of data/*.json. ── */
+const API = {
+  async ping() {
+    try { const r = await fetch("/api/ping", { cache: "no-store" }); return r.ok; }
+    catch { return false; }
+  },
+  async save(kind, list) {
+    const r = await fetch("/api/" + kind, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(list),
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  },
+};
+
+const N_KEY = "sabroso_notes";
+
 function EditorApp() {
   const [tab,         setTab]         = useState("restaurants");
   const [rests,       setRests]       = useState([]);
   const [recs,        setRecs]        = useState([]);
-  const [modal,       setModal]       = useState(null); // { kind: "restaurant"|"recipe", entry? }
-  const [exportModal, setExportModal] = useState(null); // { defaultKind: "restaurant"|"recipe" }
+  const [notes,       setNotes]       = useState([]);
+  const [modal,       setModal]       = useState(null); // { kind, entry? }
+  const [exportModal, setExportModal] = useState(null); // { defaultKind }
   const [loading,     setLoading]     = useState(true);
+  const [serverUp,    setServerUp]    = useState(false); // server.py reachable → writes persist to disk
   const toast = useToast();
 
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     setLoading(true);
-    let rOk = false, recOk = false;
-    try {
-      const res = await fetch("data/restaurants.json?_=" + Date.now());
-      if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
-      setRests(data);
-      localStorage.setItem(R_KEY, JSON.stringify(data));
-      rOk = true;
-    } catch {
-      const c = localStorage.getItem(R_KEY);
-      if (c) { setRests(JSON.parse(c)); rOk = true; }
+    setServerUp(await API.ping());
+
+    async function loadOne(filename, key, setter) {
+      try {
+        const res = await fetch("data/" + filename + "?_=" + Date.now());
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        setter(data); localStorage.setItem(key, JSON.stringify(data));
+        return "fetch";
+      } catch {
+        const c = localStorage.getItem(key);
+        if (c) { setter(JSON.parse(c)); return "cache"; }
+        setter([]);
+        return "empty";
+      }
     }
-    try {
-      const res = await fetch("data/recipes.json?_=" + Date.now());
-      if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
-      setRecs(data);
-      localStorage.setItem(REC_KEY, JSON.stringify(data));
-      recOk = true;
-    } catch {
-      const c = localStorage.getItem(REC_KEY);
-      if (c) { setRecs(JSON.parse(c)); recOk = true; }
-    }
+
+    const r   = await loadOne("restaurants.json", R_KEY,   setRests);
+    const rec = await loadOne("recipes.json",     REC_KEY, setRecs);
+    await loadOne("notes.json", N_KEY, setNotes);
     setLoading(false);
-    if (rOk && recOk)        toast("Loaded from JSON files", "ok");
-    else if (!rOk && !recOk) toast("Fetch failed — serve via HTTP, not file://", "warn");
-    else                     toast("One file fell back to cache", "warn");
+
+    if (r === "fetch" && rec === "fetch")      toast("Loaded from data/ JSON files", "ok");
+    else if (r === "empty" && rec === "empty") toast("Can't read data/ — start the server: python server.py", "warn");
+    else                                       toast("Loaded — some files fell back to cache", "warn");
+  }
+
+  /* ── Shared persist: localStorage always, plus POST to server.py ── */
+  async function persist(filename, key, next, label) {
+    const kind = filename.replace(".json", "");   // restaurants | recipes | notes
+    localStorage.setItem(key, JSON.stringify(next));
+    let saved = false;
+    try { await API.save(kind, next); saved = true; setServerUp(true); }
+    catch (e) {
+      setServerUp(false);
+      toast("Saved locally — server.py not reachable. Run `python server.py` to write to disk.", "warn");
+    }
+    if (saved) toast(label + " · saved to data/" + filename, "ok");
+    return saved;
   }
 
   /* ── Restaurant CRUD ── */
-  function saveRestaurant(entry) {
-    setRests(prev => {
-      const next = prev.find(r => r.id === entry.id)
-        ? prev.map(r => r.id === entry.id ? entry : r)
-        : [...prev, entry];
-      localStorage.setItem(R_KEY, JSON.stringify(next));
-      return next;
-    });
-    toast((modal?.entry ? "Updated" : "Added") + " · " + entry.name, "ok");
+  async function saveRestaurant(entry) {
+    const next = rests.find(r => r.id === entry.id)
+      ? rests.map(r => r.id === entry.id ? entry : r)
+      : [...rests, entry];
+    setRests(next);
+    await persist("restaurants.json", R_KEY, next, (modal?.entry ? "Updated · " : "Added · ") + entry.name);
     setModal(null);
   }
-
-  function deleteRestaurant(entry) {
+  async function deleteRestaurant(entry) {
     if (!confirm(`Delete "${entry.name}"? This cannot be undone.`)) return;
-    setRests(prev => {
-      const next = prev.filter(r => r.id !== entry.id);
-      localStorage.setItem(R_KEY, JSON.stringify(next));
-      return next;
-    });
-    toast("Deleted · " + entry.name);
+    const next = rests.filter(r => r.id !== entry.id);
+    setRests(next);
+    await persist("restaurants.json", R_KEY, next, "Deleted · " + entry.name);
     setModal(null);
   }
 
   /* ── Recipe CRUD ── */
-  function saveRecipe(entry) {
-    setRecs(prev => {
-      const next = prev.find(r => r.id === entry.id)
-        ? prev.map(r => r.id === entry.id ? entry : r)
-        : [...prev, entry];
-      localStorage.setItem(REC_KEY, JSON.stringify(next));
-      return next;
-    });
-    toast((modal?.entry ? "Updated" : "Added") + " · " + entry.name, "ok");
+  async function saveRecipe(entry) {
+    const next = recs.find(r => r.id === entry.id)
+      ? recs.map(r => r.id === entry.id ? entry : r)
+      : [...recs, entry];
+    setRecs(next);
+    await persist("recipes.json", REC_KEY, next, (modal?.entry ? "Updated · " : "Added · ") + entry.name);
+    setModal(null);
+  }
+  async function deleteRecipe(entry) {
+    if (!confirm(`Delete "${entry.name}"? This cannot be undone.`)) return;
+    const next = recs.filter(r => r.id !== entry.id);
+    setRecs(next);
+    await persist("recipes.json", REC_KEY, next, "Deleted · " + entry.name);
     setModal(null);
   }
 
-  function deleteRecipe(entry) {
+  /* ── Note CRUD ── */
+  async function saveNote(entry) {
+    const next = notes.find(n => n.id === entry.id)
+      ? notes.map(n => n.id === entry.id ? entry : n)
+      : [...notes, entry];
+    setNotes(next);
+    await persist("notes.json", N_KEY, next, (modal?.entry ? "Updated · " : "Added · ") + entry.name);
+    setModal(null);
+  }
+  async function deleteNote(entry) {
     if (!confirm(`Delete "${entry.name}"? This cannot be undone.`)) return;
-    setRecs(prev => {
-      const next = prev.filter(r => r.id !== entry.id);
-      localStorage.setItem(REC_KEY, JSON.stringify(next));
-      return next;
-    });
-    toast("Deleted · " + entry.name);
+    const next = notes.filter(n => n.id !== entry.id);
+    setNotes(next);
+    await persist("notes.json", N_KEY, next, "Deleted · " + entry.name);
     setModal(null);
   }
 
@@ -1025,9 +1165,10 @@ function EditorApp() {
     const files = [
       { name: "restaurants.json", content: JSON.stringify(rests, null, 2) },
       { name: "recipes.json",     content: JSON.stringify(recs,  null, 2) },
+      { name: "notes.json",       content: JSON.stringify(notes, null, 2) },
     ];
     const saved = await pickDirectory(files);
-    if (saved) toast("Exported restaurants.json + recipes.json", "ok");
+    if (saved) toast("Exported restaurants.json + recipes.json + notes.json", "ok");
   }
 
   async function handleExport(kind) {
@@ -1040,6 +1181,10 @@ function EditorApp() {
       <header className="ed-header">
         <div className="ed-wordmark">The <span>Sabroso</span> · Editor</div>
         <div className="ed-header-right">
+          {serverUp
+            ? <span className="ed-fs-pill live" title="server.py is running — edits write to data/*.json on disk">● Server connected</span>
+            : <span className="ed-fs-pill warn" title="Run python server.py and open http://localhost:8000/editor.html so edits save to disk">● Server offline</span>}
+          <button className="ed-header-btn" onClick={loadData} title="Reload from data/ JSON files">⟲ Reload</button>
           <a className="ed-header-btn" href="index.html">← Back to app</a>
         </div>
       </header>
@@ -1051,6 +1196,9 @@ function EditorApp() {
         <button className={`ed-tab${tab==="recipes"?" active":""}`} onClick={() => setTab("recipes")}>
           Recipes <span className="ed-count">{recs.length}</span>
         </button>
+        <button className={`ed-tab${tab==="notes"?" active":""}`} onClick={() => setTab("notes")}>
+          Notes <span className="ed-count">{notes.length}</span>
+        </button>
       </nav>
 
       {loading ? (
@@ -1060,6 +1208,7 @@ function EditorApp() {
           {tab === "restaurants" && (
             <RestaurantPanel
               restaurants={rests}
+              connected={serverUp}
               onNew={() => setModal({ kind: "restaurant" })}
               onEdit={r  => setModal({ kind: "restaurant", entry: r })}
               onExport={() => setExportModal({ defaultKind: "restaurant" })}
@@ -1068,9 +1217,19 @@ function EditorApp() {
           {tab === "recipes" && (
             <RecipePanel
               recipes={recs}
+              connected={serverUp}
               onNew={() => setModal({ kind: "recipe" })}
               onEdit={r  => setModal({ kind: "recipe", entry: r })}
               onExport={() => setExportModal({ defaultKind: "recipe" })}
+            />
+          )}
+          {tab === "notes" && (
+            <NotePanel
+              notes={notes}
+              connected={serverUp}
+              onNew={() => setModal({ kind: "note" })}
+              onEdit={n  => setModal({ kind: "note", entry: n })}
+              onExport={async () => { const ok = await pickSaveFile("notes.json", JSON.stringify(notes, null, 2)); if (ok) toast("Exported notes.json", "ok"); }}
             />
           )}
         </div>
@@ -1096,6 +1255,15 @@ function EditorApp() {
           onDelete={modal.entry ? () => deleteRecipe(modal.entry) : undefined}
         />
       )}
+      {modal?.kind === "note" && (
+        <NoteForm
+          initial={modal.entry}
+          mode={modal.entry ? "edit" : "new"}
+          onSave={saveNote}
+          onCancel={() => setModal(null)}
+          onDelete={modal.entry ? () => deleteNote(modal.entry) : undefined}
+        />
+      )}
       {exportModal && (
         <ExportModal
           defaultKind={exportModal.defaultKind}
@@ -1108,7 +1276,7 @@ function EditorApp() {
 }
 
 /* ── Restaurant list ── */
-function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
+function RestaurantPanel({ restaurants, connected, onNew, onEdit, onExport }) {
   return (
     <>
       <div className="ed-panel-head">
@@ -1119,7 +1287,9 @@ function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>data/restaurants.json</code>. Edit freely — click <strong>Export</strong> to download the updated file for git push.
+        {connected
+          ? <>Saving to <code>data/restaurants.json</code> on disk via <code>server.py</code>.</>
+          : <>Server offline — edits save to your browser only. Run <code>python server.py</code> and open <code>localhost:8000/editor.html</code> to write the file, or <strong>Export</strong> to download it.</>}
       </div>
       {restaurants.length === 0 ? (
         <div className="ed-empty">No restaurants yet.</div>
@@ -1149,7 +1319,7 @@ function RestaurantPanel({ restaurants, onNew, onEdit, onExport }) {
 }
 
 /* ── Recipe list ── */
-function RecipePanel({ recipes, onNew, onEdit, onExport }) {
+function RecipePanel({ recipes, connected, onNew, onEdit, onExport }) {
   return (
     <>
       <div className="ed-panel-head">
@@ -1160,7 +1330,9 @@ function RecipePanel({ recipes, onNew, onEdit, onExport }) {
         </div>
       </div>
       <div className="ed-notice">
-        Loaded from <code>data/recipes.json</code>. Edit freely — click <strong>Export</strong> to download the updated file for git push.
+        {connected
+          ? <>Saving to <code>data/recipes.json</code> on disk via <code>server.py</code>.</>
+          : <>Server offline — edits save to your browser only. Run <code>python server.py</code> and open <code>localhost:8000/editor.html</code> to write the file, or <strong>Export</strong> to download it.</>}
       </div>
       {recipes.length === 0 ? (
         <div className="ed-empty">No recipes yet.</div>
@@ -1173,6 +1345,41 @@ function RecipePanel({ recipes, onNew, onEdit, onExport }) {
                 <div className="ed-row-meta">{r.cuisine || "—"} · {r.time || 0} min · serves {r.serves || 0}</div>
               </div>
               <button className="btn-sm" onClick={() => onEdit(r)}>Edit</button>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ── Notes list ── */
+function NotePanel({ notes, connected, onNew, onEdit, onExport }) {
+  return (
+    <>
+      <div className="ed-panel-head">
+        <h2 className="ed-panel-title">Notes &amp; Map Pins</h2>
+        <div className="ed-panel-actions">
+          <button className="btn-sm ghost" onClick={onExport}>Export</button>
+          <button className="btn-sm accent" onClick={onNew}>+ New Note</button>
+        </div>
+      </div>
+      <div className="ed-notice">
+        {connected
+          ? <>Saving to <code>data/notes.json</code> on disk via <code>server.py</code>.</>
+          : <>Server offline — edits save to your browser only. Run <code>python server.py</code> and open <code>localhost:8000/editor.html</code> to write the file, or <strong>Export</strong> to download it.</>}
+      </div>
+      {notes.length === 0 ? (
+        <div className="ed-empty">No notes yet.</div>
+      ) : (
+        <div className="ed-list">
+          {notes.map(n => (
+            <div key={n.id} className="ed-row">
+              <div className="ed-row-info">
+                <div className="ed-row-name">{n.name}</div>
+                <div className="ed-row-meta">{n.tag || "Note"}{n.address ? " · " + n.address.split(",")[0] : ""}</div>
+              </div>
+              <button className="btn-sm" onClick={() => onEdit(n)}>Edit</button>
             </div>
           ))}
         </div>
