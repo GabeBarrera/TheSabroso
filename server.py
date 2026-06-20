@@ -25,7 +25,7 @@ import sys
 import shutil
 import tempfile
 from pathlib import Path
-from http.server import SimpleHTTPRequestHandler, HTTPServer
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 
 ROOT     = Path(__file__).parent.resolve()
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     os.chdir(ROOT)   # serve files relative to this script's directory
 
-    server = HTTPServer(("", port), Handler)
+    server = ThreadingHTTPServer(("", port), Handler)
 
     print(f"\n  🌮  Sabroso dev server")
     print(f"      http://localhost:{port}")
