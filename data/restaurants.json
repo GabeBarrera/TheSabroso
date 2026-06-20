@@ -16,13 +16,34 @@
     "website": "https://buonaforchettasd.com/location/coronado/",
     "reservationLink": "https://www.opentable.com/r/garage-buona-forchetta-coronado",
     "hours": {
-      "mon": { "open": "11:30", "close": "21:00" },
-      "tue": { "open": "11:30", "close": "21:00" },
-      "wed": { "open": "11:30", "close": "21:00" },
-      "thu": { "open": "11:30", "close": "21:00" },
-      "fri": { "open": "11:30", "close": "22:00" },
-      "sat": { "open": "11:30", "close": "22:00" },
-      "sun": { "open": "11:30", "close": "21:00" }
+      "mon": {
+        "open": "11:30",
+        "close": "21:00"
+      },
+      "tue": {
+        "open": "11:30",
+        "close": "21:00"
+      },
+      "wed": {
+        "open": "11:30",
+        "close": "21:00"
+      },
+      "thu": {
+        "open": "11:30",
+        "close": "21:00"
+      },
+      "fri": {
+        "open": "11:30",
+        "close": "22:00"
+      },
+      "sat": {
+        "open": "11:30",
+        "close": "22:00"
+      },
+      "sun": {
+        "open": "11:30",
+        "close": "21:00"
+      }
     },
     "createdAt": "2026-01-14"
   },
@@ -41,13 +62,34 @@
     "description": "<p>If you're into ramen and the cyberpunk aesthetic as much as I am, this is the spot for you. This corner downtown ramen counter with a tonkotsu broth that runs 12 hours is a lunchtime and late night staple. The chashu comes from a low braise and the soft egg is seasoned overnight. Cramped, loud, worth every inconvenience to sit under the glowing neon masterpiece above you. This is yet another Consortium Holdings offering that does not disappoint.&nbsp;</p><h3>My Order</h3><ul><li>BELLY OF THE BEAST&nbsp;— rich tonkotsu broth, soft boiled egg, oxtail dumplings, hoisin glazed short ribs... a meat lovers delight</li><li>SPICY JFC — add it, don't think about it.&nbsp;Red pepper sauce, cabbage, lemon, and a side of mayo.</li><li>SHO CHIKU BAI — Nigori Sake. 375ml. 15% unfiltered; the perfect ramen pairing.</li></ul>",
     "contacts": [],
     "hours": {
-      "mon": { "open": "11:30", "close": "23:30" },
-      "tue": { "open": "11:30", "close": "23:30" },
-      "wed": { "open": "11:30", "close": "23:30" },
-      "thu": { "open": "11:30", "close": "23:30" },
-      "fri": { "open": "11:30", "close": "23:30" },
-      "sat": { "open": "11:30", "close": "23:30" },
-      "sun": { "open": "11:30", "close": "23:30" }
+      "mon": {
+        "open": "11:30",
+        "close": "23:30"
+      },
+      "tue": {
+        "open": "11:30",
+        "close": "23:30"
+      },
+      "wed": {
+        "open": "11:30",
+        "close": "23:30"
+      },
+      "thu": {
+        "open": "11:30",
+        "close": "23:30"
+      },
+      "fri": {
+        "open": "11:30",
+        "close": "23:30"
+      },
+      "sat": {
+        "open": "11:30",
+        "close": "23:30"
+      },
+      "sun": {
+        "open": "11:30",
+        "close": "23:30"
+      }
     },
     "createdAt": "2026-01-22"
   },
@@ -62,7 +104,7 @@
     ],
     "lat": 32.7124267,
     "lng": -117.1575869,
-    "description": "<p>East Village speakeasy accessed through a secret entrance inside the Neighborhood restaurant. The entrance is the experience, but it earns what comes after: 30 seats, haunted-upscale mood lighting, portraits mounted on the ceiling, a wall lined up with enough skulls to put French catacombs to shame, and a cocktail program that operates at the top of its class. Every drink is built with the evening's vibes and the kind of attention and mixological professionalism that justifies the reservation requirement.</p><h3>My Order</h3><ul><li>Whatever the bartender recommends — tell them a spirit and a direction, and trust the process</li><li>Anything from the rotating seasonal list — the program changes and it's always worth following</li></ul><p><strong>Reservations required.</strong> The room holds roughly 30 people and books out fast. Walk-ins are possible, but increasingly unlikely the closer you get to the weekend. Plan accordingly — the planning is worth it.</p>",
+    "description": "",
     "contacts": [],
     "createdAt": "2026-06-01"
   },
@@ -72,13 +114,14 @@
     "address": "675 W Beech St, San Diego, CA 92101",
     "cuisine": "Cocktail Bar",
     "rating": 4.5,
-    "lat": 32.72076107899171,
-    "lng": -117.16895790959158,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Little Italy corner bar where the cocktail program earns its reputation and the food is better than a bar this focused on drinks has any obligation to produce. The bartenders know the classics and build on them without showing off.</p><h3>The order</h3><ul><li>Whatever the bartender recommends — trust it</li><li>Fried chicken sandwich — responsible for missed last calls</li><li>Pimento cheese dip, warm pretzel</li></ul><p><strong>Get there before 9 PM or stand.</strong></p>",
+    "lat": 32.72076107899171,
+    "lng": -117.16895790959158,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-02-08"
   },
   {
@@ -87,12 +130,42 @@
     "address": "1790 W Washington St, San Diego, CA 92103",
     "cuisine": "Japanese",
     "rating": 4.6,
-    "lat": 32.74371196053444,
-    "lng": -117.1814018641444,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Mission Hills Japanese counter — looks modest from outside, delivers something close to perfect inside. The gyoza are made to order with the skin crimped by hand. The katsu curry is the benchmark: tonkatsu pounded thin, crumbed fine, fried hard, set over rice that's been seasoned with care.</p><h3>The order</h3><ul><li>Gyoza — pan-fried, order two rounds</li><li>Katsu curry — the whole reason you're here</li><li>Cold Sapporo. Obvious but correct.</li></ul>",
+    "lat": 32.74371196053444,
+    "lng": -117.1814018641444,
+    "description": "<p>Of all my hidden gems, this is one of my favorites.</p>",
+    "contacts": [],
+    "hours": {
+      "mon": {
+        "closed": true
+      },
+      "tue": {
+        "open": "11:30",
+        "close": "20:00"
+      },
+      "wed": {
+        "open": "11:30",
+        "close": "20:00"
+      },
+      "thu": {
+        "open": "11:30",
+        "close": "20:00"
+      },
+      "fri": {
+        "open": "11:30",
+        "close": "20:00"
+      },
+      "sat": {
+        "open": "11:30",
+        "close": "20:00"
+      },
+      "sun": {
+        "open": "11:30",
+        "close": "20:00"
+      }
+    },
     "createdAt": "2026-02-15"
   },
   {
@@ -101,12 +174,13 @@
     "address": "1810 W Washington St, San Diego, CA 92103",
     "cuisine": "Mexican",
     "rating": 4.2,
-    "lat": 32.74337025007782,
-    "lng": -117.18161698326088,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>The wrestler murals are part of the deal. So is the wax-paper basket, the counter seating, and the salsa bar you'll visit three times. The adobada taco is why people drive in from other counties. The green salsa is the one you want.</p><h3>The order</h3><ul><li>Adobada taco — the reason you came</li><li>California burrito if you arrived hungry</li><li>Green salsa, applied liberally</li></ul><p><em>Cash moves faster.</em></p>",
+    "lat": 32.74337025007782,
+    "lng": -117.18161698326088,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-02-22"
   },
   {
@@ -115,12 +189,13 @@
     "address": "3823 30th St, San Diego, CA 92104",
     "cuisine": "American",
     "rating": 4,
-    "lat": 32.74277422441969,
-    "lng": -117.18063189092838,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>North Park neighborhood pub that actually cooks. The kind of place you walk into expecting a decent burger and leave having eaten one of the better meals of the month. Draft list rotates weekly — usually twelve locals, always something worth ordering.</p><h3>The order</h3><ul><li>Smash burger — straightforward, well-executed</li><li>Fries, duck fat on good days</li><li>Whatever stout is on draft</li></ul><p>Loud on weekends. Manageable on a Tuesday. Go on a Tuesday.</p>",
+    "lat": 32.74277422441969,
+    "lng": -117.18063189092838,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-03-01"
   },
   {
@@ -129,12 +204,13 @@
     "address": "631 Broadway, San Diego, CA 92101",
     "cuisine": "Mexican",
     "rating": 4.8,
-    "lat": 32.62923876427487,
-    "lng": -117.08903407120671,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Tijuana-style taqueria on Broadway. The adobada spit runs from open to close. The mulita is the move — two tortillas, meat, cheese, griddled until the whole thing fuses into one perfect object. Everything arrives in foil and is eaten standing at the counter. That is the method.</p><h3>The order</h3><ul><li>Mulita, adobada — non-negotiable</li><li>Cabeza if you're committed</li><li>Horchata, not the bottled kind</li></ul><p><strong>The spit is the whole restaurant.</strong></p>",
+    "lat": 32.62923876427487,
+    "lng": -117.08903407120671,
+    "description": "<p>If you don't order at least one Adobada taco, you're doing it wrong.</p>",
+    "contacts": [],
     "createdAt": "2026-03-10"
   },
   {
@@ -163,7 +239,7 @@
     ],
     "lat": 32.72746797271498,
     "lng": -117.1709913069006,
-    "description": "<p>Little Italy flagship with a wood-fired program that informs the food rather than just appearing in the menu copy. The charred broccolini is a side dish that outclasses the mains on half the menus in this city. The space is loud and handsome.</p><h3>The order</h3><ul><li>Wood-roasted half chicken — crisp, juicy, no notes</li><li>Charred broccolini, lemon, chili, garlic</li><li>Burrata, stone fruit, aged balsamic</li></ul><p>Start with whatever the bartender recommends. The cocktail list rewards the conversation.</p>",
+    "description": "<p><br></p>",
     "contacts": [],
     "createdAt": "2026-03-22"
   },
@@ -173,12 +249,13 @@
     "address": "2990 Jamacha Rd, El Cajon, CA 92019",
     "cuisine": "Mediterranean",
     "rating": 4.5,
-    "lat": 32.74058121003366,
-    "lng": -116.942269436211,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Rancho San Diego strip-mall exterior, Beirut grandmother's kitchen interior. The hummus is made daily from dried chickpeas — you will notice the difference immediately. The mixed grill is the order. The pita arrives from the oven still inflated and lands on the table immediately.</p><h3>The order</h3><ul><li>Hummus with pine nuts and warm pita — start here</li><li>Mixed grill platter — shawarma, kafta, shish tawook</li><li>Fattoush — dressed right before it leaves the kitchen</li></ul><p><em>Worth the drive out. Arrive early.</em></p>",
+    "lat": 32.74058121003366,
+    "lng": -116.942269436211,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-03-29"
   },
   {
@@ -187,12 +264,13 @@
     "address": "1670 India St, San Diego, CA 92101",
     "cuisine": "Ice Cream",
     "rating": 4.6,
-    "lat": 32.7227729,
-    "lng": -117.168452,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Little Italy scoop shop doing small-batch ice cream the way it should be done — unusual flavors, local sourcing, made in-house daily. The seasonal menu rotates hard enough that returning monthly produces a different list. The honey lavender is the reference point newcomers should start with before venturing further.</p><h3>The order</h3><ul><li>Honey lavender — the benchmark, don't skip it on your first visit</li><li>Sea salt with caramel ribbons — the one that gets people to drive across town</li><li>One seasonal scoop — whatever is most unexpected wins</li></ul><p>Go at an odd hour. The weekend line wraps the block and the waffle cone doesn't benefit from standing in the sun.</p>",
+    "lat": 32.7227729,
+    "lng": -117.168452,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-04-05"
   },
   {
@@ -201,12 +279,13 @@
     "address": "4805 Convoy St, San Diego, CA 92111",
     "cuisine": "Cocktail Bar",
     "rating": 4.8,
-    "lat": 32.8292062,
-    "lng": -117.1531488,
     "tags": [
       "bar"
     ],
-    "description": "<p>Hidden behind an unmarked door in the Convoy District, inside what appears to be a traditional apothecary. Velvet booths, glowing bottles, Eastern talisman on every surface. The cocktail menu reads like a pharmacopoeia — 52 remedies organized by ailment. This is not a gimmick. The drinks are precise and serious.</p><h3>The order</h3><ul><li>Ask the bartender what you're suffering from. Answer honestly.</li><li>The Jeju — mandarin-forward, clarified, slightly medicinal in the best way</li><li>Whatever is made with the house-infused spirits — they run deep</li></ul><p><strong>Reservations required.</strong> Walk-ins are turned away. This is the correct policy for a room this considered.</p>",
+    "lat": 32.8292062,
+    "lng": -117.1531488,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-04-12"
   },
   {
@@ -215,12 +294,13 @@
     "address": "4301 La Jolla Village Dr #2030, San Diego, CA 92122",
     "cuisine": "Cocktail Bar",
     "rating": 4.9,
-    "lat": 32.872516,
-    "lng": -117.21389,
     "tags": [
       "bar"
     ],
-    "description": "<p>Inside Westfield UTC, behind a flower shop, through a bookcase that opens when you pull the right book. This is not an affectation — the bar behind it earns every theatrical device. The cocktail program is one of the tightest in San Diego: short list, deep sourcing, technique that never announces itself. The glassware is exceptional. The ice is considered.</p><h3>The order</h3><ul><li>The bartender's choice — state your spirit and a flavor direction, defer completely</li><li>Anything featuring house-aged spirits from the back bar</li><li>The snacks are an afterthought. This is a drinks room.</li></ul><p>Book ahead. The room is small, intentionally. Arrive on time — the experience is sequenced.</p>",
+    "lat": 32.872516,
+    "lng": -117.21389,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-04-19"
   },
   {
@@ -229,13 +309,14 @@
     "address": "1909 India St, San Diego, CA 92101",
     "cuisine": "Steakhouse",
     "rating": 4.7,
-    "lat": 32.724625,
-    "lng": -117.1685518,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Little Italy steakhouse operating at a level this city doesn't have many examples of. Art deco interior, two-story room, rooftop bar with a view that holds up. The dry-aged beef program is taken seriously — the cuts are sourced, aged on-site, and handled by a kitchen that knows what it's doing. Michelin Guide listed. This is not a surprise.</p><h3>The order</h3><ul><li>45-day dry-aged ribeye — the reason the restaurant exists</li><li>Lobster thermidor — excessive in the best sense</li><li>Wedge salad, iceberg, blue cheese, lardons — not ironic, just correct</li></ul><p>The rooftop bar is worth arriving early for. The cocktail list upstairs is shorter and better than most standalone bars in the neighborhood.</p>",
+    "lat": 32.724625,
+    "lng": -117.1685518,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-04-26"
   },
   {
@@ -244,13 +325,14 @@
     "address": "750 6th Ave, San Diego, CA 92101",
     "cuisine": "Russian",
     "rating": 4.4,
-    "lat": 32.7131073,
-    "lng": -117.1593341,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Gaslamp Quarter Russian restaurant and lounge that covers more ground than the address suggests — full kitchen, serious bar program, hookah lounge in the back. The pelmeni and the borscht are both done correctly, which is the minimum requirement and also not guaranteed anywhere else in this zip code. The vibe runs late and gets louder as the night progresses.</p><h3>The order</h3><ul><li>Borscht — the beet kind, the proper kind, arrive with smetana</li><li>Pelmeni, beef and pork mix, in broth</li><li>Blini flight with caviar if the occasion justifies it</li></ul><p>The bar list leans vodka and Eastern European spirits. This is the correct orientation. Order accordingly.</p>",
+    "lat": 32.7131073,
+    "lng": -117.1593341,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-03"
   },
   {
@@ -259,12 +341,13 @@
     "address": "3753 India St, San Diego, CA 92103",
     "cuisine": "Gelato",
     "rating": 4.7,
-    "lat": 32.7432214,
-    "lng": -117.1810028,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Mission Hills gelato operation in a narrow spot on India Street. Made with Italian bases, rotates with the season — but the pistachio is always there and always correct. The stracciatella is the other constant. Both are better than anything made with a stabilizer in the mix.</p><h3>The order</h3><ul><li>Pistachio — the benchmark, non-negotiable on a first visit</li><li>Stracciatella — the second scoop, every time</li><li>Whatever the seasonal flavor is — usually worth it</li></ul><p>Small shop, long line on weekends. Go on a weekday afternoon.</p>",
+    "lat": 32.7432214,
+    "lng": -117.1810028,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -273,12 +356,13 @@
     "address": "Mira Mesa, San Diego, CA",
     "cuisine": "Japanese",
     "rating": 4.3,
-    "lat": 32.8196839,
-    "lng": -117.1501556,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Mira Mesa ramen counter that takes the soup seriously. The tonkotsu has the right depth and the right grease level — not oppressive, just present. The chashu is braised properly and arrives in thick slices. The noodles are firm. The soft egg is seasoned. Nothing surprising, everything correct.</p><h3>The order</h3><ul><li>Tonkotsu — the whole point of coming here</li><li>Extra chashu — add it without deliberating</li><li>Soft egg — properly seasoned, always</li></ul><p>Lunch counter hours. Go before the line builds.</p>",
+    "lat": 32.8196839,
+    "lng": -117.1501556,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -287,12 +371,13 @@
     "address": "Mira Mesa, San Diego, CA",
     "cuisine": "Japanese",
     "rating": 4.2,
-    "lat": 32.8203611,
-    "lng": -117.1486528,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>One of several Tajima locations, this one anchoring the Mira Mesa corridor. The broth runs long and comes out opaque and properly rich. The kakuni bowl is the move — pork belly slow-braised until it barely holds together, set over a tonkotsu base that justifies the drive north.</p><h3>The order</h3><ul><li>Kakuni ramen — pork belly, the reason to be here</li><li>Tonkotsu if you want the classic baseline</li><li>Gyoza to start, pan-fried, no arguments</li></ul><p>Reliable anchor for the area. Consistent across visits.</p>",
+    "lat": 32.8203611,
+    "lng": -117.1486528,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -301,13 +386,14 @@
     "address": "Normal Heights, San Diego, CA",
     "cuisine": "American",
     "rating": 4,
-    "lat": 32.748657,
-    "lng": -117.135492,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Normal Heights neighborhood bar that also happens to make a good burger. No pretense, no craft cocktail program — just a well-poured beer and a patty that earns its price. The regulars have been sitting at the same barstools since before you moved to the neighborhood. That is a good sign.</p><h3>The order</h3><ul><li>Burger — straightforward, priced right, no complaints</li><li>Whatever is cheapest on draft</li><li>Fries, nothing fancy, salted correctly</li></ul><p>A neighborhood bar that functions as one. Increasingly rare.</p>",
+    "lat": 32.748657,
+    "lng": -117.135492,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -316,12 +402,13 @@
     "address": "South San Diego, CA",
     "cuisine": "Bakery",
     "rating": 4.1,
-    "lat": 32.6970431,
-    "lng": -117.018145,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>South San Diego donut counter that opens early and closes when they run out. The glazed is the benchmark — fried fresh, thin crisp exterior, doughy interior. The apple fritter is the oversized one that justifies the drive. Cash operation, fluorescent lights, exactly what a donut shop should be.</p><h3>The order</h3><ul><li>Glazed — the reference point, order at least two</li><li>Apple fritter — large, unapologetic, correct</li><li>Old fashioned if they have it — underrated</li></ul><p>Opens before 6 AM. Go before work or don't go at all.</p>",
+    "lat": 32.6970431,
+    "lng": -117.018145,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -330,13 +417,14 @@
     "address": "3175 India St, San Diego, CA 92103",
     "cuisine": "Cocktail Bar",
     "rating": 4.5,
-    "lat": 32.73645,
-    "lng": -117.174989,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Middletown cocktail bar with a retro-modern interior that earns the aesthetic without making it the whole personality. The bar program is the reason to be here — well-sourced spirits, technique that doesn't announce itself, and a list that rewards reading past the first page. The kitchen turns out small plates that are better than an afterthought.</p><h3>The order</h3><ul><li>Bartender's choice — give them a spirit and a direction, trust the rest</li><li>Whatever the rotating seasonal cocktail is — usually the best thing on the menu</li><li>Small plates to share — the cheese board if it's available</li></ul><p>Low lighting, good sound level, the kind of bar you stay at longer than planned. Go midweek if you want a seat without a wait.</p>",
+    "lat": 32.73645,
+    "lng": -117.174989,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-05-29"
   },
   {
@@ -361,12 +449,13 @@
     "address": "2414 San Diego Ave, San Diego, CA 92110",
     "cuisine": "Cocktail Bar",
     "rating": 4.7,
-    "lat": 32.75358,
-    "lng": -117.19614,
     "tags": [
       "bar"
     ],
-    "description": "<p>Old Town speakeasy concealed behind a door that looks like it belongs to an apothecary. The cocktail program leans into the mystical aesthetic without losing its grip on technique — batched spirits, house-made syrups, and a menu that changes with intention. The space is small, deliberate, and decorated with the kind of care that rewards a second look.</p><h3>The order</h3><ul><li>Whatever the bartender is most excited about — this is the correct entry point</li><li>Any cocktail featuring house-made infusions — they're the reason the menu works</li><li>Mezcal-forward options if available — the smokiness is handled correctly here</li></ul><p><strong>Reservations strongly recommended.</strong> Walk-ins during peak hours are turned away and the disappointment is earned.</p>",
+    "lat": 32.75358,
+    "lng": -117.19614,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -375,12 +464,13 @@
     "address": "675 W Beech St, San Diego, CA 92101",
     "cuisine": "Tiki Bar",
     "rating": 4.8,
-    "lat": 32.72076,
-    "lng": -117.16896,
     "tags": [
       "bar"
     ],
-    "description": "<p>Hidden below Craft & Commerce, through a door that isn't marked. One of the best tiki bars in the country — and not a modest claim. The drinks are technically precise and arrive in vessels that match the ambition: ceramic tiki mugs, scorpion bowls, fogged glasses. The rum sourcing is serious. The banana daiquiri is not a joke.</p><h3>The order</h3><ul><li>Banana daiquiri — this is not the blended version, approach accordingly</li><li>Scorpion bowl — commit to the group format, it earns it</li><li>Whatever the bartender is running on the specials list — always something worth ordering</li></ul><p>The space fills early and stays full. Walk in before 8 PM or accept what the night gives you.</p>",
+    "lat": 32.72076,
+    "lng": -117.16896,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -389,12 +479,13 @@
     "address": "548 5th Ave, San Diego, CA 92101",
     "cuisine": "Cocktail Bar",
     "rating": 4.4,
-    "lat": 32.71285,
-    "lng": -117.16015,
     "tags": [
       "bar"
     ],
-    "description": "<p>Gaslamp speakeasy that commits to the 1920s premise without becoming a costume party. The entrance requires knowing where to look — that's part of the contract. Live jazz most nights, candlelight, leather booths. The cocktail list runs classic with house variations, built with the right ratio of respect to creativity.</p><h3>The order</h3><ul><li>Old Fashioned — the benchmark for any bar calling itself a speakeasy</li><li>French 75 — correct for the era and the room</li><li>Whatever the bar manager has on the seasonal list</li></ul><p>Best on a weeknight when the jazz is playing and the crowd hasn't arrived en masse. The room is the experience.</p>",
+    "lat": 32.71285,
+    "lng": -117.16015,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -403,12 +494,13 @@
     "address": "4646 Convoy St, San Diego, CA 92111",
     "cuisine": "Cocktail Bar",
     "rating": 4.6,
-    "lat": 32.8248571,
-    "lng": -117.1559327,
     "tags": [
       "bar"
     ],
-    "description": "<p>Japanese-inspired cocktail bar and live music venue anchoring the Convoy District. The room is warm and considered — low lighting, good acoustics, a sound system that respects the music. Natural wine list that's been thought through, cocktails that don't overstay their welcome, and a kitchen that keeps people seated longer than they planned.</p><h3>The order</h3><ul><li>Whatever is on draft — rotating list, usually something local and interesting</li><li>Ask about the natural wine by the glass — the list changes frequently and rewards the conversation</li><li>Check the live music calendar before you go — timing matters here</li></ul><p>The Convoy District is having a moment and this bar is part of why. Go before the lines get longer.</p>",
+    "lat": 32.8248571,
+    "lng": -117.1559327,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -417,12 +509,13 @@
     "address": "3829 30th St, San Diego, CA 92104",
     "cuisine": "Cocktail Bar",
     "rating": 4.6,
-    "lat": 32.74905,
-    "lng": -117.1313,
     "tags": [
       "bar"
     ],
-    "description": "<p>North Park listening bar and record store from CH Projects and Folk Arts Rare Records. The format is Japanese kissa-bar — vinyl through a high-fidelity sound system, cocktails built with the same attention the records get, a room designed to make you sit still and actually listen. Natural wine list, minimal menu, the kind of bar that changes what you think a bar can be.</p><h3>The order</h3><ul><li>Whatever the bartender recommends — give them a spirit and defer the rest</li><li>Natural wine by the glass — the list rotates and is taken seriously</li><li>Check what's on the turntable before you order — it tells you everything about what kind of night this will be</li></ul><p>Not a loud bar. Not a late bar. Go early, find a seat, and let the music run.</p>",
+    "lat": 32.74905,
+    "lng": -117.1313,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -431,12 +524,13 @@
     "address": "3054 University Ave, San Diego, CA 92104",
     "cuisine": "Whiskey Bar",
     "rating": 4.5,
-    "lat": 32.74793,
-    "lng": -117.13925,
     "tags": [
       "bar"
     ],
-    "description": "<p>North Park whiskey bar with a selection that will take you an hour to get through and a room dark enough to make that feel appropriate. The hunting lodge aesthetic — mounted heads, wood paneling, green lamps — is executed rather than approximated. The cocktail list exists and is competent. The whiskey list is the reason to be here: Scotch, bourbon, rye, Japanese, Irish, in depth.</p><h3>The order</h3><ul><li>Ask for something you haven't tried — the staff knows the back wall</li><li>Peated Scotch if you haven't gone there yet — this is the room for it</li><li>Whiskey sour if cocktails are the move — the acid is balanced correctly</li></ul><p>Happy hour runs until 8 PM and the pour is generous for the price. Arrive before then.</p>",
+    "lat": 32.74793,
+    "lng": -117.13925,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -459,12 +553,13 @@
     "address": "Middletown, San Diego, CA",
     "cuisine": "Cocktail Bar",
     "rating": 4.5,
-    "lat": 32.7284222,
-    "lng": -117.1614469,
     "tags": [
       "bar"
     ],
-    "description": "<p>Middletown bar that earns its aesthetic — shelves of books, record bins, low lighting, and a cocktail program that backs up the room. Not a theme bar. The drinks are built with care and the natural wine selection has been given actual thought. The kind of room that runs late without announcing it.</p><h3>The order</h3><ul><li>Bartender's choice — give a spirit and a direction, step back</li><li>Natural wine by the glass — rotating, taken seriously</li><li>Whatever is seasonal on the cocktail list — rewards returning</li></ul><p>The kind of bar you end up at because a friend suggested it and stay at because you don't want to leave.</p>",
+    "lat": 32.7284222,
+    "lng": -117.1614469,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -473,12 +568,13 @@
     "address": "Hillcrest, San Diego, CA",
     "cuisine": "Pizza",
     "rating": 4.4,
-    "lat": 32.7435411,
-    "lng": -117.161286,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Hillcrest pizza spot doing Detroit-style in a small room that fills fast. The Red Top is the reason to come: square pan, crispy lacey cheese edges, sauce over cheese the way it's supposed to go. The kind of pizza that makes you reconsider what you thought you wanted from the category.</p><h3>The order</h3><ul><li>Red Top, Detroit-style — the whole point of being here</li><li>Whatever the seasonal slice special is — usually worth it</li><li>Order ahead if you can — the room is small and patience has limits</li></ul><p>Arrive early or call ahead. Small operation, short wait tolerance.</p>",
+    "lat": 32.7435411,
+    "lng": -117.161286,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -487,13 +583,14 @@
     "address": "2230 Shelter Island Dr, San Diego, CA 92106",
     "cuisine": "Polynesian",
     "rating": 4.3,
-    "lat": 32.7194332,
-    "lng": -117.220418,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Shelter Island Polynesian institution since 1955 with a bay view that has not diminished. The room is dated in the ways that have become correct — carved tiki, bamboo, a bar that has been pouring since before you were born. The cocktail is the classic Bali Hai; the sunset from the deck does the rest of the work. This is a San Diego original in every sense.</p><h3>The order</h3><ul><li>Bali Hai cocktail — the house rum punch, the only right call on a first visit</li><li>Macadamia nut-crusted mahi — the kitchen's reliable anchor</li><li>Sit on the deck — the view is the meal</li></ul><p>Go at sunset. Arrive 20 minutes early to get the right seat. Everything else is secondary.</p>",
+    "lat": 32.7194332,
+    "lng": -117.220418,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -502,12 +599,13 @@
     "address": "3365 India St, San Diego, CA 92103",
     "cuisine": "Dive Bar",
     "rating": 4.2,
-    "lat": 32.7381483,
-    "lng": -117.176468,
     "tags": [
       "bar"
     ],
-    "description": "<p>Mission Hills dive bar with a whiskey collection that runs into the hundreds — aviation memorabilia on every wall, cash preferred, ice in the glass. The bar program is not precious about it: pour what you're handed, sit down, come back tomorrow. One of the last rooms in San Diego that operates the way a bar should and has no interest in changing.</p><h3>The order</h3><ul><li>Ask what's interesting in the whiskey well — the answer is always there</li><li>Anything peated if you haven't explored that shelf yet — this is the room for it</li><li>Beer back — the correct accompaniment, no argument</li></ul><p>Unpretentious in the actual sense of the word. Goes dark early on weeknights. That is a feature.</p>",
+    "lat": 32.7381483,
+    "lng": -117.176468,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -516,12 +614,13 @@
     "address": "1 Market Pl, San Diego, CA 92101",
     "cuisine": "Cocktail Bar",
     "rating": 4.4,
-    "lat": 32.709746,
-    "lng": -117.167834,
     "tags": [
       "bar"
     ],
-    "description": "<p>40th floor of the Manchester Grand Hyatt with a panoramic view of the bay, Coronado, and the downtown skyline. The drinks are fine. The view is the product and it earns the price without argument. Go at sunset, arrive early enough to claim a window seat, order something cold, and let the city do what it does at that altitude.</p><h3>The order</h3><ul><li>Whatever is coldest and simplest — the setting is doing most of the work</li><li>Champagne if the occasion calls for it — the backdrop earns it</li><li>Get there 30 minutes before sunset — the window seats go fast and the view changes quickly</li></ul><p>Book a table if you're going on a weekend. The walk-in line at golden hour is real.</p>",
+    "lat": 32.709746,
+    "lng": -117.167834,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -530,13 +629,14 @@
     "address": "969 Pacific Hwy, San Diego, CA 92101",
     "cuisine": "Asian-Latin",
     "rating": 4.7,
-    "lat": 32.715116,
-    "lng": -117.170522,
     "tags": [
       "restaurant",
       "bar"
     ],
-    "description": "<p>Little Italy pan-Asian restaurant from a kitchen that takes the brief seriously — wagyu, sashimi, and Japanese-Latin crossovers executed at a level most restaurants in this city can't touch. The design is the other story: neon, gold, a bar that could stand alone. Michelin-adjacent and not surprised by it. This is where technique and concept actually meet.</p><h3>The order</h3><ul><li>A5 wagyu — if it's available and the occasion justifies it, there's no argument</li><li>Whole crispy fish — arrives dramatically, tastes correctly</li><li>The cocktail list at the bar — built with the same seriousness as the kitchen</li></ul><p>Make a reservation. The walk-in game here is not worth playing on weekends. Dress the occasion.</p>",
+    "lat": 32.715116,
+    "lng": -117.170522,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -545,12 +645,13 @@
     "address": "National City, CA",
     "cuisine": "Mexican",
     "rating": 4.3,
-    "lat": 32.6776306,
-    "lng": -117.101525,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>South Bay family restaurant running Mexican comfort food the right way — no pretense, no ambition beyond feeding people well. The carne asada plate is the reason to know this place: properly grilled, correct char, served with rice and beans done without shortcuts. Large portions, correct prices, the kind of neighborhood spot that doesn't need a review.</p><h3>The order</h3><ul><li>Carne asada plate — the whole reason you're here</li><li>Chile relleno if it's on — reliably done</li><li>Horchata — the house version, not bottled</li></ul><p>Bring cash, bring an appetite, bring someone who can finish a plate. No one leaves light.</p>",
+    "lat": 32.6776306,
+    "lng": -117.101525,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -559,12 +660,13 @@
     "address": "Santee, CA",
     "cuisine": "Mexican",
     "rating": 4.5,
-    "lat": 32.8396194,
-    "lng": -116.9962652,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Santee birria operation that does one thing and does it without apology. The consommé is deep — long-braised, properly fatty, the kind that leaves a mark. The quesabirria is the move: crispy tortilla, dipped correctly, assembled with the right ratio of cheese to meat. Worth the drive east without question.</p><h3>The order</h3><ul><li>Quesabirria — dipped, not optional</li><li>Consommé on the side — drink it, that is the point</li><li>Birria ramen if it's available — the crossover works here</li></ul><p>Weekend lines are real. Arrive early or order ahead. The wait is never long enough to justify skipping it.</p>",
+    "lat": 32.8396194,
+    "lng": -116.9962652,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -573,12 +675,13 @@
     "address": "Santee, CA",
     "cuisine": "Bakery",
     "rating": 4.2,
-    "lat": 32.8401804,
-    "lng": -116.9954235,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Santee donut counter in the tradition of every great donut shop — open early, fluorescent lights, glazed on the rack by 5 AM. The cake donut is the benchmark. The apple fritter is the occasion. The coffee is there and does its job. Nothing sophisticated happens here and that is precisely the point.</p><h3>The order</h3><ul><li>Glazed — the reference point, eat one immediately</li><li>Apple fritter — large, correct, no notes</li><li>Cake donut — the underrated pick, always right</li></ul><p>Opens before dawn. Go before work or accept you're eating whatever's left by 9 AM.</p>",
+    "lat": 32.8401804,
+    "lng": -116.9954235,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -587,12 +690,13 @@
     "address": "La Mesa, CA",
     "cuisine": "Mexican",
     "rating": 4.4,
-    "lat": 32.7666164,
-    "lng": -117.0157279,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>La Mesa Mexican institution with the kind of menu that hasn't needed to change in decades. The enchiladas are the move — sauce that's been going since Tuesday, proper melt, served with rice and beans done correctly. A neighborhood restaurant operating at neighborhood standards, which in this case means genuinely good.</p><h3>The order</h3><ul><li>Enchiladas — the sauce is the reason, red or green depending on your conviction</li><li>Menudo on weekends — the version that earns the drive</li><li>Agua fresca — skip the soda</li></ul><p>Cash is faster. The lunch crowd is real. Go early or accept the wait, which is worth it.</p>",
+    "lat": 32.7666164,
+    "lng": -117.0157279,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -601,12 +705,13 @@
     "address": "Chula Vista, CA",
     "cuisine": "Filipino",
     "rating": 4.5,
-    "lat": 32.6800731,
-    "lng": -117.078358,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Chula Vista Filipino counter cooking that earns its following on every visit. The sinigang is the order: sour, deep, built with the right pork-to-broth ratio and tamarind that actually shows up. The longanisa breakfast plate runs all day and is always correct. The kind of restaurant you tell people about in the same breath as telling them to make the drive.</p><h3>The order</h3><ul><li>Sinigang — the pork version, the reason the restaurant exists</li><li>Longanisa and eggs — available all day, always the right call</li><li>Pancit — order it as a side, finish it as a main</li></ul><p>Small operation. Goes fast on weekends. Arrive with patience and leave with leftovers.</p>",
+    "lat": 32.6800731,
+    "lng": -117.078358,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -615,12 +720,13 @@
     "address": "Chula Vista, CA",
     "cuisine": "Chinese",
     "rating": 4.3,
-    "lat": 32.6760033,
-    "lng": -117.0951844,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Chula Vista Chinese restaurant covering more ground than the strip mall entrance suggests. The Peking duck comes out right — crispy skin, proper pancakes, hoisin handled correctly. The wonton soup is the benchmark for the category in this area. Order more than you think you need, share everything, and don't rush the tea.</p><h3>The order</h3><ul><li>Peking duck — call ahead to reserve one, worth the planning</li><li>Wonton soup — the benchmark, arrives correctly</li><li>Mapo tofu if you want heat — they don't pull the Sichuan pepper</li></ul><p>Dim sum on weekends. Arrive at opening or expect to wait for a table that seats the whole party.</p>",
+    "lat": 32.6760033,
+    "lng": -117.0951844,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   },
   {
@@ -629,12 +735,13 @@
     "address": "Little Italy, San Diego, CA",
     "cuisine": "Bakery",
     "rating": 4.5,
-    "lat": 32.722832,
-    "lng": -117.1677805,
     "tags": [
       "restaurant"
     ],
-    "description": "<p>Little Italy bakery operating in the neighborhood that needs one. The cupcakes are the anchor — well-frosted, correct cake-to-frosting ratio, rotating flavors that reward a second visit. The coffee is capable. The pastry case turns over fast on weekends, which is the signal about when to arrive and how decisive to be once you're in line.</p><h3>The order</h3><ul><li>Cupcake of the day — whatever is most unexpected is usually the right call</li><li>Layer cake by the slice if available — the frosting-to-cake ratio is always correct</li><li>Coffee — capable, pairs without complaint</li></ul><p>Weekend mornings move fast. Arrive with a plan or accept what's left, which is still worth it.</p>",
+    "lat": 32.722832,
+    "lng": -117.1677805,
+    "description": "<p><br></p>",
+    "contacts": [],
     "createdAt": "2026-06-01"
   }
 ]
