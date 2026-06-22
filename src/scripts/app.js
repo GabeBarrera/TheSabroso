@@ -235,9 +235,11 @@ function App() {
     Promise.all([
       fetch("./data/restaurants.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
       fetch("./data/recipes.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
-    ]).then(([r, rec]) => {
+      fetch("./data/notes.json", { cache: "no-store" }).then((r) => r.json()).catch(() => []),
+    ]).then(([r, rec, nts]) => {
       setRestaurants(r);
       setRecipes(rec.map(migrateRecipeLegacy));
+      if (Array.isArray(nts)) setNotes(nts);
       if (!dataReady) setDataReady(true);
     });
   }, []);
@@ -265,7 +267,7 @@ function App() {
   // persist on change — guarded so we don't write before seed fetch resolves
   useEffect(() => { if (dataReady) SDStore.saveRestaurants(restaurants); }, [restaurants, dataReady]);
   useEffect(() => { if (dataReady) SDStore.saveRecipes(recipes); }, [recipes, dataReady]);
-  useEffect(() => { SDStore.saveNotes(notes); }, [notes]);
+  useEffect(() => { if (dataReady) SDStore.saveNotes(notes); }, [notes, dataReady]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem("sabroso_theme", theme); } catch (e) { /* no-op */ }

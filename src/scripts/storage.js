@@ -12,6 +12,48 @@ const NOTES_KEY         = "sabroso_notes";
 const GROCERY_KEY       = "sabroso_grocery";
 
 window.SDStore = {
+  /* ── Server sync (local python dev server) ──────────────────────────────
+     Admin creates / edits / deletes are mirrored back to data/*.json by
+     POSTing the full array to the dev server's REST API. This only fires
+     when (a) an admin is authenticated AND (b) the python server is
+     actually running — on a static host (GitHub Pages, file://) the ping
+     fails and we silently fall back to localStorage-only behavior. */
+  _server: { checked: false, available: false },
+  _lastSynced: { restaurants: null, recipes: null, notes: null },
+
+  async _detectServer() {
+    if (this._server.checked) return this._server.available;
+    try {
+      const r = await fetch("/api/ping", { method: "GET", cache: "no-store" });
+      const j = await r.json();
+      this._server.available = !!(j && j.ok);
+    } catch (e) {
+      this._server.available = false;
+    }
+    this._server.checked = true;
+    return this._server.available;
+  },
+
+  async serverSync(kind, list) {
+    // only an authenticated admin writes back to disk
+    if (!this.isAdmin()) return;
+    const payload = JSON.stringify(list ?? []);
+    if (this._lastSynced[kind] === payload) return;   // unchanged since last write
+    const ok = await this._detectServer();
+    if (!ok) return;                                   // static host — localStorage only
+    try {
+      const res = await fetch("/api/" + kind, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      });
+      if (res.ok) {
+        this._lastSynced[kind] = payload;
+        window.dispatchEvent(new CustomEvent("sabroso:synced", { detail: { kind, count: (list || []).length } }));
+      }
+    } catch (e) { /* network blip — localStorage still holds the change */ }
+  },
+
   loadRestaurants() {
     try {
       const raw = localStorage.getItem(RESTAURANTS_KEY);
@@ -26,8 +68,8 @@ window.SDStore = {
     } catch (e) { return null; }
   },
 
-  saveRestaurants(list) { localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(list)); },
-  saveRecipes(list)     { localStorage.setItem(RECIPES_KEY,     JSON.stringify(list)); },
+  saveRestaurants(list) { localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(list)); this.serverSync("restaurants", list); },
+  saveRecipes(list)     { localStorage.setItem(RECIPES_KEY,     JSON.stringify(list)); this.serverSync("recipes", list); },
 
   loadContacts() {
     try {
@@ -123,7 +165,7 @@ window.SDStore = {
     } catch (e) { return []; }
   },
 
-  saveNotes(list) { localStorage.setItem(NOTES_KEY, JSON.stringify(list)); },
+  saveNotes(list) { localStorage.setItem(NOTES_KEY, JSON.stringify(list)); this.serverSync("notes", list); },
 
   loadGroceryList() {
     try {
