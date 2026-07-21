@@ -66,7 +66,28 @@ npx serve .
 # Install the "Live Server" extension, then right-click index.html → Open with Live Server
 ```
 
-Then open `http://localhost:8080`.
+Then open \`http://localhost:8080\`.
+
+### Local dev server with write-back (\`server.py\`)
+
+\`server.py\` is an optional stdlib-only server (no pip installs) that serves the static files **and** exposes a tiny REST API which writes admin edits straight back to \`data/*.json\` on disk:
+
+\`\`\`bash
+python server.py          # port 8000
+python server.py 9000     # custom port
+\`\`\`
+
+| Route | Method | Effect |
+|---|---|---|
+| \`/api/ping\` | GET | Health check — \`{"ok": true}\` |
+| \`/api/restaurants\` · \`/api/recipes\` · \`/api/notes\` | GET | Returns the seed array |
+| \`/api/restaurants\` · \`/api/recipes\` · \`/api/notes\` | POST | Overwrites the matching \`data/*.json\` with the posted array (atomic temp-file write) |
+
+How the app uses it: \`SDStore.serverSync()\` runs only when **an admin is logged in** and a ping to \`/api/ping\` succeeds. On any static host (GitHub Pages, \`file://\`, \`python -m http.server\`) the ping fails and the app silently falls back to localStorage-only behaviour. When a write lands, the app dispatches a \`sabroso:synced\` DOM event. This is the second of two write-back paths — the other is the editor's Chromium-only **Connect data folder** (File System Access API); \`server.py\` works in any browser but requires the Python process.
+
+### Watch / tiny-screen mode
+
+The app detects viewports **≤ 220px wide** (\`isWatch\`) and renders a stripped-down layout for smart-watch-class screens. \`index.html\` also sets \`<meta name="disabled-adaptations" content="watch">\`.
 
 ---
 
@@ -482,3 +503,64 @@ The description fields in restaurant and recipe forms use a `contentEditable` ri
 ```
 
 Contacts are an object keyed by restaurant `id`, stored in `sabroso_contacts`. They are never written into `restaurants.json`.
+
+---
+
+## Potential improvements
+
+The app is deliberately build-free, which keeps it approachable but leaves several things on the table. In rough priority order:
+
+**Architecture & performance**
+- **Ship production React and precompile JSX.** `index.html` loads `react.development.js` / `react-dom.development.js` and transforms four `.js` files with Babel Standalone *in the browser* on every load. This is the single biggest win: swap to the minified `production.min.js` builds and move JSX transpilation to a one-shot build step (esbuild / Vite) to cut both bytes and first-paint time dramatically. The no-build ethos can be preserved with a committed `dist/` bundle.
+- **Split the monolith files.** `views.js` is ~1,800 lines and mixes map, recipes, profiles, grocery, weather, and open-hours logic. Break it into modules (once a bundler exists) so each concern is independently readable and testable.
+- **De-duplicate shared logic.** There are two haversine implementations (`haversine` in miles in `app.js`, `haversineKm` in `views.js`) and two ingredient parsers (`parseIngredientText` for legacy migration vs. `parseIngredient` for scaling). Consolidate into one utilities module.
+- **Manual cache-busting is fragile.** The `?v=1780976600` query strings on CSS/JS are hand-edited; a build step should stamp these automatically (content hash) so stale assets can't be served.
+
+**Offline / PWA**
+- **No service worker.** Both `manifest.json` files declare a PWA, but nothing caches the shell or the CDN dependencies (React, Leaflet, fonts), so the "installed" app is broken offline — exactly when a field journal is most useful. Add a service worker that precaches the app shell and seed JSON.
+
+**Data & correctness**
+- **Grocery totals parsing is lossy.** `buildTotals` sums quantities per ingredient name but can't reconcile mixed units (e.g. `1 cup` + `200 g` of the same item), and unit normalization is limited. Consider a small unit-conversion table or grouping by `name + unit`.
+- **Legacy migration runs on every load.** `migrateRecipeLegacy` re-parses `<li>` ingredients each time recipes load; once migrated it could be written back so the parse only happens once.
+- **No schema validation on import.** Import dialogs trust the JSON shape; a malformed file can inject bad records. A lightweight validator would harden the import/backup round-trip.
+
+**Security**
+- **Admin mode is client-side only and not real security.** The password check compares a SHA-256 hash held in `localStorage`, defaulting to `anyonecancook`, all in the browser — trivially bypassable via devtools. This is fine for a personal journal but should be documented as UI-gating, not access control. Any genuinely sensitive data (contacts) should not rely on it.
+
+**Accessibility & UX**
+- **Add focus management and ARIA to modals.** Overlays should trap focus, restore it on close, and expose `role="dialog"` / `aria-modal`. Escape-to-close exists in places but isn't universal.
+- **No error boundaries.** A throw in any view crashes the whole app to a blank `#root`. A top-level React error boundary with a themed fallback would keep the journal usable.
+- **Reduced-motion support.** The carousel and scribble filters animate unconditionally; honour `prefers-reduced-motion`.
+
+**Tooling**
+- **No tests and no linting.** Even a handful of unit tests around the parsers (`parseIngredient`, `scaleQty`, `getOpenStatus`, `buildTotals`) plus an ESLint pass would catch regressions in the trickiest pure functions.
+
+---
+
+## Dev Log
+
+Running notes on fixes that need doing or would be nice to have. Newest at the top; move items to a "Done" note as they land.
+
+### 🔴 Major (correctness / breaks a promised feature)
+- [ ] **Service worker for offline PWA** — installed app currently can't load without network (CDN deps uncached). Highest-impact PWA fix.
+- [ ] **Production React + precompiled JSX** — stop shipping dev builds and in-browser Babel; add a build step or committed bundle.
+- [ ] **Grocery "Totals" mixed-unit handling** — quantities across different units silently mis-sum; group by `name + unit` or convert.
+- [ ] **Top-level error boundary** — one thrown error blanks the entire app; add a themed fallback.
+- [ ] **Document admin mode as non-secure** — make explicit in UI/README that admin gating is cosmetic, not access control.
+
+### 🟡 Minor (bugs / rough edges)
+- [ ] **Consolidate duplicate helpers** — two haversine fns, two ingredient parsers; unify into a utils module.
+- [ ] **Persist legacy migration** — write migrated recipes back so `migrateRecipeLegacy` doesn't re-parse every load.
+- [ ] **Automate cache-busting** — replace hand-edited `?v=` strings with build-stamped hashes.
+- [ ] **Import schema validation** — reject malformed records instead of trusting shape.
+- [ ] **Modal focus trap + ARIA** — focus management and `role="dialog"` across all overlays.
+- [ ] **Honour `prefers-reduced-motion`** on the carousel and scribble filters.
+
+### 🟢 Nice to have
+- [ ] **Split `views.js`** into per-concern modules once a bundler exists.
+- [ ] **Unit tests** for `parseIngredient`, `scaleQty`, `getOpenStatus`, `buildTotals`; add ESLint.
+- [ ] **Undo for destructive actions** (delete entry / clear grocery list / resync) via a toast with an Undo action.
+- [ ] **Bulk edit in the editor** — multi-select delete/export.
+- [ ] **Photo handling** — the rich-text editor accepts uploads but there's no image-size guard or optimization; large base64 images bloat `localStorage`.
+- [ ] **Export a print-friendly recipe card / PDF** from the recipe detail view.
+- [ ] **Keyboard nav inside the recipe list** (↑/↓ to move selection, like global search).
